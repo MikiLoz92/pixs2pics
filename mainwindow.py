@@ -10,13 +10,13 @@ from image import *
 
 import random
 
-class Color(QtGui.QLabel):
+class Color(QtGui.QFrame):
 	"""
 	"""
 
-	def __init__(self):
+	def __init__(self, Parent=None):
 
-		super(Color, self).__init__()
+		super(Color, self).__init__(Parent)
 
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
 		self.setFixedSize(16,16)
@@ -25,20 +25,28 @@ class Color(QtGui.QLabel):
 
 	def paintEvent(self, e):
 
+	
 		painter = QtGui.QPainter(self)	
 		painter.setBackgroundMode(Qt.OpaqueMode)
 		brush = QtGui.QBrush(self.color)
 		painter.setBrush(brush)
 		painter.fillRect(0,0,self.width(),self.height(),brush)
 
+		super(Color, self).paintEvent(e)
+
 	def mousePressEvent(self, e):
 
-		c = QtGui.QColorDialog.getColor(self.color, self)
-		if c.isValid():
-			self.color = c
-			self.update()
+		if e.button() == Qt.LeftButton:
+			self.setFrameStyle(QtGui.QFrame.Box)
+			self.setFrameShadow(QtGui.QFrame.Plain)
+			self.setLineWidth(2)
+		elif e.button() == Qt.RightButton:
+			c = QtGui.QColorDialog.getColor(self.color, self)
+			if c.isValid():
+				self.color = c
+				self.update()
 
-
+			      
 ## Vista/View
 class MainWindow(QtGui.QMainWindow):
 	"""
@@ -52,9 +60,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.resize(640,480)
 		self.setWindowTitle("PixelArt")
-		statusBar = self.statusBar().showMessage("Ready")
+		self.statusBar = self.statusBar().showMessage("Ready")
 
-		menuBar = self.createMenuBar()
+		self.menuBar = self.createMenuBar()
 
 		self.mainWidget = MainWidget(128, 96, image, com, Qt.red, self)
 		
@@ -178,9 +186,9 @@ class MainWindow(QtGui.QMainWindow):
 
 	def createDockWidgets(self):
 
-		d = QtGui.QDockWidget("Palette", self)
-		d.setAllowedAreas(Qt.RightDockWidgetArea)
-		d.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+		self.paletteDW = QtGui.QDockWidget("Palette", self)
+		self.paletteDW.setAllowedAreas(Qt.RightDockWidgetArea)
+		self.paletteDW.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
 		self.palette = QtGui.QWidget()
 		grid = QtGui.QGridLayout()
@@ -191,7 +199,7 @@ class MainWindow(QtGui.QMainWindow):
 		i = 0
 		j = 0
 		for k in range(16):
-			c = Color()
+			c = Color(self)
 			grid.addWidget(c,j,i)
 			i += 1
 			if j == 0 and i > 7:
@@ -201,9 +209,9 @@ class MainWindow(QtGui.QMainWindow):
 		grid.setSpacing(0)
 		#d.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
 		#d.setFixedSize(grid.minimumSize())
-		d.setWidget(self.palette)
+		self.paletteDW.setWidget(self.palette)
 
-		self.addDockWidget(Qt.RightDockWidgetArea, d)
+		self.addDockWidget(Qt.RightDockWidgetArea, self.paletteDW)
 
 		d = QtGui.QDockWidget("Tool Properties", self)
 		d.setAllowedAreas(Qt.RightDockWidgetArea)
