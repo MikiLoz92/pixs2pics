@@ -87,13 +87,13 @@ QSpinBox::down-button:hover {
 }
 
 QSpinBox::up-arrow  {
-    background-image: url(uparrow.png);
+    background-image: url(images/uparrow.png);
     width: 8px;
     height: 8px;
 }
 
 QSpinBox::down-arrow  {
-    background-image: url(downarrow.png);
+    background-image: url(images/downarrow.png);
     width: 8px;
     height: 8px;
 }

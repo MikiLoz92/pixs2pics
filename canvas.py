@@ -11,86 +11,61 @@ class Canvas(QtGui.QLabel):
 	Se expande de tamaño a medida que aumentamos el zoom.
 	"""
 
-	def __init__(self, w, h, image, com, color, parent=None):
+	def __init__(self, w, h, data, com, color, parent=None):
 
 		super(Canvas, self).__init__()
-		self.qimage = QtGui.QImage(w,h,QtGui.QImage.Format_RGB32)
 
-		self.setPixmap(QtGui.QPixmap.fromImage(self.qimage))
+		self.setBackgroundRole(QtGui.QPalette.Base)
+		self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+		self.setScaledContents(True)
 
-		self.parent = parent
-		self.width = w
-		self.height = h
-		#self.setSizePolicy(QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed)
-		#self.repaint()
-		#self.setFixedSize(w, h)
-		self.zoom = 1
-		#self.setBackgroundRole(QtGui.QPalette.Base)
-		#self.setAutoFillBackground(True)
-
-		#self.setAttribute(QtCore.Qt.WA_StaticContents)
-		self.myPenWidth = 1
-		self.myPenColor = color
-		self.image = image
 		self.com = com
-		self.com.dadesActualitzada.connect(self.actualitzar)
-		#self.com.zoomIn.connect(self.zoomIn)
-
-	def actualitzar(self):
-
-		self.update()
+		self.com.updateCanvas.connect(self.update)
+		self.parent = parent
+		self.data = data
+		self.image = data.image
+		self.image.fill(QtGui.qRgb(255, 255, 255))
+		self.setPixmap(QtGui.QPixmap.fromImage(self.image))
 
 	def mousePressEvent(self, event):
 
 		if event.button() == QtCore.Qt.LeftButton:
 			pos = event.pos()
-			x = pos.x() - pos.x()*(self.zoom-1)/self.zoom
-			y = pos.y() - pos.y()*(self.zoom-1)/self.zoom
-			self.image.afegirpunt(QtCore.QPoint(x,y))
-			self.update()
+			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
+			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+			self.lastPoint = QtCore.QPoint(x,y)
+			self.drawing = True
 
 	def mouseMoveEvent(self, event):
 
-		if (event.buttons() & QtCore.Qt.LeftButton):
+		if (event.buttons() and QtCore.Qt.LeftButton) and self.drawing:
 			pos = event.pos()
-			x = pos.x() - pos.x()*(self.zoom-1)/self.zoom
-			y = pos.y() - pos.y()*(self.zoom-1)/self.zoom
-			self.image.afegirpunt(QtCore.QPoint(x,y))
-			self.update()
+			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
+			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+			self.drawLineTo(QtCore.QPoint(x,y))
 
 	def mouseReleaseEvent(self, event):
 
-		if event.button() == QtCore.Qt.LeftButton:
+		if event.button() == QtCore.Qt.LeftButton and self.drawing:
 			pos = event.pos()
-			x = pos.x() - pos.x()*(self.zoom-1)/self.zoom
-			y = pos.y() - pos.y()*(self.zoom-1)/self.zoom
-			self.image.afegirpunt(QtCore.QPoint(x,y))
-			self.update()
-
-	def zoomIn(self):
-
-		if self.zoom < 7:
-			self.zoom += 1
-			self.setFixedSize(self.width*self.zoom, self.height*self.zoom)
-			self.actualitzar()
-
-	def zoomOut(self):
-
-		if self.zoom > 1:
-			self.zoom -= 1
-			self.setFixedSize(self.width*self.zoom, self.height*self.zoom)
-			self.actualitzar()
-
+			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
+			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+			self.drawLineTo(QtCore.QPoint(x,y))
+			self.drawing = False
+	
 	def paintEvent(self, event):
-		
-		painter = QtGui.QPainter(self)
-		painter.scale(self.zoom,self.zoom)		
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(Qt.white)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width,self.height,brush)
 
-		painter.setPen(QtGui.QPen(self.myPenColor, self.myPenWidth,
-			QtCore.Qt.SolidLine, QtCore.Qt.FlatCap, QtCore.Qt.MiterJoin))
-		for punt in self.image.lpunts:
-			painter.drawPoint(punt)
+		self.setFixedSize(self.image.width()*self.data.zoom, self.image.height()*self.data.zoom)
+		painter = QtGui.QPainter(self)
+		painter.drawImage(self.rect(), self.image)
+
+	def drawLineTo(self, endPoint):
+
+		painter = QtGui.QPainter(self.image)
+		painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
+			QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+		painter.drawLine(self.lastPoint, endPoint)
+		self.modified = True
+
+		self.update()
+		self.lastPoint = QtCore.QPoint(endPoint)

@@ -73,3 +73,45 @@ class NewFileDialog(QtGui.QDialog):
 	def accept(self):
 
 		super(NewFileDialog,self).accept()
+
+
+class ResizeImageDialog (QtGui.QDialog):
+
+	def __init__(self, Parent=None):
+
+		super(ResizeImageDialog, self).__init__(Parent)
+
+		self.parent = Parent
+
+		dimensionGroup = QtGui.QGroupBox("New dimension")
+		dimensionLayout = QtGui.QVBoxLayout()
+
+		self.width = QtGui.QSpinBox(dimensionGroup)
+		self.width.setMinimum(1)
+		self.width.setMaximum(1024)
+		self.width.setValue(Parent.data.image.width())
+		self.height = QtGui.QSpinBox(dimensionGroup)
+		self.height.setMinimum(1)
+		self.height.setMaximum(1024)
+		self.height.setValue(Parent.data.image.height())
+
+		dimensionLayout.addWidget(self.width)
+		dimensionLayout.addWidget(self.height)
+		dimensionGroup.setLayout(dimensionLayout)
+		
+		buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+		buttonBox.accepted.connect(self.accept)
+		buttonBox.rejected.connect(self.reject)
+
+		mainLayout = QtGui.QVBoxLayout()
+		mainLayout.addWidget(dimensionGroup)
+		mainLayout.addWidget(buttonBox)
+
+		self.setLayout(mainLayout)
+		self.setWindowTitle("Create new image")
+		self.show()
+
+	def accept(self):
+
+		super(ResizeImageDialog,self).accept()
+		self.parent.resizeImage(self.width.value(), self.height.value())

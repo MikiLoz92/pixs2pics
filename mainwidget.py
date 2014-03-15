@@ -13,13 +13,17 @@ class MainWidget(QtGui.QScrollArea):
 	Además, éste es el widget alrededor del cual se centra la MainWindow.
 	"""
 
-	def __init__(self, w, h, image, com, color, Parent=None):
+	def __init__(self, w, h, data, com, color, Parent=None):
 
 		super(MainWidget,self).__init__()
 
-		self.canvas = Canvas(w, h, image, com, color, self)
-		self.setWidget(self.canvas)
+		self.com = com
+		self.data = data
+		self.canvas = Canvas(w, h, data, com, color, self)
 
+		self.setBackgroundRole(QtGui.QPalette.Dark)
+		self.setWidget(self.canvas)
+	"""
 	def resizeEvent(self, event):
 
 		super(MainWidget,self).resizeEvent(event)
@@ -31,8 +35,10 @@ class MainWidget(QtGui.QScrollArea):
 		self.calcNewCanvasGeometry()
 
 	def calcNewCanvasGeometry(self):
+		
 		g = self.frameGeometry()
 		w = g.width()
 		h = g.height()
-		self.canvas.move( (w-self.canvas.width*self.canvas.zoom)/2, (h-self.canvas.height*self.canvas.zoom)/2 );
+		self.canvas.move( (w-self.data.image.width()*self.data.zoom)/2, (h-self.data.image.height()*self.data.zoom)/2 );
 		print self.frameGeometry()
+	"""

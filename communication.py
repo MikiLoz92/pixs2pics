@@ -9,6 +9,6 @@ class Communication(QtCore.QObject):
 	instancias de todo el programa.
 	"""
 
-	dadesActualitzada = QtCore.pyqtSignal()
+	updateCanvas = QtCore.pyqtSignal()
 	zoomIn = QtCore.pyqtSignal()
 	zoomOut = QtCore.pyqtSignal()

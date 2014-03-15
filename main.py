@@ -17,12 +17,9 @@ import sys
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
-from image import Image
-from communication import Communication
-from dialogs import NewFileDialog
-from mainwidget import MainWidget
-from canvas import Canvas
 from mainwindow import MainWindow
+from communication import Communication
+from data import Data
 
 
 def readCSS(fname):
@@ -35,8 +32,8 @@ if __name__ == '__main__':
 
 	app = QtGui.QApplication(sys.argv)
 	com = Communication()
-	im = Image(com)
-	mw = MainWindow(im, com)
+	data = Data(com)
+	mw = MainWindow(data, com)
 	mw.setStyleSheet(readCSS("style.css"))
 
 	sys.exit(app.exec_())
