@@ -14,8 +14,9 @@ class Data:
 	"""
 
 	color = QtCore.Qt.red
-	pencilSize = 2
+	pencilSize = 1
 	brushSize = 3
+	currentTool = 0
 	zoom = 1
 
 	def __init__(self, com):

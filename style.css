@@ -157,6 +157,10 @@ QToolButton:selected {
 	background-color: red;
 }
 
+QToolButton:checked {
+	background-color: rgb(18,123,75);
+}
+
 QTabWidget::pane {
 	border-top: 2px solid;
 	border-top-color: rgb(18,123,75);

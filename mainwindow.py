@@ -115,18 +115,39 @@ class MainWindow(QtGui.QMainWindow):
 		# Llista d'accions
 		l = []
 
-		self.selectAction = QtGui.QAction(QtGui.QIcon('images/marquee.png'), 'Select (W)', self)
-		l.append(self.selectAction)
+		self.tools = QtGui.QActionGroup(self)
 
-		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), 'Pencil (N)', self)
+		self.selectionAction = QtGui.QAction(QtGui.QIcon('images/selection.png'), 'Select (W)', self.tools)
+		self.selectionAction.setCheckable(True)
+		self.selectionAction.toggled.connect(self.setSelectionTool)
+		l.append(self.selectionAction)
+
+		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), 'Pencil (N)', self.tools)
+		self.pencilAction.setCheckable(True)
+		self.pencilAction.toggled.connect(self.setPencilTool)
 		l.append(self.pencilAction)
 
-		self.zoomInAction = QtGui.QAction(QtGui.QIcon('images/zoomin.png'), 'Zoom In (+)', self)
+		self.brushAction = QtGui.QAction(QtGui.QIcon('images/brush.png'), 'Brush (B)', self.tools)
+		self.brushAction.setCheckable(True)
+		self.brushAction.toggled.connect(self.setBrushTool)
+		l.append(self.brushAction)
+
+		self.eraserAction = QtGui.QAction(QtGui.QIcon('images/eraser.png'), 'Eraser (E)', self.tools)
+		self.eraserAction.setCheckable(True)
+		self.eraserAction.toggled.connect(self.setEraserTool)
+		l.append(self.eraserAction)
+
+		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), 'Color Picker (K)', self.tools)
+		self.colorPickerAction.setCheckable(True)
+		self.colorPickerAction.toggled.connect(self.setColorPickerTool)
+		l.append(self.colorPickerAction)
+
+		self.zoomInAction = QtGui.QAction(QtGui.QIcon('images/zoomin.png'), 'Zoom In (+)', self.tools)
 		self.zoomInAction.setShortcut("+")
 		self.zoomInAction.triggered.connect(self.zoomIn)
 		l.append(self.zoomInAction)
 
-		self.zoomOutAction = QtGui.QAction(QtGui.QIcon('images/zoomout.png'), 'Zoom Out (+)', self)
+		self.zoomOutAction = QtGui.QAction(QtGui.QIcon('images/zoomout.png'), 'Zoom Out (+)', self.tools)
 		self.zoomOutAction.setShortcut("-")
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
@@ -267,6 +288,8 @@ class MainWindow(QtGui.QMainWindow):
 
 	def createDockWidgets(self):
 
+		# Palette widget
+
 		self.palette = QtGui.QDockWidget("Palette", self)
 		self.palette.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
@@ -298,6 +321,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.palette.setWidget(paletteWidget)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 
+		# Tool Properties widget
+
 		self.toolProperties = QtGui.QDockWidget("Tool Properties", self)
 		self.toolProperties.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
@@ -322,6 +347,7 @@ class MainWindow(QtGui.QMainWindow):
 		hbox.setAlignment(QtCore.Qt.AlignTop)
 
 		self.toolProperties.setWidget(toolPropertiesWidget)
+		self.toolProperties.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
 
 	def zoomIn(self):
@@ -364,3 +390,20 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.pencilSize.setText(str(size))
 		self.data.pencilSize = size
+
+	def setSelectionTool(self):
+		self.data.currentTool = 0
+
+	def setPencilTool(self):
+		self.data.currentTool = 1
+
+	def setBrushTool(self):
+		self.data.currentTool = 2
+
+	def setEraserTool(self):
+		self.data.currentTool = 3
+
+	def setColorPickerTool(self):
+		self.data.currentTool = 4
+
+	

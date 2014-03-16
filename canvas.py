@@ -26,10 +26,11 @@ class Canvas(QtGui.QLabel):
 		self.image = data.image
 		self.image.fill(QtGui.qRgb(255, 255, 255))
 		self.setPixmap(QtGui.QPixmap.fromImage(self.image))
+		self.drawing = False
 
 	def mousePressEvent(self, event):
 
-		if event.button() == QtCore.Qt.LeftButton:
+		if event.button() == QtCore.Qt.LeftButton and self.data.currentTool == 1:
 			pos = event.pos()
 			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
 			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
