@@ -56,6 +56,7 @@ class Canvas(QtGui.QLabel):
 	
 	def paintEvent(self, event):
 
+		self.setPixmap(QtGui.QPixmap.fromImage(self.image))
 		self.setFixedSize(self.image.width()*self.data.zoom, self.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.image)

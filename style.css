@@ -9,9 +9,7 @@ QMainWindow {
 }
 
 QAbstractScrollArea {
-	border: 2px solid;
-	border-color: rgb(45,46,48);
-	margin: 4px;
+	border: none;
 }
 
 QMainWindow::separator {

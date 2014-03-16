@@ -8,7 +8,7 @@ Autores:
 	Alicia Guindulain
 	Antonio Peris
 	Luis Moyà
-	Natasha -
+	Natacza Johnson
 	Miguel Vera
 """
 

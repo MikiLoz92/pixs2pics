@@ -418,6 +418,7 @@ class MainWindow(QtGui.QMainWindow):
 					"Images (*.bmp *.gif *.png *.xpm *.jpg);;All Files (*)")
 		if fileName:
 			print fileName
+			self.data.loadImage(fileName)
 
 	def saveFile(self):
 

@@ -23,3 +23,8 @@ class Data:
 
 		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
 		#self.image = QtGui.QImage("images/zapdos.png")
+
+	def loadImage(self, fileName):
+
+		self.image = QtGui.QImage(64,64,QtGui.QImage.Format_RGB32)
+		#self.image.load(fileName)
