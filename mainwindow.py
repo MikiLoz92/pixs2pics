@@ -4,7 +4,7 @@
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 from mainwidget import MainWidget
-from dialogs import ResizeImageDialog
+from dialogs import ResizeImageDialog, NewFileDialog
 import random
 
 class PenSizeValueLabel(QtGui.QLabel):
@@ -175,8 +175,8 @@ class MainWindow(QtGui.QMainWindow):
 		labels = ["&New", "&Open", "&Save", "Save &As...", "&Exit"]
 		shortcuts = ['Ctrl+N', 'Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
 		statusTips = [ "Create a new image", "Open an existing image", "Save the current image", "Saves as a new image", "Exit application"]
-		#connects = [self.showNewFileDialog,self.openFile,self.saveFile,0,QtGui.qApp.quit]
-		connects = [0,0,0,0,0]
+		connects = [self.showNewFileDialog,self.openFile,self.saveFile,0,QtGui.qApp.quit]
+		#connects = [0,0,0,0,0]
 
 		# Llista d'accions
 		l = []
@@ -406,4 +406,22 @@ class MainWindow(QtGui.QMainWindow):
 	def setColorPickerTool(self):
 		self.data.currentTool = 4
 
-	
+	def showNewFileDialog(self):
+
+		d = NewFileDialog(self)
+
+	def openFile(self):
+		
+		fileName = QtGui.QFileDialog.getOpenFileName(self,
+					"Open an existing image",
+					"/home",
+					"Images (*.bmp *.gif *.png *.xpm *.jpg);;All Files (*)")
+		if fileName:
+			print fileName
+
+	def saveFile(self):
+
+		fileName = QtGui.QFileDialog.getSaveFileName(self,
+					"Save the current image", 
+					"", 
+					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")

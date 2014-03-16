@@ -70,10 +70,6 @@ class NewFileDialog(QtGui.QDialog):
 			self.cButton.setPalette(QtGui.QPalette(color))
 			self.cButton.setAutoFillBackground(True)
 
-	def accept(self):
-
-		super(NewFileDialog,self).accept()
-
 
 class ResizeImageDialog (QtGui.QDialog):
 
@@ -112,6 +108,6 @@ class ResizeImageDialog (QtGui.QDialog):
 		self.show()
 
 	def accept(self):
-
-		super(ResizeImageDialog,self).accept()
+	
 		self.parent.resizeImage(self.width.value(), self.height.value())
+		super(ResizeImageDialog,self).accept()
