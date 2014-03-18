@@ -7,7 +7,7 @@ PixelART: Editor de Pixel Art
 Autores:
 	Alicia Guindulain
 	Antonio Peris
-	Luis Moyà
+	Luis Mollá
 	Natacza Johnson
 	Miguel Vera
 """

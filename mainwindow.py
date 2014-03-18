@@ -7,6 +7,48 @@ from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog
 import random
 
+class Preview (QtGui.QDockWidget):
+
+	def __init__(self, title, data, com, Parent=None):
+
+		super(Preview, self).__init__(title, Parent)
+
+		self.data = data
+		self.com = com
+		self.parent = Parent
+		self.setAllowedAreas(Qt.RightDockWidgetArea)
+
+		self.label = QtGui.QLabel()
+		self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+		self.layout = QtGui.QHBoxLayout()
+		self.layout.addWidget(self.label)
+		self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+		self.layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+		self.setWidget(self.label)
+		self.update()
+
+		self.com.updateCanvas.connect(self.update)
+
+	def update(self):
+
+		super(Preview, self).update()
+		if self.data.image.width() > 128 or self.data.image.height() > 128:
+			imatge = self.data.image.scaled(128, 128, Qt.KeepAspectRatio)
+			self.label.setPixmap(QtGui.QPixmap.fromImage(imatge))
+		else:
+			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+
+		print "Updating Preview"
+
+	def setPixmap(self):
+
+		if self.data.image.width() > 128 or self.data.image.height() > 128:
+			imatge = self.data.image.scaled(128, 128, Qt.KeepAspectRatio)
+			self.label.setPixmap(QtGui.QPixmap.fromImage(imatge))
+		else:
+			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+
+
 class ToolProperties (QtGui.QDockWidget):
 
 	def __init__(self, title, data, com, Parent=None):
@@ -176,7 +218,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.data = data
 
 		self.resize(640,480)
-		self.setWindowTitle("PixelArt")
+		self.setWindowTitle("Pix2Pics")
 		self.statusBar = self.statusBar().showMessage("Ready")
 		self.menuBar = self.createMenuBar()
 		self.toolBar = self.createToolBar()
@@ -404,6 +446,11 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.toolProperties = ToolProperties("Tool Properties", self.data, self.com)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
+
+		# Preview
+
+		self.preview = Preview("Preview", self.data, self.com, self)
+		self.addDockWidget(Qt.RightDockWidgetArea, self.preview)
 		
 	def zoomIn(self):
 

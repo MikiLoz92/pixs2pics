@@ -39,7 +39,10 @@ class Canvas(QtGui.QLabel):
 		if event.button() == QtCore.Qt.LeftButton:
 			if self.data.currentTool == 1:
 				self.lastPoint = QtCore.QPoint(x,y)
-				self.drawLineTo(QtCore.QPoint(x,y))
+				painter = QtGui.QPainter(self.data.image)
+				painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
+								QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+				painter.drawPoint(x,y)
 				self.drawing = True
 			elif self.data.currentTool == 4:
 				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
@@ -79,6 +82,7 @@ class Canvas(QtGui.QLabel):
 		#self.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.data.image)
+		#self.com.updateCanvas.emit()
 		
 	def drawLineTo(self, endPoint):
 
@@ -87,6 +91,7 @@ class Canvas(QtGui.QLabel):
 			QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 		painter.drawLine(self.lastPoint, endPoint)
 		self.modified = True
+		self.com.updateCanvas.emit()
 
 		#self.update()
 		self.lastPoint = QtCore.QPoint(endPoint)
@@ -96,3 +101,4 @@ class Canvas(QtGui.QLabel):
 		self.resize(self.data.image.width(), self.data.image.height())
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.data.zoom = 1
+		self.com.updateCanvas.emit()
