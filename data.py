@@ -19,6 +19,8 @@ class Data:
 	currentTool = 0
 	zoom = 1
 
+	defaultFileName = ""
+
 	def __init__(self, com):
 
 		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)

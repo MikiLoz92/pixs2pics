@@ -253,7 +253,7 @@ class MainWindow(QtGui.QMainWindow):
 		labels = ["&New", "&Open", "&Save", "Save &As...", "&Exit"]
 		shortcuts = ['Ctrl+N', 'Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
 		statusTips = [ "Create a new image", "Open an existing image", "Save the current image", "Saves as a new image", "Exit application"]
-		connects = [self.showNewFileDialog,self.openFile,self.saveFile,0,QtGui.qApp.quit]
+		connects = [self.showNewFileDialog,self.openFile,self.saveFile,self.saveFileAs,QtGui.qApp.quit]
 		#connects = [0,0,0,0,0]
 
 		# Llista d'accions
@@ -401,34 +401,6 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Tool Properties widget
 
-		"""
-		self.toolProperties = QtGui.QDockWidget("Tool Properties", self)
-		self.toolProperties.setAllowedAreas(Qt.RightDockWidgetArea)
-		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-
-		toolPropertiesWidget = QtGui.QWidget()
-		hbox = QtGui.QHBoxLayout()
-
-		pencilSizeLabel = QtGui.QLabel("Size:")
-		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-		slider.setValue(self.data.pencilSize)
-		self.pencilSize = QtGui.QLabel(str(self.data.pencilSize))
-
-		slider.setMaximum(9)
-		slider.setMinimum(1)
-		slider.setPageStep(1)
-		slider.valueChanged.connect(self.setPencilSize)
-
-		hbox.addWidget(pencilSizeLabel)
-		hbox.addWidget(slider)
-		hbox.addWidget(self.pencilSize)
-		toolPropertiesWidget.setLayout(hbox)
-		hbox.setAlignment(QtCore.Qt.AlignTop)
-
-		self.toolProperties.setWidget(toolPropertiesWidget)
-		self.toolProperties.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-		"""
-		
 		self.toolProperties = ToolProperties("Tool Properties", self.data, self.com)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
 		
@@ -514,8 +486,17 @@ class MainWindow(QtGui.QMainWindow):
 
 	def saveFile(self):
 
-		fileName = QtGui.QFileDialog.getSaveFileName(self,
+		if self.data.defaultFileName == "":
+			self.saveFileAs()
+		else:	
+			self.data.image.save(self.data.defaultFileName)
+
+	def saveFileAs(self):
+
+		d = QtGui.QFileDialog()
+		fileName, filterName = d.getSaveFileNameAndFilter(self,
 					"Save the current image", 
 					"", 
 					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")
-		self.data.image.save(fileName)
+		self.data.image.save(fileName+filterName[1:])
+		self.data.defaultFileName = fileName + filterName[1:]
