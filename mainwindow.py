@@ -15,15 +15,20 @@ class PenSizeValueLabel(QtGui.QLabel):
 
 class CurrentColor(QtGui.QLabel):
 
-	def __init__(self, Parent=None):
+	def __init__(self, data, com, Parent=None):
 
 		super(CurrentColor, self).__init__(Parent)
 
+		self.data = data
+		self.com = com
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
 		self.setFixedSize(32,32)
 		self.setPalette(QtGui.QPalette(self.color))
 		self.setAutoFillBackground(True)
 		self.parent = Parent
+		self.data.color = self.color
+
+		self.com.updateColor.connect(self.update)
 
 	def paintEvent(self, e):
 
@@ -32,7 +37,6 @@ class CurrentColor(QtGui.QLabel):
 		brush = QtGui.QBrush(self.color)
 		painter.setBrush(brush)
 		painter.fillRect(0,0,self.width(),self.height(),brush)
-		self.parent.data.color = self.color
 
 		super(CurrentColor, self).paintEvent(e)
 
@@ -41,18 +45,25 @@ class CurrentColor(QtGui.QLabel):
 		if e.button() == Qt.LeftButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
-				self.color = c
-				self.update()
+				self.data.color = c
+				self.com.updateColor.emit()
+
+	def update(self):
+
+		self.color = self.data.color
+		super(CurrentColor, self).update()
 
 
 class Color(QtGui.QFrame):
 	"""
 	"""
 
-	def __init__(self, Parent=None):
+	def __init__(self, data, com, Parent=None):
 
 		super(Color, self).__init__(Parent)
 
+		self.data = data
+		self.com = com
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
 		self.setFixedSize(16,16)
 		self.setPalette(QtGui.QPalette(self.color))
@@ -76,8 +87,8 @@ class Color(QtGui.QFrame):
 			#self.setFrameStyle(QtGui.QFrame.Box)
 			#self.setFrameShadow(QtGui.QFrame.Plain)
 			#self.setLineWidth(2)
-			self.parent.currentColor.color = self.color
-			self.parent.currentColor.update()
+			self.data.color = self.color
+			self.com.updateColor.emit()
 		elif e.button() == Qt.RightButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
@@ -298,12 +309,12 @@ class MainWindow(QtGui.QMainWindow):
 		hbox = QtGui.QHBoxLayout()
 		grid = QtGui.QGridLayout()
 
-		self.currentColor = CurrentColor(self)
+		self.currentColor = CurrentColor(self.data, self.com, self)
 		
 		i = 0
 		j = 0
 		for k in range(12):
-			c = Color(self)
+			c = Color(self.data, self.com, self)
 			grid.addWidget(c,j,i)
 			i += 1
 			if j == 0 and i > 5:
@@ -352,8 +363,8 @@ class MainWindow(QtGui.QMainWindow):
 
 	def zoomIn(self):
 
-		if self.data.zoom < 15:
-			self.data.zoom += 1
+		if self.data.zoom < 25:
+			self.data.zoom += 2
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
@@ -361,7 +372,7 @@ class MainWindow(QtGui.QMainWindow):
 	def zoomOut(self):
 
 		if self.data.zoom > 1:
-			self.data.zoom -= 1
+			self.data.zoom -= 2
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
