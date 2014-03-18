@@ -10,6 +10,7 @@ QMainWindow {
 
 QAbstractScrollArea {
 	border: none;
+	background: url("images/transparent.png");
 }
 
 QScrollBar::handle {
@@ -19,10 +20,6 @@ QScrollBar::handle {
 
 QScrollBar::handle:pressed {
 	background-color: rgb(18,123,75);
-}
-
-QScrollBar {
-	
 }
 
 QMainWindow::separator {

@@ -16,6 +16,7 @@ class Data:
 	color = QtCore.Qt.red
 	pencilSize = 1
 	brushSize = 3
+	brushStyle = 0
 	currentTool = 0
 	zoom = 1
 	defaultFileName = ""

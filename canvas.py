@@ -16,6 +16,7 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).__init__()
 
 		self.setBackgroundRole(QtGui.QPalette.Base)
+		self.setAttribute(Qt.WA_TranslucentBackground)
 		#self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
 		#self.setScaledContents(True)
 
