@@ -46,6 +46,7 @@ class Canvas(QtGui.QLabel):
 				self.com.updateColor.emit()
 				print "ASDASRF"
 				#self.mainWidget.update()
+			self.update()
 
 	def mouseMoveEvent(self, event):
 
@@ -54,6 +55,7 @@ class Canvas(QtGui.QLabel):
 			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
 			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
 			self.drawLineTo(QtCore.QPoint(x,y))
+			self.update()
 
 	def mouseReleaseEvent(self, event):
 
@@ -63,13 +65,16 @@ class Canvas(QtGui.QLabel):
 			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.drawing = False
+			self.update()
 	
 	def paintEvent(self, event):
-
-		self.setPixmap(QtGui.QPixmap.fromImage(self.image))
-		self.setFixedSize(self.image.width()*self.data.zoom, self.image.height()*self.data.zoom)
+		
+		#super(Canvas, self).paintEvent(event)
+		
+		#self.setFixedSize(self.image.width()*self.data.zoom, self.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.image)
+		
 
 	def drawLineTo(self, endPoint):
 
@@ -79,5 +84,5 @@ class Canvas(QtGui.QLabel):
 		painter.drawLine(self.lastPoint, endPoint)
 		self.modified = True
 
-		self.update()
+		#self.update()
 		self.lastPoint = QtCore.QPoint(endPoint)

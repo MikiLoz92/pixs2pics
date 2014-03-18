@@ -7,11 +7,78 @@ from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog
 import random
 
+class ToolProperties (QtGui.QDockWidget):
+
+	def __init__(self, title, data, com, Parent=None):
+
+		super(ToolProperties, self).__init__(title, Parent)
+
+		self.data = data
+		self.com = com
+		self.parent = Parent
+		self.setAllowedAreas(Qt.RightDockWidgetArea)
+		self.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+
+		# Llista de widgets (configuració de cada eina del programa)
+		self.widgets = self.createWidgets()
+		self.com.updateTool.connect(self.updateWidget)
+
+		self.updateWidget()
+
+	def createWidgets(self):
+
+		# Creem una llista amb tots el widgets i la retornem
+		l = []
+
+		l.append(QtGui.QWidget())
+		l.append(self.createPencilWidget())
+		l.append(QtGui.QWidget())
+		l.append(QtGui.QWidget())
+		l.append(QtGui.QWidget())
+
+		return l
+
+	def createPencilWidget(self):
+
+		w = QtGui.QWidget()
+		hbox = QtGui.QHBoxLayout()
+
+		pencilSizeLabel = QtGui.QLabel("Size:")
+		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+		slider.setValue(self.data.pencilSize)
+		self.pencilSize = QtGui.QLabel(str(self.data.pencilSize))
+
+		slider.setMaximum(9)
+		slider.setMinimum(1)
+		slider.setPageStep(1)
+		slider.valueChanged.connect(self.setPencilSize)
+
+		hbox.addWidget(pencilSizeLabel)
+		hbox.addWidget(slider)
+		hbox.addWidget(self.pencilSize)
+		hbox.setAlignment(QtCore.Qt.AlignTop)
+
+		w.setLayout(hbox)
+
+		return w
+
+	def setPencilSize(self, size):
+
+		self.pencilSize.setText(str(size))
+		self.data.pencilSize = size
+
+	def updateWidget(self):
+
+		self.setWidget(self.widgets[self.data.currentTool])
+		print self.data.currentTool
+
+
 class PenSizeValueLabel(QtGui.QLabel):
 
 	def setText(self, text):
 
 		super(PenSizeValueLabel, self).setText(str(text))
+
 
 class CurrentColor(QtGui.QLabel):
 
@@ -272,7 +339,7 @@ class MainWindow(QtGui.QMainWindow):
 		return l
 
 	def createMenuBar(self):
-
+		
 		menubar = self.menuBar()
 		fileMenu = menubar.addMenu('&File')
 		editMenu = menubar.addMenu('&Edit')
@@ -296,9 +363,9 @@ class MainWindow(QtGui.QMainWindow):
 			else: imageMenu.addAction(i)
 
 		return menubar
-
+		
 	def createDockWidgets(self):
-
+		
 		# Palette widget
 
 		self.palette = QtGui.QDockWidget("Palette", self)
@@ -334,6 +401,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Tool Properties widget
 
+		"""
 		self.toolProperties = QtGui.QDockWidget("Tool Properties", self)
 		self.toolProperties.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
@@ -359,8 +427,11 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.toolProperties.setWidget(toolPropertiesWidget)
 		self.toolProperties.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+		"""
+		
+		self.toolProperties = ToolProperties("Tool Properties", self.data, self.com)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
-
+		
 	def zoomIn(self):
 
 		if self.data.zoom < 25:
@@ -378,12 +449,12 @@ class MainWindow(QtGui.QMainWindow):
 			self.mainWidget.canvas.update()
 
 	def scaleImage(self, zoom):
-
+		
 		self.mainWidget.canvas.resize(zoom * self.mainWidget.canvas.pixmap().size())
 
 		self.adjustScrollBar(self.mainWidget.horizontalScrollBar(), zoom)
 		self.adjustScrollBar(self.mainWidget.verticalScrollBar(), zoom)
-
+		
 	def adjustScrollBar(self, scrollBar, zoom):
 
 		scrollBar.setValue(int(zoom * scrollBar.value() + ((zoom - 1) * scrollBar.pageStep()/2)))
@@ -394,28 +465,38 @@ class MainWindow(QtGui.QMainWindow):
 		d = ResizeImageDialog(self)
 
 	def resizeImage(self, width, height):
-
+		
 		self.data.image = self.data.image.scaled(width, height)
-
+		
 	def setPencilSize(self, size):
 
 		self.pencilSize.setText(str(size))
 		self.data.pencilSize = size
 
 	def setSelectionTool(self):
+
 		self.data.currentTool = 0
+		self.com.updateTool.emit()
 
 	def setPencilTool(self):
+
 		self.data.currentTool = 1
+		self.com.updateTool.emit()
 
 	def setBrushTool(self):
+
 		self.data.currentTool = 2
+		self.com.updateTool.emit()
 
 	def setEraserTool(self):
+
 		self.data.currentTool = 3
+		self.com.updateTool.emit()
 
 	def setColorPickerTool(self):
+
 		self.data.currentTool = 4
+		self.com.updateTool.emit()
 
 	def showNewFileDialog(self):
 
@@ -437,3 +518,4 @@ class MainWindow(QtGui.QMainWindow):
 					"Save the current image", 
 					"", 
 					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")
+		self.data.image.save(fileName)

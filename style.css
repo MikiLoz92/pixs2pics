@@ -12,6 +12,19 @@ QAbstractScrollArea {
 	border: none;
 }
 
+QScrollBar::handle {
+	background-color: rgb(33,167,108);
+	border: none;
+}
+
+QScrollBar::handle:pressed {
+	background-color: rgb(18,123,75);
+}
+
+QScrollBar {
+	
+}
+
 QMainWindow::separator {
 	background-color: rgb(45,46,48);
 	width: 6px;
