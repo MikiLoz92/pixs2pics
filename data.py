@@ -17,7 +17,7 @@ class Data:
 	pencilSize = 1
 	brushSize = 3
 	brushStyle = 0
-	currentTool = 0
+	currentTool = 1
 	zoom = 1
 	defaultFileName = ""
 

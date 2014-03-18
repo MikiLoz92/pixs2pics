@@ -203,6 +203,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), 'Pencil (N)', self.tools)
 		self.pencilAction.setCheckable(True)
 		self.pencilAction.toggled.connect(self.setPencilTool)
+		self.pencilAction.toggle()
 		l.append(self.pencilAction)
 
 		self.brushAction = QtGui.QAction(QtGui.QIcon('images/brush.png'), 'Brush (B)', self.tools)

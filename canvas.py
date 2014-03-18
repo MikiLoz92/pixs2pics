@@ -95,3 +95,4 @@ class Canvas(QtGui.QLabel):
 
 		self.resize(self.data.image.width(), self.data.image.height())
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+		self.data.zoom = 1
