@@ -32,23 +32,24 @@ class Canvas(QtGui.QLabel):
 
 	def mousePressEvent(self, event):
 
+		pos = event.pos()
+		x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
+		y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
+
 		if event.button() == QtCore.Qt.LeftButton:
 			if self.data.currentTool == 1:
-				pos = event.pos()
-				x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
-				y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 				self.lastPoint = QtCore.QPoint(x,y)
 				self.drawLineTo(QtCore.QPoint(x,y))
 				self.drawing = True
 			elif self.data.currentTool == 4:
-				pos = event.pos()
-				x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
-				y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
 				self.com.updateColor.emit()
-				print "ASDASRF"
-				#self.mainWidget.update()
+			elif self.data.currentTool == 3:
+				print "Borrandooooo, me paso el día borrandoooo"
+
 			self.update()
+
+		# DEBUG
 		print self.width(), self.height()
 		print self.data.image.width(), self.data.image.height()
 
