@@ -439,6 +439,7 @@ class MainWindow(QtGui.QMainWindow):
 	def resizeImage(self, width, height):
 		
 		self.data.image = self.data.image.scaled(width, height)
+		self.com.newImage.emit()
 		
 	def setPencilSize(self, size):
 
@@ -473,6 +474,10 @@ class MainWindow(QtGui.QMainWindow):
 	def showNewFileDialog(self):
 
 		d = NewFileDialog(self)
+
+	def newImage(self, w, h):
+
+		self.data.newImage(w, h)
 
 	def openFile(self):
 		

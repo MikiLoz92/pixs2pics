@@ -16,16 +16,17 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).__init__()
 
 		self.setBackgroundRole(QtGui.QPalette.Base)
-		self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
-		self.setScaledContents(True)
+		#self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+		#self.setScaledContents(True)
 
 		self.com = com
 		self.com.updateCanvas.connect(self.update)
+		self.com.newImage.connect(self.resizeToNewImage)
 		self.parent = parent
 		self.data = data
-		self.image = data.image
-		self.image.fill(QtGui.qRgb(255, 255, 255))
-		self.setPixmap(QtGui.QPixmap.fromImage(self.image))
+		#self.image = data.image
+		self.data.image.fill(QtGui.qRgb(255, 255, 255))
+		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.drawing = False
 
 	def mousePressEvent(self, event):
@@ -33,27 +34,29 @@ class Canvas(QtGui.QLabel):
 		if event.button() == QtCore.Qt.LeftButton:
 			if self.data.currentTool == 1:
 				pos = event.pos()
-				x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
-				y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+				x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
+				y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 				self.lastPoint = QtCore.QPoint(x,y)
 				self.drawLineTo(QtCore.QPoint(x,y))
 				self.drawing = True
 			elif self.data.currentTool == 4:
 				pos = event.pos()
-				x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
-				y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
-				self.data.color = QtGui.QColor(self.image.pixel(QtCore.QPoint(x,y)))
+				x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
+				y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
+				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
 				self.com.updateColor.emit()
 				print "ASDASRF"
 				#self.mainWidget.update()
 			self.update()
+		print self.width(), self.height()
+		print self.data.image.width(), self.data.image.height()
 
 	def mouseMoveEvent(self, event):
 
 		if (event.buttons() and QtCore.Qt.LeftButton) and self.drawing:
 			pos = event.pos()
-			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
-			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+			x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
+			y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.update()
 
@@ -61,8 +64,8 @@ class Canvas(QtGui.QLabel):
 
 		if event.button() == QtCore.Qt.LeftButton and self.drawing:
 			pos = event.pos()
-			x = self.image.width() * pos.x() / ( self.image.width() * self.data.zoom )
-			y = self.image.height() * pos.y() / ( self.image.height() * self.data.zoom )
+			x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
+			y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.drawing = False
 			self.update()
@@ -71,14 +74,13 @@ class Canvas(QtGui.QLabel):
 		
 		#super(Canvas, self).paintEvent(event)
 		
-		#self.setFixedSize(self.image.width()*self.data.zoom, self.image.height()*self.data.zoom)
+		#self.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
-		painter.drawImage(self.rect(), self.image)
+		painter.drawImage(self.rect(), self.data.image)
 		
-
 	def drawLineTo(self, endPoint):
 
-		painter = QtGui.QPainter(self.image)
+		painter = QtGui.QPainter(self.data.image)
 		painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
 			QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 		painter.drawLine(self.lastPoint, endPoint)
@@ -86,3 +88,8 @@ class Canvas(QtGui.QLabel):
 
 		#self.update()
 		self.lastPoint = QtCore.QPoint(endPoint)
+
+	def resizeToNewImage(self):
+
+		self.resize(self.data.image.width(), self.data.image.height())
+		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))

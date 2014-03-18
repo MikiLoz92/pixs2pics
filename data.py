@@ -18,17 +18,24 @@ class Data:
 	brushSize = 3
 	currentTool = 0
 	zoom = 1
-	image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
-
 	defaultFileName = ""
 
 	def __init__(self, com):
 
-		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
-		#self.image = QtGui.QImage("images/zapdos.png")
+		self.com = com
+		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_ARGB32)
 
 	def loadImage(self, fileName):
 
-		#self.image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
+		self.defaultFileName = fileName
+		self.image = QtGui.QImage(fileName).convertToFormat(QtGui.QImage.Format_ARGB32)
+		self.zoom = 1
+		self.com.newImage.emit()
+
+	def newImage(self, w, h):
+
 		self.defaultFileName = ""
-		self.image.load(fileName)
+		self.image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
+		self.image.fill(QtGui.qRgb(255, 255, 255))
+		self.zoom = 1
+		self.com.newImage.emit()

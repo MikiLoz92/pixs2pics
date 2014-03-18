@@ -9,6 +9,7 @@ class Communication(QtCore.QObject):
 	instancias de todo el programa.
 	"""
 
+	newImage = QtCore.pyqtSignal()
 	updateCanvas = QtCore.pyqtSignal()
 	updateColor = QtCore.pyqtSignal()
 	updateTool = QtCore.pyqtSignal()

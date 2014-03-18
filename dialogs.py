@@ -13,15 +13,20 @@ class NewFileDialog(QtGui.QDialog):
 	def __init__(self, Parent=None):
 
 		super(NewFileDialog,self).__init__(Parent)
+		self.parent = Parent
 
 		dimensionGroup = QtGui.QGroupBox("Dimension")
 		dimensionLayout = QtGui.QVBoxLayout()
-		w = QtGui.QSpinBox(dimensionGroup)
-		w.setValue(32)
-		h = QtGui.QSpinBox(dimensionGroup)
-		h.setValue(32)
-		dimensionLayout.addWidget(w)
-		dimensionLayout.addWidget(h)
+		self.width = QtGui.QSpinBox(dimensionGroup)
+		self.width.setValue(32)
+		self.width.setMinimum(1)
+		self.width.setMaximum(1024)
+		self.height = QtGui.QSpinBox(dimensionGroup)
+		self.height.setValue(32)
+		self.height.setMinimum(1)
+		self.height.setMaximum(1024)
+		dimensionLayout.addWidget(self.width)
+		dimensionLayout.addWidget(self.height)
 		dimensionGroup.setLayout(dimensionLayout)
 
 		backgroundGroup = QtGui.QGroupBox("Background")
@@ -41,7 +46,7 @@ class NewFileDialog(QtGui.QDialog):
 
 		buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		#buttonBox.accepted.connect(self.accept)
-		buttonBox.accepted.connect(Parent.createNewImage)
+		buttonBox.accepted.connect(self.accept)
 		buttonBox.rejected.connect(self.reject)
 		mainLayout = QtGui.QVBoxLayout()
 		mainLayout.addWidget(dimensionGroup)
@@ -69,6 +74,11 @@ class NewFileDialog(QtGui.QDialog):
 			self.cButton.setText(color.name())
 			self.cButton.setPalette(QtGui.QPalette(color))
 			self.cButton.setAutoFillBackground(True)
+
+	def accept(self):
+
+		self.parent.newImage(self.width.value(), self.height.value())
+		super(NewFileDialog, self).accept()
 
 
 class ResizeImageDialog (QtGui.QDialog):
