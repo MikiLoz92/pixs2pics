@@ -18,6 +18,7 @@ class Data:
 	brushSize = 3
 	currentTool = 0
 	zoom = 1
+	image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
 
 	defaultFileName = ""
 
@@ -28,5 +29,6 @@ class Data:
 
 	def loadImage(self, fileName):
 
-		self.image = QtGui.QImage(64,64,QtGui.QImage.Format_RGB32)
-		#self.image.load(fileName)
+		#self.image = QtGui.QImage(32,32,QtGui.QImage.Format_RGB32)
+		self.defaultFileName = ""
+		self.image.load(fileName)
