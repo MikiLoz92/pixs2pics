@@ -77,6 +77,8 @@ class ToolProperties (QtGui.QDockWidget):
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
+		l.append(QtGui.QWidget())
+		l.append(self.createDegradWidget())
 
 		return l
 
@@ -108,6 +110,40 @@ class ToolProperties (QtGui.QDockWidget):
 
 		self.pencilSize.setText(str(size))
 		self.data.pencilSize = size
+
+	def createDegradWidget(self):
+
+		w = QtGui.QWidget()
+		grid = QtGui.QGridLayout()
+
+		label1 = QtGui.QLabel("Color 1:", self)
+		label2 = QtGui.QLabel("Color 2:", self)
+		self.color1 = DegColor(self.data, self.com, self.data.color_deg_1, 1)
+		self.color2 = DegColor(self.data, self.com, self.data.color_deg_2, 2)
+
+		self.color1.com.updateColorDeg.connect(self.setColorDeg)
+		self.color1.com.updateColorDeg.connect(self.setColorDeg)
+
+		grid.addWidget(label1,1,1)
+		grid.addWidget(self.color1,1,3)
+		grid.addWidget(label2,3,1)
+		grid.addWidget(self.color2,3,3)
+		grid.setRowMinimumHeight(0,3)
+		grid.setRowMinimumHeight(2,3)
+		grid.setColumnMinimumWidth(0,3)
+		grid.setColumnMinimumWidth(2,3)
+		grid.setColumnStretch(4,1)
+		grid.setRowStretch(4,1)
+
+		w.setLayout(grid)
+
+		return w
+
+	def setColorDeg(self, index):
+		if index == 1:
+			self.data.color_deg_1 == self.color1.color
+		if index == 2:
+			self.data.color_deg_2 == self.color2.color
 
 	def updateWidget(self):
 
@@ -204,6 +240,24 @@ class Color(QtGui.QFrame):
 				self.color = c
 				self.update()
 
+class DegColor(Color):
+
+	def __init__(self, data, com, color, index, Parent = None):
+
+		super(DegColor,self).__init__(data, com, Parent)
+
+		self.color = color
+		self.indx = index
+
+	def mousePressEvent(self, e):
+
+		if e.button() == Qt.LeftButton:
+			c = QtGui.QColorDialog.getColor(self.color, self)
+			if c.isValid():
+				self.color = c
+				self.update()
+				self.com.updateColorDeg.emit(self.index)
+
 
 class MainWindow(QtGui.QMainWindow):
 	"""
@@ -272,6 +326,16 @@ class MainWindow(QtGui.QMainWindow):
 		self.zoomOutAction.setShortcut("-")
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
+
+		self.FillAction = QtGui.QAction(QtGui.QIcon('images/Fill.png'), 'Fill (F)', self.tools)
+		self.FillAction.setCheckable(True)
+		self.FillAction.toggled.connect(self.setFillTool)
+		l.append(self.FillAction)
+
+		self.FillAction = QtGui.QAction(QtGui.QIcon('images/Degrad.gif'), 'Degrade (D)', self.tools)
+		self.FillAction.setCheckable(True)
+		self.FillAction.toggled.connect(self.setDegTool)
+		l.append(self.FillAction)
 
 		return l
 
@@ -519,6 +583,16 @@ class MainWindow(QtGui.QMainWindow):
 		self.data.currentTool = 4
 		self.com.updateTool.emit()
 
+	def setFillTool(self):
+
+		self.data.currentTool = 5
+		self.com.updateTool.emit()
+
+	def setDegTool(self):
+
+		self.data.currentTool = 6
+		self.com.updateTool.emit()
+
 	def showNewFileDialog(self):
 
 		d = NewFileDialog(self)
@@ -534,7 +608,7 @@ class MainWindow(QtGui.QMainWindow):
 					"/home",
 					"Images (*.bmp *.gif *.png *.xpm *.jpg);;All Files (*)")
 		if fileName:
-			print fileName
+			#print fileName
 			self.data.loadImage(fileName)
 
 	def saveFile(self):

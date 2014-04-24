@@ -20,6 +20,8 @@ class Data:
 	currentTool = 1
 	zoom = 1
 	defaultFileName = ""
+	color_deg_1 = QtCore.Qt.white
+	color_deg_2 = QtCore.Qt.black
 
 	def __init__(self, com):
 

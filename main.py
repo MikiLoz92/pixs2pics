@@ -35,5 +35,5 @@ if __name__ == '__main__':
 	data = Data(com)
 	mw = MainWindow(data, com)
 	mw.setStyleSheet(readCSS("style.css"))
-
+#sys.
 	sys.exit(app.exec_())
