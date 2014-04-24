@@ -44,8 +44,6 @@ class Canvas(QtGui.QLabel):
 								QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 				painter.drawPoint(x,y)
 				self.drawing = True
-			elif self.data.currentTool == 5:
-				self.fillImage( x, y, self.data.color, self.data.image.pixel(x,y), self.data.image )
 			elif self.data.currentTool == 4:
 				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
 				self.com.updateColor.emit()
@@ -57,7 +55,6 @@ class Canvas(QtGui.QLabel):
 		# DEBUG
 		print self.width(), self.height()
 		print self.data.image.width(), self.data.image.height()
-		print x,y
 
 	def mouseMoveEvent(self, event):
 
@@ -105,15 +102,3 @@ class Canvas(QtGui.QLabel):
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.data.zoom = 1
 		self.com.updateCanvas.emit()
-
-	def fillImage(self, x, y, paint, current, imagen):
-		if x<0 or y<0 or x>imagen.width() or y>imagen.height():
-			pass
-		elif imagen.pixel(x,y) == current :
-			imagen.setPixel(x,y,paint.rgb())
-			self.fillImage(x+1, y, paint, current, imagen)
-			self.fillImage(x, y+1, paint, current, imagen)
-			self.fillImage(x-1, y, paint, current, imagen)
-			self.fillImage(x, y-1, paint, current, imagen)
-
-		
