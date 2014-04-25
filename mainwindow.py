@@ -430,6 +430,7 @@ class MainWindow(QtGui.QMainWindow):
 		labels = ["&Contents", "&About"]
 		shortcuts = ['Ctrl+H', 'Ctrl+B']
 		statusTips = ["Show the Help dialog", "About PixelART..."]
+		connects = [0, self.showAboutDialog]
 
 		# Llista d'accions
 		l = []
@@ -596,6 +597,11 @@ class MainWindow(QtGui.QMainWindow):
 	def showNewFileDialog(self):
 
 		d = NewFileDialog(self)
+
+	def showAboutDialog(self):
+
+		d = QtGui.QMessageBox.about(self, "About Pix2Pics...", "Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.")
+		d.show()
 
 	def newImage(self, w, h):
 
