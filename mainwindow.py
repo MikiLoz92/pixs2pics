@@ -78,7 +78,7 @@ class ToolProperties (QtGui.QDockWidget):
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
-		l.append(self.createDegradWidget())
+		l.append(self.createGradientWidget())
 
 		return l
 
@@ -111,7 +111,7 @@ class ToolProperties (QtGui.QDockWidget):
 		self.pencilSize.setText(str(size))
 		self.data.pencilSize = size
 
-	def createDegradWidget(self):
+	def createGradientWidget(self):
 
 		w = QtGui.QWidget()
 		grid = QtGui.QGridLayout()
@@ -312,7 +312,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.eraserAction.toggled.connect(self.setEraserTool)
 		l.append(self.eraserAction)
 
-		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), 'Color Picker (K)', self.tools)
+		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), 'Color Picker (C)', self.tools)
 		self.colorPickerAction.setCheckable(True)
 		self.colorPickerAction.toggled.connect(self.setColorPickerTool)
 		l.append(self.colorPickerAction)
@@ -327,12 +327,12 @@ class MainWindow(QtGui.QMainWindow):
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
 
-		self.FillAction = QtGui.QAction(QtGui.QIcon('images/Fill.png'), 'Fill (F)', self.tools)
+		self.FillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), 'Fill (F)', self.tools)
 		self.FillAction.setCheckable(True)
 		self.FillAction.toggled.connect(self.setFillTool)
 		l.append(self.FillAction)
 
-		self.FillAction = QtGui.QAction(QtGui.QIcon('images/Degrad.gif'), 'Degrade (D)', self.tools)
+		self.FillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), 'Gradient (D)', self.tools)
 		self.FillAction.setCheckable(True)
 		self.FillAction.toggled.connect(self.setDegTool)
 		l.append(self.FillAction)
