@@ -34,6 +34,13 @@ if __name__ == '__main__':
 	com = Communication()
 	data = Data(com)
 	mw = MainWindow(data, com)
+
+	customFnt = "Aller_Rg.ttf"
+	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 1:
+		print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
+	else:
+		fnt = QtGui.QFont("Aller")
+		app.setFont(fnt)
 	mw.setStyleSheet(readCSS("style.css"))
-#sys.
+
 	sys.exit(app.exec_())
