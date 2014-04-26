@@ -147,8 +147,9 @@ class Preferences (QtGui.QDialog):
 		self.preferences.addItem("Keyboard shortcuts")
 		self.preferences.addItem("Defaults")
 		self.preferences.currentItemChanged.connect(self.changeCurrentView)
-		#self.preferences.setFixedSize(self.preferences.minimumSizeHint())
-		self.preferences.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+		#self.preferences.setFixedSize(self.preferences.minimumSize())
+		#self.preferences.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+		print "Minimum size hint:", self.preferences.sizeHint()
 
 		self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		self.buttonBox.accepted.connect(self.accept)
@@ -171,6 +172,8 @@ class Preferences (QtGui.QDialog):
 
 		# Widget de ejemplo
 
+		g = QtGui.QGroupBox()
+
 		w = QtGui.QWidget()
 
 		vbox = QtGui.QVBoxLayout()
@@ -180,7 +183,10 @@ class Preferences (QtGui.QDialog):
 
 		w.setLayout(vbox)
 
-		return w
+		g.setLayout(vbox)
+		g.setTitle("Language")
+
+		return g
 
 	def createUICustomizationView(self):
 

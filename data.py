@@ -49,3 +49,8 @@ class Data:
 		self.image.fill(QtGui.qRgb(255, 255, 255))
 		self.zoom = 1
 		self.com.newImage.emit()
+
+	def changeColor(self, c):
+
+		self.color = c
+		self.com.updateColor.emit()

@@ -3,9 +3,12 @@
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
+import random
+
 from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog, Preferences
-import random
+from palette import Palette
+
 
 class Preview (QtGui.QDockWidget):
 
@@ -506,7 +509,11 @@ class MainWindow(QtGui.QMainWindow):
 		grid.setSpacing(0)
 		paletteWidget.setLayout(hbox)
 
+		paletteWidgetNew = Palette(self.data, self.com)
+
 		self.palette.setWidget(paletteWidget)
+		#self.palette.setWidget(paletteWidgetNew) # NUEVA Paleta
+
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 
 		# Tool Properties widget
@@ -668,10 +675,9 @@ class MainWindow(QtGui.QMainWindow):
 		# como color principal.
 		if event.button() == QtCore.Qt.LeftButton and self.onClickPalette:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
-			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
-			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
-			self.data.color = c
-			self.com.updateColor.emit()
+			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
+			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
+			self.data.changeColor(c) # Cambiamos el color actual por el que hemos cogido
 
 			# im.save("desktop.png") # Guardar la captura de pantalla en un archivo
 			# print "Getting color " + c.red(), c.green(), c.blue() + " from screen" # Comprueba qué color coge
@@ -679,10 +685,9 @@ class MainWindow(QtGui.QMainWindow):
 	def mouseMoveEvent(self, event):
 
 		super(MainWindow, self).mouseMoveEvent(event)
+		# Lo mismo de antes pero para cuando el ratón se mueve
 		if self.onClickPalette and event.buttons() == QtCore.Qt.LeftButton:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
-			self.data.color = c
-			self.com.updateColor.emit()
-			print "move"
+			self.data.changeColor(c)
