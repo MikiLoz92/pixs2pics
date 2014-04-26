@@ -271,6 +271,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.com = com
 		self.data = data
 
+		self.onClickPalette = False
 		self.resize(640,480)
 		self.setWindowTitle("Pix2Pics")
 		self.statusBar = self.statusBar().showMessage("Ready")
@@ -638,3 +639,50 @@ class MainWindow(QtGui.QMainWindow):
 					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")
 		self.data.image.save(fileName+filterName[1:])
 		self.data.defaultFileName = fileName + filterName[1:]
+
+	def keyPressEvent(self, event):
+
+		super(MainWindow, self).keyPressEvent(event)
+
+		if event.key() == Qt.Key_Control:
+			self.onClickPalette = True
+			QtCore.QCoreApplication.instance().setOverrideCursor(self.data.colorPickerCur)
+			self.grabMouse()
+
+	def keyReleaseEvent(self, event):
+
+		super(MainWindow, self).keyReleaseEvent(event)
+
+		if event.key() == Qt.Key_Control:
+			self.onClickPalette = False
+			QtCore.QCoreApplication.instance().restoreOverrideCursor()
+			self.releaseMouse()
+
+	def mousePressEvent(self, event):
+
+		super(MainWindow, self).mousePressEvent(event)
+
+		# --- Paleta "onClick" ---
+		# Cuando pulsamos Ctrl y hacemos click con el mouse creamos una captura de pantalla.
+		# Luego de esa captura extraemos el color en la posición del cursor y lo establecemos
+		# como color principal.
+		if event.button() == QtCore.Qt.LeftButton and self.onClickPalette:
+			widget = QtCore.QCoreApplication.instance().desktop().screen()
+			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
+			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
+			self.data.color = c
+			self.com.updateColor.emit()
+
+			# im.save("desktop.png") # Guardar la captura de pantalla en un archivo
+			# print "Getting color " + c.red(), c.green(), c.blue() + " from screen" # Comprueba qué color coge
+
+	def mouseMoveEvent(self, event):
+
+		super(MainWindow, self).mouseMoveEvent(event)
+		if self.onClickPalette and event.buttons() == QtCore.Qt.LeftButton:
+			widget = QtCore.QCoreApplication.instance().desktop().screen()
+			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
+			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
+			self.data.color = c
+			self.com.updateColor.emit()
+			print "move"

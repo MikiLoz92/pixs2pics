@@ -16,3 +16,5 @@ class Communication(QtCore.QObject):
 	updateTool = QtCore.pyqtSignal()
 	zoomIn = QtCore.pyqtSignal()
 	zoomOut = QtCore.pyqtSignal()
+	colorPickerOn = QtCore.pyqtSignal()
+	colorPickerOff = QtCore.pyqtSignal()

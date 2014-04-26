@@ -20,13 +20,20 @@ class Data:
 	currentTool = 1
 	zoom = 1
 	defaultFileName = ""
+	colorPicker = False
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
 
 	def __init__(self, com):
 
 		self.com = com
+
+		# Creamos la QImage
 		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_ARGB32)
+
+		# Creamos los cursores
+		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
+		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/dropperCur.png"), 0, 23)
 
 	def loadImage(self, fileName):
 

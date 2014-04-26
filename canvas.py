@@ -33,8 +33,8 @@ class Canvas(QtGui.QLabel):
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
 		super(Canvas, self).enterEvent(event)
-		cur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
-		self.setCursor(cur)
+		if not self.data.colorPicker:
+			self.setCursor(self.data.pencilCur)
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
 
