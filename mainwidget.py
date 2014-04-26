@@ -22,6 +22,7 @@ class MainWidget(QtGui.QScrollArea):
 		self.canvas = Canvas(w, h, data, com, color, self)
 
 		self.setBackgroundRole(QtGui.QPalette.Dark)
+		self.setObjectName("MainWidget")
 		self.setWidget(self.canvas)
 	"""
 	def resizeEvent(self, event):

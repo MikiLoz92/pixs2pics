@@ -8,11 +8,6 @@ QMainWindow {
 	background: rgb(61,69,72);
 }
 
-QAbstractScrollArea {
-	border: none;
-	background: url("images/transparent.png");
-}
-
 QScrollBar::handle {
 	background-color: rgb(33,167,108);
 	border: none;
@@ -192,4 +187,21 @@ QSizeGrip {
 
 QWidget#CanvasEdit {
 	background-color: white;
+}
+
+QScrollArea#MainWidget {
+	border: none;
+	background: url("images/transparent.png");
+}
+
+QListWidget {
+	border: none;
+}
+
+QListWidget::item {
+	background-color: rgb(33,167,108);
+}
+
+QListWidget::item:selected {
+	background-color: rgb(18,123,75);
 }

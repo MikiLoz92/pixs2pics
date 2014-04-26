@@ -4,7 +4,7 @@
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 from mainwidget import MainWidget
-from dialogs import ResizeImageDialog, NewFileDialog
+from dialogs import ResizeImageDialog, NewFileDialog, Preferences
 import random
 
 class Preview (QtGui.QDockWidget):
@@ -327,15 +327,15 @@ class MainWindow(QtGui.QMainWindow):
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
 
-		self.FillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), 'Fill (F)', self.tools)
-		self.FillAction.setCheckable(True)
-		self.FillAction.toggled.connect(self.setFillTool)
-		l.append(self.FillAction)
+		self.fillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), 'Fill (F)', self.tools)
+		self.fillAction.setCheckable(True)
+		self.fillAction.toggled.connect(self.setFillTool)
+		l.append(self.fillAction)
 
-		self.FillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), 'Gradient (D)', self.tools)
-		self.FillAction.setCheckable(True)
-		self.FillAction.toggled.connect(self.setDegTool)
-		l.append(self.FillAction)
+		self.fillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), 'Gradient (D)', self.tools)
+		self.fillAction.setCheckable(True)
+		self.fillAction.toggled.connect(self.setDegTool)
+		l.append(self.fillAction)
 
 		return l
 
@@ -381,11 +381,11 @@ class MainWindow(QtGui.QMainWindow):
 	def createEditActions(self):
 
 		# Llistes de propietats (de cada acció)
-		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png"]
-		labels = ["&Undo", "&Redo", "Cu&t", "&Copy", "&Paste", "C&lear"]
-		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del']
-		statusTips = ["Undo the last action", "Redo the last action", "Cut a part of the image", "Copy a part of the image", "Paste an image into this one", "Clear out a part of the image"]
-		connects = [0,0,0,0,0,0]
+		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
+		labels = ["&Undo", "&Redo", "Cu&t", "&Copy", "&Paste", "C&lear", "&Preferences"]
+		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
+		statusTips = ["Undo the last action", "Redo the last action", "Cut a part of the image", "Copy a part of the image", "Paste an image into this one", "Clear out a part of the image", "Open the preferences dialog"]
+		connects = [0,0,0,0,0,0, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -399,6 +399,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Insertem els zeros que simbolitzen separadors
 		l.insert(2,0)
+		l.insert(7,0)
 
 		return l
 
@@ -602,6 +603,10 @@ class MainWindow(QtGui.QMainWindow):
 
 		d = QtGui.QMessageBox.about(self, "About Pix2Pics...", "Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.")
 		d.show()
+
+	def showPreferences(self):
+
+		d = Preferences(self)
 
 	def newImage(self, w, h):
 

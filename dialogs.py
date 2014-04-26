@@ -121,3 +121,90 @@ class ResizeImageDialog (QtGui.QDialog):
 	
 		self.parent.resizeImage(self.width.value(), self.height.value())
 		super(ResizeImageDialog,self).accept()
+
+
+class Preferences (QtGui.QDialog):
+
+	def  __init__(self, Parent=None):
+
+		super(Preferences, self).__init__(Parent)
+		self.parent = Parent
+
+		# El QStackedWidget es un tipo de widget muy útil que tiene diferentes "páginas" y podemos ir cambiando entre ellas
+		# con sólo llamar a un método. En nuestro caso, conectamos (el signal que emite el QListWidget al cambiar de sección)
+		# -> (al método self.changeCurrentView, que cambia la página del QStackedWidget).
+
+		self.view = QtGui.QStackedWidget()
+		self.view.addWidget(self.createLanguageView())
+		self.view.addWidget(self.createUICustomizationView())
+		#self.view.addWidget(self.createKeyboardShorcutsView()) # Si se descomenta da un SEGFAULT
+		#self.view.addWidget(self.createDefaultsView()) # Si se descomenta da un SEGFAULT
+		self.view.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+
+		self.preferences = QtGui.QListWidget()
+		self.preferences.addItem("Language")
+		self.preferences.addItem("UI Customization")
+		self.preferences.addItem("Keyboard shortcuts")
+		self.preferences.addItem("Defaults")
+		self.preferences.currentItemChanged.connect(self.changeCurrentView)
+		#self.preferences.setFixedSize(self.preferences.minimumSizeHint())
+		self.preferences.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+
+		self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+		self.buttonBox.accepted.connect(self.accept)
+		self.buttonBox.rejected.connect(self.reject)
+
+		self.hbox = QtGui.QHBoxLayout()
+		self.hbox.addWidget(self.preferences)
+		self.hbox.addWidget(self.view)
+
+		self.vbox = QtGui.QVBoxLayout()
+		self.vbox.addLayout(self.hbox)
+		self.vbox.addWidget(self.buttonBox)
+
+		self.setLayout(self.vbox)
+		self.setWindowTitle("Preferences")
+		self.adjustSize()
+		self.show()
+
+	def createLanguageView(self):
+
+		# Widget de ejemplo
+
+		w = QtGui.QWidget()
+
+		vbox = QtGui.QVBoxLayout()
+		vbox.addWidget(QtGui.QLabel("Hola"))
+		vbox.addWidget(QtGui.QLabel("Adios"))
+		vbox.addWidget(QtGui.QSlider())
+
+		w.setLayout(vbox)
+
+		return w
+
+	def createUICustomizationView(self):
+
+		# Widget de ejemplo
+
+		w = QtGui.QWidget()
+
+		vbox = QtGui.QVBoxLayout()
+		vbox.addWidget(QtGui.QLabel("Ra, Ra, Rasputin"))
+		vbox.addWidget(QtGui.QLabel("lover of the Russian queen"))
+		vbox.addWidget(QtGui.QSlider())
+
+		w.setLayout(vbox)
+
+		return w
+
+	def createKeyboardShorcutsView(self):
+
+		return
+
+	def createDefaultsView(self):
+
+		return
+
+	def changeCurrentView(self):
+
+		self.view.setCurrentIndex(self.preferences.currentRow())
