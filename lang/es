@@ -1,0 +1,21 @@
+[_lang]
+name = Español
+
+[menu_file_labels]
+new = &Nueva
+open = &Abrir
+save = &Guardar
+saveas = Guardar como...
+exit= &Salir
+
+[menu_file_status_tips]
+new = Crear una nueva imagen
+open = Abrir un imagen existente
+save = Guardar la imagen actual
+saveas = Guardar la imagen actual con un nombre de archivo diferente
+exit = Salir de la aplicación
+
+[status]
+ready = Listo
+
+[newimage]

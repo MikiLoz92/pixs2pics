@@ -1,31 +1,65 @@
-class Translation:
+#!/usr/bin/env python
+#coding: utf-8
+
+import os
+import ConfigParser
+
+class Language:
+
+	def __init__(self, lang, d):
+
+		self.name = lang
+		self.dict = d
+
+	def __getitem__(self, item):
+
+		return self.dict[item]
+
+class TDatabase:
 
 	def __init__(self):
+		
+		self.d = {}
+		cp = ConfigParser.ConfigParser()
+		l = os.listdir("lang")
+		for i in l:
+			cp.read("lang/" + i)
+			langname = cp.get("_lang", "name")
+			d2 = {}
+			for j in cp.sections()[1:]: # Sin la sección _lang
+				d3 = {}
+				for k, l in cp.items(j):
+					d3[k] = l
+				d2[j] = d3
+			lang = Language(i, d2)
+			self.d[i] = lang
 
-		pass
+	def getText(self, lang, sect, ident):
 
-	def getText(lang, ident):
+		return self.d[lang][sect][ident]
 
-		return d[lang][ident]
+"""
 
+d = {
 
-hola = {
-	"es": "Hola", 
-	"en": "Hello",
-	"fr": "Bonjour"
-}
+	"menu": {
+		"new": "&New"
+		"open" = "&Open"
+		"save" = "&Save"
+		"saveas" = "Save &As..."
+		"exit"= "&Exit"
+	}
 
-adios = {
-	"es": "Adios", 
-	"en": "Goodbye",
-	"fr": "Au revoir"
-}
+	"menu_status_tip": {
+		...
+	}
 
-dict = {
-	"hola": hola
-	"adios": adios
-}
+} ...y un diccionario como este para cada idioma.
 
-dict["hola"]["es"]
-t = Translation()
-t.getText(lang, "hola")
+Para probarlo en una terminal (en python):
+
+>>> from translation import *
+>>> t = TDatabase()
+>>> t.getText("en", "menu", "new")
+
+"""

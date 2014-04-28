@@ -1,0 +1,21 @@
+[_lang]
+name = English
+
+[menu_file_labels]
+new = &New
+open = &Open
+save = &Save
+saveas = Save &As...
+exit= &Exit
+
+[menu_file_status_tips]
+new = Create a new image
+open = Open an existing image
+save = Save the current image
+saveas = Saves as a new image
+exit = Exit application
+
+[status]
+ready = Ready
+
+[newimage]

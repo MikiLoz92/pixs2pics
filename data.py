@@ -2,6 +2,7 @@
 #coding: utf-8
 
 from PyQt4 import QtGui, QtCore
+from translation import *
 
 ## Model / Modelo
 class Data:
@@ -21,6 +22,10 @@ class Data:
 	zoom = 1
 	defaultFileName = ""
 	colorPicker = False
+
+	lang = "es"
+	tdatabase = TDatabase()
+
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
 

@@ -288,6 +288,10 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.show()
 
+	def getText(self, sect, ident):
+
+		return self.data.tdatabase.getText(self.data.lang, sect, ident)
+
 	def createToolBarActions(self):
 
 		# Llista d'accions
@@ -360,20 +364,18 @@ class MainWindow(QtGui.QMainWindow):
 	def createFileActions(self):
 
 		# Llistes de propietats (de cada acció)
+		ids = ["new", "open", "save", "saveas", "exit"]
 		icons = ["document-new.png", "document-open.png", "document-save.png", "document-save-as.png", "application-exit.png"]
-		labels = ["&New", "&Open", "&Save", "Save &As...", "&Exit"]
 		shortcuts = ['Ctrl+N', 'Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
-		statusTips = [ "Create a new image", "Open an existing image", "Save the current image", "Saves as a new image", "Exit application"]
-		connects = [self.showNewFileDialog,self.openFile,self.saveFile,self.saveFileAs,QtGui.qApp.quit]
-		#connects = [0,0,0,0,0]
+		connects = [self.showNewFileDialog, self.openFile, self.saveFile, self.saveFileAs, QtGui.qApp.quit]
 
 		# Llista d'accions
 		l = []
 
-		for i in range(len(labels)):
-			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), labels[i], self)
+		for i in range(len(ids)):
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.getText("menu_file_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
-			a.setStatusTip(statusTips[i])
+			a.setStatusTip(self.getText("menu_file_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
 
