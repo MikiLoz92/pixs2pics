@@ -196,6 +196,7 @@ QScrollArea#MainWidget {
 
 QListWidget {
 	border: none;
+	background-color: rgb(33,167,108);
 }
 
 QListWidget::item {
@@ -204,4 +205,19 @@ QListWidget::item {
 
 QListWidget::item:selected {
 	background-color: rgb(18,123,75);
+}
+
+QComboBox {
+	border: none;
+	background-color: rgb(33,167,108); 
+}
+
+QComboBox::editable {
+	background-color: rgb(33,167,108);
+}
+
+QComboBox::down-arrow {
+	border: none;
+	background-color: rgb(33,167,108);
+	background-image: url('images/downarrow.png');
 }

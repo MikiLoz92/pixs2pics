@@ -39,7 +39,7 @@ if __name__ == '__main__':
 	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 0:
 		print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
 	else:
-		fnt = QtGui.QFont("Lato", 10)
+		fnt = QtGui.QFont("Lato", 9)
 		app.setFont(fnt)
 	mw.setStyleSheet(readCSS("style.css"))
 

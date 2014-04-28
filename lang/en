@@ -96,8 +96,8 @@ title = Resize...
 dimension = New dimension
 
 [dialog_about]
-title = Acerca de Pix2Pics
-description = Pix2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.
+title = About Pix2Pics
+description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.
 
 # -------------
 # --- TOOLS ---

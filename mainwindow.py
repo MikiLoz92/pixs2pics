@@ -188,13 +188,26 @@ class CurrentColor(QtGui.QLabel):
 
 		super(CurrentColor, self).paintEvent(e)
 
-	def mousePressEvent(self, e):
+	def mouseReleaseEvent(self, e):
 
 		if e.button() == Qt.LeftButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.data.color = c
 				self.com.updateColor.emit()
+
+	def mouseMoveEvent(self, e):
+
+		if e.buttons() != QtCore.Qt.LeftButton:
+			return
+
+		mimeData = QtCore.QMimeData()
+
+		drag = QtGui.QDrag(self)
+		drag.setMimeData(mimeData)
+		drag.setHotSpot(QtCore.QPoint(0,-10))
+
+		dropAction = drag.start(QtCore.Qt.MoveAction)
 
 	def update(self):
 
@@ -210,17 +223,18 @@ class Color(QtGui.QFrame):
 
 		super(Color, self).__init__(Parent)
 
+		self.parent = Parent
 		self.data = data
 		self.com = com
+
+		self.setAcceptDrops(True)
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
 		self.setFixedSize(16,16)
 		self.setPalette(QtGui.QPalette(self.color))
 		self.setAutoFillBackground(True)
-		self.parent = Parent
 
 	def paintEvent(self, e):
 
-	
 		painter = QtGui.QPainter(self)	
 		painter.setBackgroundMode(Qt.OpaqueMode)
 		brush = QtGui.QBrush(self.color)
@@ -242,6 +256,16 @@ class Color(QtGui.QFrame):
 			if c.isValid():
 				self.color = c
 				self.update()
+
+	def dragEnterEvent(self, e):
+
+		e.accept()
+
+	def dropEvent(self, e):
+
+		position = e.pos()
+		e.setDropAction(QtCore.Qt.CopyAction)
+		e.accept()
 
 class DegColor(Color):
 
@@ -446,6 +470,7 @@ class MainWindow(QtGui.QMainWindow):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_help_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
 			a.setStatusTip(self.data.getText("menu_help_status_tips", ids[i]))
+			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
 
 		# Insertem els zeros que simbolitzen separadors
@@ -610,9 +635,10 @@ class MainWindow(QtGui.QMainWindow):
 		d = NewFileDialog(self)
 
 	def showAboutDialog(self):
+		print "asdasd"
 
 		d = QtGui.QMessageBox.about(self, self.data.getText("dialog_about", "title"), self.data.getText("dialog_about", "description"))
-		d.show()
+		#d.show()
 
 	def showPreferences(self):
 

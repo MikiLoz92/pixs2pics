@@ -146,10 +146,13 @@ class Preferences (QtGui.QDialog):
 		self.preferences.addItem("UI Customization")
 		self.preferences.addItem("Keyboard shortcuts")
 		self.preferences.addItem("Defaults")
+		self.preferences.setCurrentRow(0)
 		self.preferences.currentItemChanged.connect(self.changeCurrentView)
+		self.preferences.setFixedWidth(self.preferences.sizeHintForColumn(0) + 24)
+		#self.preferences.setFixedHeight(self.preferences.sizeHintForRow(0)*self.preferences.count()+24)
+		self.preferences.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
 		#self.preferences.setFixedSize(self.preferences.minimumSize())
 		#self.preferences.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-		print "Minimum size hint:", self.preferences.sizeHint()
 
 		self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		self.buttonBox.accepted.connect(self.accept)
@@ -177,9 +180,11 @@ class Preferences (QtGui.QDialog):
 		w = QtGui.QWidget()
 
 		vbox = QtGui.QVBoxLayout()
-		vbox.addWidget(QtGui.QLabel("Hola"))
-		vbox.addWidget(QtGui.QLabel("Adios"))
-		vbox.addWidget(QtGui.QSlider())
+		#vbox.addWidget(QtGui.QLabel("Hola"))
+		#vbox.addWidget(QtGui.QLabel("Adios"))
+		vbox.addWidget(QtGui.QComboBox())
+		vbox.setStretch(1,1)
+		vbox.setAlignment(Qt.AlignTop)
 
 		w.setLayout(vbox)
 
@@ -196,8 +201,11 @@ class Preferences (QtGui.QDialog):
 
 		vbox = QtGui.QVBoxLayout()
 		vbox.addWidget(QtGui.QLabel("Ra, Ra, Rasputin"))
-		vbox.addWidget(QtGui.QLabel("lover of the Russian queen"))
-		vbox.addWidget(QtGui.QSlider())
+		vbox.addWidget(QtGui.QLabel("Lover of the Russian queen"))
+		vbox.addWidget(QtGui.QLabel("There was a cat that really was gone"))
+		vbox.addWidget(QtGui.QLabel("Ra, Ra, Rasputin"))
+		vbox.addWidget(QtGui.QLabel("Russia's greatest love machine"))
+		vbox.addWidget(QtGui.QLabel("It was a shame how he carried on"))
 
 		w.setLayout(vbox)
 

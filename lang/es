@@ -96,8 +96,9 @@ title = Modificar tamaño...
 dimension = Nuevas dimensiones
 
 [dialog_about]
-title = About Pix2Pics
-description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.
+title = Acerca de Pix2Pics
+description = Pix2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.
+#Autores:\n- Miguel Vera Belmonte\n- Alicia Guindulain\n- Antonio Peris\n- Luis Mollà\n-Natacza Johnson
 
 # -------------
 # --- TOOLS ---
@@ -120,7 +121,7 @@ gradient = Degradado
 
 [dock_widgets]
 palette = Paleta
-tool_properties = Propiedad de herramienta
+tool_properties = Propiedades de la herramienta
 preview = Miniatura
 
 # -----------------------
