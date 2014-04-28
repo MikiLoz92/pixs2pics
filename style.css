@@ -53,12 +53,12 @@ QMenu {
 }
 
 QMenu::item {
-	padding: 2px 25px 2px 28px;
+	padding: 2px 25px 2px 24px;
 	border: 1px;
 }
 
 QMenu::icon {
-	padding: 6px;
+	padding: 2px;
 }
 
 QMenu::item:selected {
