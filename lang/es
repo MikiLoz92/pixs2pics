@@ -1,12 +1,25 @@
 [_lang]
 name = Español
 
+[pix2pics]
+title = Pix2Pics
+
+# ------------
+# --- MENU ---
+# ------------
+
+[menu]
+file = &Archivo
+edit = &Editar
+transform = &Transformar
+help = A&yuda
+
 [menu_file_labels]
 new = &Nueva
 open = &Abrir
 save = &Guardar
 saveas = Guardar como...
-exit= &Salir
+exit= Sali&r
 
 [menu_file_status_tips]
 new = Crear una nueva imagen
@@ -14,6 +27,108 @@ open = Abrir un imagen existente
 save = Guardar la imagen actual
 saveas = Guardar la imagen actual con un nombre de archivo diferente
 exit = Salir de la aplicación
+
+[menu_edit_labels]
+undo = &Deshacer
+redo = &Rehacer
+cut = Cor&tar
+copy = &Copiar
+paste = &Pegar
+clear = E&liminar
+preferences = P&referencias
+
+[menu_edit_status_tips]
+undo = Deshacer la última acción
+redo = Rehacer la última acción
+cut = Cortar la imagen o una parte
+copy = Copiar la imagen o una parte
+paste = Pegar una imagen encima
+clear = Eliminar la imagen o una parte
+preferences = Abrir el diálogo de preferencias
+
+[menu_transform_labels]
+flip_hor = Voltear horizontalmente
+flip_ver = Voltear verticalmente
+rotate_cw = Rotar 90º en sentido horario
+rotate_ccw = Rotar 90º en sentido antihorario
+rotate_180 = Rotar 180º
+resize = Modificar tamaño
+resize_canvas = Tamaño del lienzo...
+
+[menu_transform_status_tips]
+flip_hor = Flip horizontally the image or a part of it
+flip_ver = Flip vertically the image or a part of it
+rotate_cw = Rotate 90º clockwise the image or a part of it
+rotate_ccw = Rotate 90º counterclockwise the image or a part of it
+rotate_180 = Rotate 180º the image or a part of it
+resize = Resize the image or a part of it
+resize_canvas = Resize the canvas
+
+[menu_help_labels]
+contents = &Ayuda
+about = A&cerca de...
+
+[menu_help_status_tips]
+contents = Abrir la ventana de ayuda
+about = Acerca de Pix2Pics
+
+# ---------------
+# --- DIALOGS ---
+# ---------------
+
+[dialog_new_image]
+title = Crear una imagen nueva
+dimension = Dimensiones
+background = Fondo
+transparent = Transparente
+color = Color:
+
+[dialog_open]
+title = Abre una imagen existente
+images = Imágenes
+all_files = Todos los archivos
+
+[dialog_save]
+title = Guarda la imagen actual
+
+[dialog_resize]
+title = Modificar tamaño...
+dimension = Nuevas dimensiones
+
+[dialog_about]
+title = About Pix2Pics
+description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.
+
+# -------------
+# --- TOOLS ---
+# -------------
+
+[tools]
+selection = Selección
+pencil = Lápiz
+brush = Pincel
+eraser = Goma
+colorpicker = Pipeta de color
+zoomin = Zoom hacia dentro
+zoomout = Zoom hacia fuera
+fill = Cubeta
+gradient = Degradado
+
+# --------------------
+# --- DOCK WIDGETS ---
+# --------------------
+
+[dock_widgets]
+palette = Paleta
+tool_properties = Propiedad de herramienta
+preview = Miniatura
+
+# -----------------------
+# --- TOOL PROPERTIES ---
+# -----------------------
+
+[tool_properties_pencil]
+size = Tamaño:
 
 [status]
 ready = Listo

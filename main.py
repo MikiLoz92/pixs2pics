@@ -35,11 +35,11 @@ if __name__ == '__main__':
 	data = Data(com)
 	mw = MainWindow(data, com)
 
-	customFnt = "Aller_Rg.ttf"
-	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 1:
+	customFnt = "Lato-Reg.ttf"
+	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 0:
 		print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
 	else:
-		fnt = QtGui.QFont("Aller")
+		fnt = QtGui.QFont("Lato", 10)
 		app.setFont(fnt)
 	mw.setStyleSheet(readCSS("style.css"))
 

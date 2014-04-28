@@ -41,7 +41,7 @@ class Preview (QtGui.QDockWidget):
 		else:
 			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 
-		print "Updating Preview"
+		#print "Updating Preview"
 
 	def setPixmap(self):
 
@@ -90,7 +90,7 @@ class ToolProperties (QtGui.QDockWidget):
 		w = QtGui.QWidget()
 		hbox = QtGui.QHBoxLayout()
 
-		pencilSizeLabel = QtGui.QLabel("Size:")
+		pencilSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
 		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
 		slider.setValue(self.data.pencilSize)
 		self.pencilSize = QtGui.QLabel(str(self.data.pencilSize))
@@ -276,8 +276,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.onClickPalette = False
 		self.resize(640,480)
-		self.setWindowTitle("Pix2Pics")
-		self.statusBar = self.statusBar().showMessage("Ready")
+		self.setWindowTitle(self.data.getText("pix2pics", "title"))
+		self.statusBar = self.statusBar().showMessage(self.data.getText("status", "ready"))
 		self.menuBar = self.createMenuBar()
 		self.toolBar = self.createToolBar()
 		self.createDockWidgets()
@@ -299,48 +299,48 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		self.selectionAction = QtGui.QAction(QtGui.QIcon('images/selection.png'), 'Select (W)', self.tools)
+		self.selectionAction = QtGui.QAction(QtGui.QIcon('images/selection.png'), self.data.getText("tools", "selection"), self.tools)
 		self.selectionAction.setCheckable(True)
 		self.selectionAction.toggled.connect(self.setSelectionTool)
 		l.append(self.selectionAction)
 
-		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), 'Pencil (N)', self.tools)
+		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), self.data.getText("tools", "pencil"), self.tools)
 		self.pencilAction.setCheckable(True)
 		self.pencilAction.toggled.connect(self.setPencilTool)
 		self.pencilAction.toggle()
 		l.append(self.pencilAction)
 
-		self.brushAction = QtGui.QAction(QtGui.QIcon('images/brush.png'), 'Brush (B)', self.tools)
+		self.brushAction = QtGui.QAction(QtGui.QIcon('images/brush.png'), self.data.getText("tools", "brush"), self.tools)
 		self.brushAction.setCheckable(True)
 		self.brushAction.toggled.connect(self.setBrushTool)
 		l.append(self.brushAction)
 
-		self.eraserAction = QtGui.QAction(QtGui.QIcon('images/eraser.png'), 'Eraser (E)', self.tools)
+		self.eraserAction = QtGui.QAction(QtGui.QIcon('images/eraser.png'), self.data.getText("tools", "eraser"), self.tools)
 		self.eraserAction.setCheckable(True)
 		self.eraserAction.toggled.connect(self.setEraserTool)
 		l.append(self.eraserAction)
 
-		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), 'Color Picker (C)', self.tools)
+		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), self.data.getText("tools", "colorpicker"), self.tools)
 		self.colorPickerAction.setCheckable(True)
 		self.colorPickerAction.toggled.connect(self.setColorPickerTool)
 		l.append(self.colorPickerAction)
 
-		self.zoomInAction = QtGui.QAction(QtGui.QIcon('images/zoomin.png'), 'Zoom In (+)', self.tools)
+		self.zoomInAction = QtGui.QAction(QtGui.QIcon('images/zoomin.png'), self.data.getText("tools", "zoomin"), self.tools)
 		self.zoomInAction.setShortcut("+")
 		self.zoomInAction.triggered.connect(self.zoomIn)
 		l.append(self.zoomInAction)
 
-		self.zoomOutAction = QtGui.QAction(QtGui.QIcon('images/zoomout.png'), 'Zoom Out (+)', self.tools)
+		self.zoomOutAction = QtGui.QAction(QtGui.QIcon('images/zoomout.png'), self.data.getText("tools", "zoomout"), self.tools)
 		self.zoomOutAction.setShortcut("-")
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
 
-		self.fillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), 'Fill (F)', self.tools)
+		self.fillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), self.data.getText("tools", "fill"), self.tools)
 		self.fillAction.setCheckable(True)
 		self.fillAction.toggled.connect(self.setFillTool)
 		l.append(self.fillAction)
 
-		self.fillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), 'Gradient (D)', self.tools)
+		self.fillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), self.data.getText("tools", "gradient"), self.tools)
 		self.fillAction.setCheckable(True)
 		self.fillAction.toggled.connect(self.setDegTool)
 		l.append(self.fillAction)
@@ -373,9 +373,9 @@ class MainWindow(QtGui.QMainWindow):
 		l = []
 
 		for i in range(len(ids)):
-			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.getText("menu_file_labels", ids[i]), self)
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_file_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
-			a.setStatusTip(self.getText("menu_file_status_tips", ids[i]))
+			a.setStatusTip(self.data.getText("menu_file_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
 
@@ -387,19 +387,18 @@ class MainWindow(QtGui.QMainWindow):
 	def createEditActions(self):
 
 		# Llistes de propietats (de cada acció)
+		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
 		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
-		labels = ["&Undo", "&Redo", "Cu&t", "&Copy", "&Paste", "C&lear", "&Preferences"]
 		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		statusTips = ["Undo the last action", "Redo the last action", "Cut a part of the image", "Copy a part of the image", "Paste an image into this one", "Clear out a part of the image", "Open the preferences dialog"]
 		connects = [0,0,0,0,0,0, self.showPreferences]
 
 		# Llista d'accions
 		l = []
 
-		for i in range(len(labels)):
-			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), labels[i], self)
+		for i in range(len(ids)):
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_edit_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
-			a.setStatusTip(statusTips[i])
+			a.setStatusTip(self.data.getText("menu_edit_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
 
@@ -409,43 +408,44 @@ class MainWindow(QtGui.QMainWindow):
 
 		return l
 
-	def createImageActions(self):
+	def createTransformActions(self):
 
 		# Llistes de propietats (de cada acció)
-		icons = ["resize-image.png"]
-		labels = ["&Resize..."]
-		shortcuts = ['Ctrl+R']
-		statusTips = ["Adjust the image size"]
-		connects = [self.showResizeImageDialog]
+		ids = ["flip_hor", "flip_ver", "rotate_cw", "rotate_ccw", "rotate_180", "resize", "resize_canvas"]
+		icons = ["", "", "", "", "", "resize-image.png", ""]
+		shortcuts = ['', '', '', '', '', 'Ctrl+R', '']
+		connects = [0,0,0,0,0,self.showResizeImageDialog,0]
 
 		# Llista d'accions
 		l = []
 
-		for i in range(len(labels)):
-			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), labels[i], self)
+		for i in range(len(ids)):
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_transform_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
-			a.setStatusTip(statusTips[i])
+			a.setStatusTip(self.data.getText("menu_transform_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
+
+		l.insert(2,0)
+		l.insert(5,0)
 
 		return l
 
 	def createHelpActions(self):
 
 		# Llistes de propietats (de cada acció)
+		ids = ["contents", "about"]
 		icons = ["help-contents.png", "help-about.png"]
-		labels = ["&Contents", "&About"]
 		shortcuts = ['Ctrl+H', 'Ctrl+B']
-		statusTips = ["Show the Help dialog", "About PixelART..."]
 		connects = [0, self.showAboutDialog]
 
 		# Llista d'accions
 		l = []
 
-		for i in range(len(labels)):
-			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), labels[i], self)
+		for i in range(len(ids)):
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_help_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
-			a.setStatusTip(statusTips[i])
+			a.setStatusTip(self.data.getText("menu_help_status_tips", ids[i]))
 			l.append(a)
 
 		# Insertem els zeros que simbolitzen separadors
@@ -456,13 +456,13 @@ class MainWindow(QtGui.QMainWindow):
 	def createMenuBar(self):
 		
 		menubar = self.menuBar()
-		fileMenu = menubar.addMenu('&File')
-		editMenu = menubar.addMenu('&Edit')
-		imageMenu = menubar.addMenu('&Image')
-		helpMenu = menubar.addMenu('&Help')
+		fileMenu = menubar.addMenu(self.data.getText("menu", "file"))
+		editMenu = menubar.addMenu(self.data.getText("menu", "edit"))
+		transformMenu = menubar.addMenu(self.data.getText("menu", "transform"))
+		helpMenu = menubar.addMenu(self.data.getText("menu", "help"))
 		fileActions = self.createFileActions()
 		editActions = self.createEditActions()
-		imageActions = self.createImageActions()
+		transformActions = self.createTransformActions()
 		helpActions = self.createHelpActions()
 		for i in fileActions:
 			if i == 0: fileMenu.addSeparator()
@@ -473,9 +473,9 @@ class MainWindow(QtGui.QMainWindow):
 		for i in helpActions:
 			if i == 0: helpMenu.addSeparator()
 			else: helpMenu.addAction(i)
-		for i in imageActions:
-			if i == 0: imageMenu.addSeparator()
-			else: imageMenu.addAction(i)
+		for i in transformActions:
+			if i == 0: transformMenu.addSeparator()
+			else: transformMenu.addAction(i)
 
 		return menubar
 		
@@ -483,7 +483,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 		# Palette widget
 
-		self.palette = QtGui.QDockWidget("Palette", self)
+		self.palette = QtGui.QDockWidget(self.data.getText("dock_widgets", "palette"), self)
 		self.palette.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
@@ -520,12 +520,12 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Tool Properties widget
 
-		self.toolProperties = ToolProperties("Tool Properties", self.data, self.com)
+		self.toolProperties = ToolProperties(self.data.getText("dock_widgets", "tool_properties"), self.data, self.com)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
 
 		# Preview
 
-		self.preview = Preview("Preview", self.data, self.com, self)
+		self.preview = Preview(self.data.getText("dock_widgets", "preview"), self.data, self.com, self)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.preview)
 		
 	def zoomIn(self):
@@ -611,7 +611,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	def showAboutDialog(self):
 
-		d = QtGui.QMessageBox.about(self, "About Pix2Pics...", "Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.")
+		d = QtGui.QMessageBox.about(self, self.data.getText("dialog_about", "title"), self.data.getText("dialog_about", "description"))
 		d.show()
 
 	def showPreferences(self):
@@ -625,9 +625,9 @@ class MainWindow(QtGui.QMainWindow):
 	def openFile(self):
 		
 		fileName = QtGui.QFileDialog.getOpenFileName(self,
-					"Open an existing image",
+					self.data.getText("dialog_open", "title"),
 					"/home",
-					"Images (*.bmp *.gif *.png *.xpm *.jpg);;All Files (*)")
+					self.data.getText("dialog_open", "images") + u" (*.bmp *.gif *.png *.xpm *.jpg);;" + self.data.getText("dialog_open", "all_files") + u" (*)")
 		if fileName:
 			#print fileName
 			self.data.loadImage(fileName)

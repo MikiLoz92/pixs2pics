@@ -15,7 +15,7 @@ class NewFileDialog(QtGui.QDialog):
 		super(NewFileDialog,self).__init__(Parent)
 		self.parent = Parent
 
-		dimensionGroup = QtGui.QGroupBox("Dimension")
+		dimensionGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_new_image", "dimension"))
 		dimensionLayout = QtGui.QVBoxLayout()
 		self.width = QtGui.QSpinBox(dimensionGroup)
 		self.width.setValue(32)
@@ -29,11 +29,11 @@ class NewFileDialog(QtGui.QDialog):
 		dimensionLayout.addWidget(self.height)
 		dimensionGroup.setLayout(dimensionLayout)
 
-		backgroundGroup = QtGui.QGroupBox("Background")
+		backgroundGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_new_image", "background"))
 		backgroundLayout = QtGui.QVBoxLayout()
-		r1 = QtGui.QRadioButton("Transparent")
+		r1 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "transparent"))
 		r1.setChecked(True)
-		self.r2 = QtGui.QRadioButton("Color:")
+		self.r2 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "color"))
 		self.cButton = QtGui.QPushButton()
 		self.cButton.clicked.connect(self.getColor)
 		colorLayout = QtGui.QHBoxLayout()
@@ -53,7 +53,7 @@ class NewFileDialog(QtGui.QDialog):
 		mainLayout.addWidget(backgroundGroup)
 		mainLayout.addWidget(buttonBox)
 		self.setLayout(mainLayout)
-		self.setWindowTitle("Create new image")
+		self.setWindowTitle(self.parent.data.getText("dialog_new_image", "title"))
 		self.initUI()
 
 		# Definim les senyals
@@ -89,7 +89,7 @@ class ResizeImageDialog (QtGui.QDialog):
 
 		self.parent = Parent
 
-		dimensionGroup = QtGui.QGroupBox("New dimension")
+		dimensionGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_resize", "dimension"))
 		dimensionLayout = QtGui.QVBoxLayout()
 
 		self.width = QtGui.QSpinBox(dimensionGroup)
@@ -114,7 +114,7 @@ class ResizeImageDialog (QtGui.QDialog):
 		mainLayout.addWidget(buttonBox)
 
 		self.setLayout(mainLayout)
-		self.setWindowTitle("Create new image")
+		self.setWindowTitle(self.parent.data.getText("dialog_resize", "title"))
 		self.show()
 
 	def accept(self):

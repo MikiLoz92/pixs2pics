@@ -59,3 +59,7 @@ class Data:
 
 		self.color = c
 		self.com.updateColor.emit()
+
+	def getText(self, sect, ident):
+
+		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8")

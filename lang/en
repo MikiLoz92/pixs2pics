@@ -1,6 +1,19 @@
 [_lang]
 name = English
 
+[pix2pics]
+title = Pix2Pics
+
+# ------------
+# --- MENU ---
+# ------------
+
+[menu]
+file = &File
+edit = &Edit
+transform = &Transform
+help = &Help
+
 [menu_file_labels]
 new = &New
 open = &Open
@@ -14,6 +27,108 @@ open = Open an existing image
 save = Save the current image
 saveas = Saves as a new image
 exit = Exit application
+
+[menu_edit_labels]
+undo = &Undo
+redo = &Redo
+cut = Cu&t
+copy = &Copy
+paste = &Paste
+clear = C&lear
+preferences = &Preferences
+
+[menu_edit_status_tips]
+undo = Undo the last action
+redo = Redo the last action
+cut = Cut the image or a part of it
+copy = Copy the image or a part of it
+paste = Paste an image onto this one
+clear = Clear out the image or a part of it
+preferences = Open the preferences dialog
+
+[menu_transform_labels]
+flip_hor = Flip horizontally
+flip_ver = Flip vertically
+rotate_cw = Rotate 90º clockwise
+rotate_ccw = Rotate 90º counterclockwise
+rotate_180 = Rotate 180º
+resize = Resize
+resize_canvas = Canvas size...
+
+[menu_transform_status_tips]
+flip_hor = Flip horizontally the image or a part of it
+flip_ver = Flip vertically the image or a part of it
+rotate_cw = Rotate 90º clockwise the image or a part of it
+rotate_ccw = Rotate 90º counterclockwise the image or a part of it
+rotate_180 = Rotate 180º the image or a part of it
+resize = Resize the image or a part of it
+resize_canvas = Resize the canvas
+
+[menu_help_labels]
+contents = &Contents
+about = &About
+
+[menu_help_status_tips]
+contents = Show the help window
+about = About Pix2Pics...
+
+# ---------------
+# --- DIALOGS ---
+# ---------------
+
+[dialog_new_image]
+title = Create a new image
+dimension = Dimension
+background = Background
+transparent = Transparent
+color = Color:
+
+[dialog_open]
+title = Open an existing image
+images = Images
+all_files = All files
+
+[dialog_save]
+title = Save the current image
+
+[dialog_resize]
+title = Resize...
+dimension = New dimension
+
+[dialog_about]
+title = Acerca de Pix2Pics
+description = Pix2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.
+
+# -------------
+# --- TOOLS ---
+# -------------
+
+[tools]
+selection = Selection
+pencil = Pencil
+brush = Brush
+eraser = Eraser
+colorpicker = Color Picker
+zoomin = Zoom In
+zoomout = Zoom Out
+fill = Fill
+gradient = Gradient
+
+# --------------------
+# --- DOCK WIDGETS ---
+# --------------------
+
+[dock_widgets]
+palette = Palette
+tool_properties = Tool properties
+preview = Preview
+
+# -----------------------
+# --- TOOL PROPERTIES ---
+# -----------------------
+
+[tool_properties_pencil]
+size = Size:
 
 [status]
 ready = Ready
