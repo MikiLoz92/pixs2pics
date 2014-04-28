@@ -52,6 +52,15 @@ QMenu {
 	font-weight: bold;
 }
 
+QMenu::item {
+	padding: 2px 25px 2px 28px;
+	border: 1px;
+}
+
+QMenu::icon {
+	padding: 6px;
+}
+
 QMenu::item:selected {
 	background-color: rgb(18,123,75);
 }
