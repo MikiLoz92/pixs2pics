@@ -13,6 +13,7 @@ file = &File
 edit = &Edit
 transform = &Transform
 help = &Help
+view = &View
 
 [menu_file_labels]
 new = &New
@@ -45,6 +46,14 @@ copy = Copy the image or a part of it
 paste = Paste an image onto this one
 clear = Clear out the image or a part of it
 preferences = Open the preferences dialog
+
+[menu_view_labels]
+pixel_grid = Pixel grid
+matrix_grid = Matrix grid
+
+[menu_view_status_tips]
+pixel_grid = Toggle pixel grid
+matrix_grid = Toggle matrix grid
 
 [menu_transform_labels]
 flip_hor = Flip horizontally

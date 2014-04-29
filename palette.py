@@ -8,6 +8,48 @@ import random
 from flowlayout import FlowLayout
 
 
+class CurrentColor(QtGui.QLabel):
+
+	def __init__(self, primary, data, com, Parent=None):
+
+		super(CurrentColor, self).__init__()
+
+		self.parent = Parent
+		self.data = data
+		self.com = com
+		self.com.updateColor.connect(self.update)
+
+		if primary: self.color = QtGui.QColor(0,0,0)
+		else: self.color = QtGui.QColor(255,255,255)
+
+		self.setFixedHeight(24)
+		self.setPalette(QtGui.QPalette(self.color))
+		self.setAutoFillBackground(True)
+
+	def paintEvent(self, e):
+
+		painter = QtGui.QPainter(self)	
+		painter.setBackgroundMode(Qt.OpaqueMode)
+		brush = QtGui.QBrush(self.color)
+		painter.setBrush(brush)
+		painter.fillRect(0,0,self.width(),self.height(),brush)
+
+		super(CurrentColor, self).paintEvent(e)
+
+	def mouseReleaseEvent(self, e):
+
+		if e.button() == Qt.LeftButton:
+			c = QtGui.QColorDialog.getColor(self.color, self)
+			if c.isValid():
+				self.color = c
+				self.update()
+
+	def update(self):
+
+		self.color = self.data.color
+		super(CurrentColor, self).update()
+
+
 class Color(QtGui.QFrame):
 	"""
 	Una QFrame cuadrada que representa un color de la paleta.
@@ -57,12 +99,38 @@ class Palette (QtGui.QWidget):
 		self.data = data
 		self.com = com
 
-		self.flow = FlowLayout()
+		"""
+		palette = QtGui.QGridLayout()
+		palette.setSpacing(0)
+		palette.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+		i = 0
+		j = 0
+		for k in range(16):
+			c = Color(self.data, self.com, self)
+			palette.addWidget(c,j,i)
+			i += 1
+			if j == 0 and i > 7:
+				j = 1
+				i = 0
+		"""
 
-		#cList = []
+		
+		palette = FlowLayout()
 		for i in range(random.randint(20,50)):
-			#cList.append(Color())
-			self.flow.addWidget(Color(self.data, self.com))
+			palette.addWidget(Color(self.data, self.com))
+		palette.setSpacing(0)
+		
 
-		self.flow.setSpacing(0)
-		self.setLayout(self.flow)
+		hbox = QtGui.QHBoxLayout()
+		hbox.addWidget(CurrentColor(True, self.data, self.com))
+		hbox.addWidget(CurrentColor(False, self.data, self.com))
+		hbox.setSpacing(0)
+		hbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+
+		vbox = QtGui.QVBoxLayout()
+		vbox.addLayout(hbox)
+		vbox.addLayout(palette)
+		vbox.setSpacing(0)
+		vbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
+
+		self.setLayout(vbox)

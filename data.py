@@ -23,7 +23,7 @@ class Data:
 	defaultFileName = ""
 	colorPicker = False
 
-	lang = "es"
+	lang = "en"
 	tdatabase = TDatabase()
 
 	color_deg_1 = QtCore.Qt.white

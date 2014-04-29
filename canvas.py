@@ -4,6 +4,37 @@
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
+
+class RubberBand(QtGui.QRubberBand):
+
+	def __init__(self, data, parent=None):
+
+		self.data = data
+
+		super(RubberBand, self).__init__(QtGui.QRubberBand.Rectangle, parent)
+
+	"""
+	def resizeEvent(self, event):
+
+		super(RubberBand, self).resizeEvent(event)
+		w = (event.size().width()/self.data.zoom + 1) * self.data.zoom
+		h = (event.size().height()/self.data.zoom + 1) * self.data.zoom
+		self.resize(w, h)
+	"""
+
+	"""
+	def paintEvent(self, event):
+
+		rect = event.rect()
+		x = (rect.x() + rect.width()) / self.data.zoom
+		y = (rect.y() + rect.height()) / self.data.zoom
+		self.resize(x*self.data.zoom+1+5, y*self.data.zoom+1+5)
+
+		super(RubberBand, self).paintEvent(QtGui.QPaintEvent(self.rect()))
+	"""
+	
+
+
 ## Vista/View
 class Canvas(QtGui.QLabel):
 	"""
@@ -29,6 +60,7 @@ class Canvas(QtGui.QLabel):
 		self.data.image.fill(QtGui.qRgb(255, 255, 255))
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.drawing = False
+		self.rubber = None
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
@@ -44,11 +76,18 @@ class Canvas(QtGui.QLabel):
 	def mousePressEvent(self, event):
 
 		pos = event.pos()
-		x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
-		y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
+		x = pos.x() / self.data.zoom # x de la imagen
+		y = pos.y() / self.data.zoom # y de la imagen
 
 		if event.button() == QtCore.Qt.LeftButton:
-			if self.data.currentTool == 1:
+			if self.data.currentTool == 0:
+				if not self.rubber:
+					#self.rubberOrigin = event.pos()
+					self.rubberOrigin = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
+					self.rubber = RubberBand(self.data, self)
+					self.rubber.setGeometry(QtCore.QRect(self.rubberOrigin, QtCore.QSize()))
+					self.rubber.show()
+			elif self.data.currentTool == 1:
 				self.lastPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
 				painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
@@ -79,6 +118,14 @@ class Canvas(QtGui.QLabel):
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.update()
 
+		if (event.buttons() and QtCore.Qt.LeftButton and self.data.currentTool == 0):
+			#self.rubber.setGeometry(QtCore.QRect(self.rubberOrigin, event.pos()).normalized())
+			x = (event.pos().x()-self.rubberOrigin.x()) / self.data.zoom * self.data.zoom
+			y = (event.pos().y()-self.rubberOrigin.y()) / self.data.zoom * self.data.zoom
+			print "Origin x:", self.rubberOrigin.x(), ", y:", self.rubberOrigin.y(), "x:", x, ", y:", y
+			self.rubber.setGeometry( self.rubberOrigin.x(), self.rubberOrigin.y(), x+self.data.zoom+2, y+self.data.zoom+2 )
+			
+
 	def mouseReleaseEvent(self, event):
 
 		if event.button() == QtCore.Qt.LeftButton and self.drawing:
@@ -88,6 +135,11 @@ class Canvas(QtGui.QLabel):
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.drawing = False
 			self.update()
+
+		if event.button() == QtCore.Qt.LeftButton and self.data.currentTool == 0:
+			self.rubber.hide()
+			self.rubber = None
+			self.rubberOrigin = None
 	
 	def paintEvent(self, event):
 		
@@ -96,6 +148,7 @@ class Canvas(QtGui.QLabel):
 		#self.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.data.image)
+		
 		#self.com.updateCanvas.emit()
 		
 	def drawLineTo(self, endPoint):

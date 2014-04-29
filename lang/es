@@ -13,6 +13,7 @@ file = &Archivo
 edit = &Editar
 transform = &Transformar
 help = A&yuda
+view = &Ver
 
 [menu_file_labels]
 new = &Nueva
@@ -45,6 +46,14 @@ copy = Copiar la imagen o una parte
 paste = Pegar una imagen encima
 clear = Eliminar la imagen o una parte
 preferences = Abrir el diálogo de preferencias
+
+[menu_view_labels]
+pixel_grid = Rejilla de píxel
+matrix_grid = Rejilla matricial
+
+[menu_view_status_tips]
+pixel_grid = Activar o desactivar rejilla de píxel
+matrix_grid = Activar o desactivar rejilla matricial
 
 [menu_transform_labels]
 flip_hor = Voltear horizontalmente

@@ -432,6 +432,34 @@ class MainWindow(QtGui.QMainWindow):
 
 		return l
 
+	def createViewActions(self):
+
+		# Llistes de propietats (de cada acció)
+		ids = ["pixel_grid", "matrix_grid"]
+		icons = ["", ""]
+		shortcuts = ['', '']
+		connects = [0,0]
+
+		# Llista d'accions
+		l = []
+
+		for i in range(len(ids)):
+			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_view_labels", ids[i]), self)
+			a.setShortcut(shortcuts[i])
+			a.setStatusTip(self.data.getText("menu_view_status_tips", ids[i]))
+			if connects[i] != 0: a.triggered.connect(connects[i])
+			a.setCheckable(True)
+			l.append(a)
+
+		# Insertem els zeros que simbolitzen separadors
+		l.insert(2,0)
+
+		# Algunas opcionas son chekables, lo consideramos:
+		l[0].setCheckable(True)
+		l[1].setCheckable(True)
+
+		return l
+
 	def createTransformActions(self):
 
 		# Llistes de propietats (de cada acció)
@@ -451,7 +479,7 @@ class MainWindow(QtGui.QMainWindow):
 			l.append(a)
 
 		l.insert(2,0)
-		l.insert(5,0)
+		l.insert(6,0)
 
 		return l
 
@@ -483,10 +511,12 @@ class MainWindow(QtGui.QMainWindow):
 		menubar = self.menuBar()
 		fileMenu = menubar.addMenu(self.data.getText("menu", "file"))
 		editMenu = menubar.addMenu(self.data.getText("menu", "edit"))
+		viewMenu = menubar.addMenu(self.data.getText("menu", "view"))
 		transformMenu = menubar.addMenu(self.data.getText("menu", "transform"))
 		helpMenu = menubar.addMenu(self.data.getText("menu", "help"))
 		fileActions = self.createFileActions()
 		editActions = self.createEditActions()
+		viewActions = self.createViewActions()
 		transformActions = self.createTransformActions()
 		helpActions = self.createHelpActions()
 		for i in fileActions:
@@ -495,6 +525,9 @@ class MainWindow(QtGui.QMainWindow):
 		for i in editActions:
 			if i == 0: editMenu.addSeparator()
 			else: editMenu.addAction(i)
+		for i in viewActions:
+			if i == 0: viewMenu.addSeparator()
+			else: viewMenu.addAction(i)
 		for i in helpActions:
 			if i == 0: helpMenu.addSeparator()
 			else: helpMenu.addAction(i)
@@ -538,8 +571,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		paletteWidgetNew = Palette(self.data, self.com)
 
-		self.palette.setWidget(paletteWidget)
-		#self.palette.setWidget(paletteWidgetNew) # NUEVA Paleta
+		#self.palette.setWidget(paletteWidget)
+		self.palette.setWidget(paletteWidgetNew) # NUEVA Paleta
 
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 

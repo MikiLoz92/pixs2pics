@@ -69,6 +69,10 @@ QMenu::item:pressed {
 	background-color: rgb(18,123,75);
 }
 
+QMenu::item:checked {
+	background-color: rgb(18,123,75);
+}
+
 QGroupBox {
 	color: white;
 	font-weight: bold;
