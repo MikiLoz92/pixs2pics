@@ -60,7 +60,8 @@ class Canvas(QtGui.QLabel):
 		self.data.image.fill(QtGui.qRgb(255, 255, 255))
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.drawing = False
-		self.rubber = None
+		self.selecting = False
+		self.selection = None
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
@@ -81,12 +82,10 @@ class Canvas(QtGui.QLabel):
 
 		if event.button() == QtCore.Qt.LeftButton:
 			if self.data.currentTool == 0:
-				if not self.rubber:
-					#self.rubberOrigin = event.pos()
-					self.rubberOrigin = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
-					self.rubber = RubberBand(self.data, self)
-					self.rubber.setGeometry(QtCore.QRect(self.rubberOrigin, QtCore.QSize()))
-					self.rubber.show()
+				if not self.selection:
+					self.selOriginOnImage = QtCore.QPoint( x, y )
+					self.selOriginOnCanvas = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
+					self.selection = RubberBand(self.data, self)
 			elif self.data.currentTool == 1:
 				self.lastPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
@@ -119,11 +118,31 @@ class Canvas(QtGui.QLabel):
 			self.update()
 
 		if (event.buttons() and QtCore.Qt.LeftButton and self.data.currentTool == 0):
-			#self.rubber.setGeometry(QtCore.QRect(self.rubberOrigin, event.pos()).normalized())
-			x = (event.pos().x()-self.rubberOrigin.x()) / self.data.zoom * self.data.zoom
-			y = (event.pos().y()-self.rubberOrigin.y()) / self.data.zoom * self.data.zoom
-			print "Origin x:", self.rubberOrigin.x(), ", y:", self.rubberOrigin.y(), "x:", x, ", y:", y
-			self.rubber.setGeometry( self.rubberOrigin.x(), self.rubberOrigin.y(), x+self.data.zoom+2, y+self.data.zoom+2 )
+
+			self.selecting = True
+
+			w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
+			h = (event.pos().y()-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
+			x = event.pos().x() / self.data.zoom * self.data.zoom - 1
+			y = event.pos().y() / self.data.zoom * self.data.zoom - 1
+
+			if event.pos().x() > self.selOriginOnCanvas.x() + 1 and event.pos().y() > self.selOriginOnCanvas.y() + 1:
+				#print "Cuadrante 4"
+				self.selection.setGeometry( self.selOriginOnCanvas.x(), self.selOriginOnCanvas.y(), w+self.data.zoom+2, h+self.data.zoom+2)
+			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() > self.selOriginOnCanvas.y() + 1:
+				#print "Cuadrante 3"
+				self.selection.setGeometry( x, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, h+self.data.zoom+2)
+			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
+				#print "Cuadrante 2"
+				self.selection.setGeometry( x, y, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
+			elif event.pos().x() > self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
+				#print "Cuadrante 1"
+				self.selection.setGeometry( self.selOriginOnCanvas.x(), y, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
+
+			self.selection.show()
+			#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
+			#print "Event x:", event.pos().x(), ", y:", event.pos().y()
+			
 			
 
 	def mouseReleaseEvent(self, event):
@@ -137,9 +156,17 @@ class Canvas(QtGui.QLabel):
 			self.update()
 
 		if event.button() == QtCore.Qt.LeftButton and self.data.currentTool == 0:
-			self.rubber.hide()
-			self.rubber = None
-			self.rubberOrigin = None
+			x = event.pos().x() / self.data.zoom
+			y = event.pos().y() / self.data.zoom
+			if self.selecting:
+				print "Selection made starting at (" + str(self.selOriginOnImage.x()) + ", " + str(self.selOriginOnImage.y()) + ") and ending at (" + str(x) + ", " + str(y) + ")"
+			else:
+				print "No selection was made"
+			self.selection.hide()
+			self.selecting = False
+			self.selection = None
+			self.selOriginOnImage = None
+			self.selOriginOnCanvas = None
 	
 	def paintEvent(self, event):
 		
