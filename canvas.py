@@ -119,7 +119,6 @@ class Canvas(QtGui.QLabel):
 
 		if (event.buttons() and QtCore.Qt.LeftButton and self.data.currentTool == 0):
 
-			if not self.selection: self.selection = RubberBand(self.data, self)
 			self.selecting = True
 
 			w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
