@@ -193,7 +193,7 @@ class Canvas(QtGui.QLabel):
 				painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 
 		# Matrix Grid
-		if self.data.matrixGrid and self.data.zoom > 3:
+		if self.data.matrixGrid and self.data.zoom >= 3:
 			painter.setPen(QtGui.QColor(127,67,167,128))
 			w = self.data.image.width()
 			h = self.data.image.height()
