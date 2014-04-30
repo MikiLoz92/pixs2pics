@@ -438,7 +438,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["pixel_grid", "matrix_grid"]
 		icons = ["", ""]
 		shortcuts = ['', '']
-		connects = [0,0]
+		connects = [self.setPixelGrid,0]
 
 		# Llista d'accions
 		l = []
@@ -668,14 +668,12 @@ class MainWindow(QtGui.QMainWindow):
 		d = NewFileDialog(self)
 
 	def showAboutDialog(self):
-		print "asdasd"
 
 		d = QtGui.QMessageBox.about(self, self.data.getText("dialog_about", "title"), self.data.getText("dialog_about", "description"))
-		#d.show()
 
 	def showPreferences(self):
 
-		d = Preferences(self)
+		d = Preferences(self.data, self.com, self)
 
 	def newImage(self, w, h):
 
@@ -688,7 +686,6 @@ class MainWindow(QtGui.QMainWindow):
 					"/home",
 					self.data.getText("dialog_open", "images") + u" (*.bmp *.gif *.png *.xpm *.jpg);;" + self.data.getText("dialog_open", "all_files") + u" (*)")
 		if fileName:
-			#print fileName
 			self.data.loadImage(fileName)
 
 	def saveFile(self):
@@ -702,11 +699,21 @@ class MainWindow(QtGui.QMainWindow):
 
 		d = QtGui.QFileDialog()
 		fileName, filterName = d.getSaveFileNameAndFilter(self,
-					"Save the current image", 
+					self.data.getText("dialog_save", "title"), 
 					"", 
 					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")
 		self.data.image.save(fileName+filterName[1:])
 		self.data.defaultFileName = fileName + filterName[1:]
+
+	def setPixelGrid(self):
+
+		self.data.grid = not self.data.grid
+		self.com.updateCanvas.emit()
+
+	def setMatrixGrid(self):
+
+		self.data.matrixGrid = not self.data.matrixGrid
+		self.com.updateCanvas.emit()
 
 	def keyPressEvent(self, event):
 

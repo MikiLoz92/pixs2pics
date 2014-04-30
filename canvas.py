@@ -175,8 +175,22 @@ class Canvas(QtGui.QLabel):
 		#self.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.data.image)
-		
-		#self.com.updateCanvas.emit()
+
+		# Pixel Grid
+		if self.data.grid and self.data.zoom > 3:
+			if self.data.zoom < 9:
+				pen = QtGui.QPen(QtGui.QColor(0,0,0,64))
+				pen.setStyle(Qt.SolidLine)
+			else:
+				pen = QtGui.QPen(QtGui.QColor(0,0,0,128))
+				pen.setStyle(Qt.DotLine)
+			painter.setPen(pen)
+			w = self.data.image.width()
+			h = self.data.image.height()
+			for i in range(w):
+				painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
+			for i in range(h):
+				painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 		
 	def drawLineTo(self, endPoint):
 

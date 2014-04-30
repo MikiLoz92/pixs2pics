@@ -104,6 +104,9 @@ title = Save the current image
 title = Resize...
 dimension = New dimension
 
+[dialog_preferences]
+title=Preferences
+
 [dialog_about]
 title = About Pix2Pics
 description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.

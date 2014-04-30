@@ -125,9 +125,11 @@ class ResizeImageDialog (QtGui.QDialog):
 
 class Preferences (QtGui.QDialog):
 
-	def  __init__(self, Parent=None):
+	def  __init__(self, data, com, Parent=None):
 
 		super(Preferences, self).__init__(Parent)
+		self.data = data
+		self.com = com
 		self.parent = Parent
 
 		# El QStackedWidget es un tipo de widget muy útil que tiene diferentes "páginas" y podemos ir cambiando entre ellas
@@ -137,22 +139,19 @@ class Preferences (QtGui.QDialog):
 		self.view = QtGui.QStackedWidget()
 		self.view.addWidget(self.createLanguageView())
 		self.view.addWidget(self.createUICustomizationView())
+		self.view.addWidget(self.createMatrixGridView())
 		#self.view.addWidget(self.createKeyboardShorcutsView()) # Si se descomenta da un SEGFAULT
 		#self.view.addWidget(self.createDefaultsView()) # Si se descomenta da un SEGFAULT
-		self.view.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
 
 		self.preferences = QtGui.QListWidget()
 		self.preferences.addItem("Language")
 		self.preferences.addItem("UI Customization")
+		self.preferences.addItem("Matrix grid")
 		self.preferences.addItem("Keyboard shortcuts")
 		self.preferences.addItem("Defaults")
 		self.preferences.setCurrentRow(0)
 		self.preferences.currentItemChanged.connect(self.changeCurrentView)
 		self.preferences.setFixedWidth(self.preferences.sizeHintForColumn(0) + 24)
-		#self.preferences.setFixedHeight(self.preferences.sizeHintForRow(0)*self.preferences.count()+24)
-		self.preferences.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
-		#self.preferences.setFixedSize(self.preferences.minimumSize())
-		#self.preferences.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
 
 		self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		self.buttonBox.accepted.connect(self.accept)
@@ -171,54 +170,90 @@ class Preferences (QtGui.QDialog):
 		self.adjustSize()
 		self.show()
 
+	def changeCurrentView(self):
+
+		self.view.setCurrentIndex(self.preferences.currentRow())
+
 	def createLanguageView(self):
 
 		# Widget de ejemplo
 
-		g = QtGui.QGroupBox()
+		g = QtGui.QGroupBox("Language")
 
 		w = QtGui.QWidget()
 
 		vbox = QtGui.QVBoxLayout()
-		#vbox.addWidget(QtGui.QLabel("Hola"))
-		#vbox.addWidget(QtGui.QLabel("Adios"))
-		vbox.addWidget(QtGui.QComboBox())
+
+		self.language = QtGui.QComboBox()
+
+		for i in self.data.tdatabase.d.keys():
+			self.language.addItem(self.data.tdatabase.d[i].name)
+			self.langCode = self.data.tdatabase.d[i].code
+			#self.language.setCurrentIndex()
+
+		vbox.addWidget(self.language)
 		vbox.setStretch(1,1)
 		vbox.setAlignment(Qt.AlignTop)
 
 		w.setLayout(vbox)
 
 		g.setLayout(vbox)
-		g.setTitle("Language")
 
 		return g
 
 	def createUICustomizationView(self):
 
-		# Widget de ejemplo
-
-		w = QtGui.QWidget()
+		g = QtGui.QGroupBox("UI Customization")
 
 		vbox = QtGui.QVBoxLayout()
-		vbox.addWidget(QtGui.QLabel("Ra, Ra, Rasputin"))
-		vbox.addWidget(QtGui.QLabel("Lover of the Russian queen"))
-		vbox.addWidget(QtGui.QLabel("There was a cat that really was gone"))
-		vbox.addWidget(QtGui.QLabel("Ra, Ra, Rasputin"))
-		vbox.addWidget(QtGui.QLabel("Russia's greatest love machine"))
-		vbox.addWidget(QtGui.QLabel("It was a shame how he carried on"))
+		vbox.addWidget(QtGui.QComboBox())
+		vbox.setStretch(1,1)
+		vbox.setAlignment(Qt.AlignTop)
 
-		w.setLayout(vbox)
+		g.setLayout(vbox)
 
-		return w
+		return g
 
 	def createKeyboardShorcutsView(self):
 
 		return
 
+	def createMatrixGridView(self):
+
+		g = QtGui.QGroupBox("Matrix grid dimension")
+
+		vbox = QtGui.QVBoxLayout()
+		
+		self.matrixGridWidth = QtGui.QSpinBox()
+		self.matrixGridWidth.setMinimum(1)
+		self.matrixGridWidth.setMaximum(1024)
+		self.matrixGridWidth.setValue(self.data.matrixGridWidth)
+		self.matrixGridHeight = QtGui.QSpinBox()
+		self.matrixGridHeight.setMinimum(1)
+		self.matrixGridHeight.setMaximum(1024)
+		self.matrixGridHeight.setValue(self.data.matrixGridHeight)
+
+		vbox.addWidget(self.matrixGridWidth)
+		vbox.addWidget(self.matrixGridHeight)
+		vbox.setStretch(1,1)
+		vbox.setAlignment(Qt.AlignTop)
+
+		g.setLayout(vbox)
+
+		return g
+
 	def createDefaultsView(self):
 
 		return
 
-	def changeCurrentView(self):
+	def accept(self):
 
-		self.view.setCurrentIndex(self.preferences.currentRow())
+		if self.language != self.data.lang:
+			QtGui.QMessageBox.information(self, "Language settings changed", "You will have to close Pix2Pics for the language settings to apply.")
+
+
+		self.data.matrixGridWidth = self.matrixGridWidth.value()
+		self.data.matrixGridHeight = self.matrixGridHeight.value()
+
+		self.com.updateCanvas.emit()
+		super(Preferences, self).accept()

@@ -23,8 +23,13 @@ class Data:
 	defaultFileName = ""
 	colorPicker = False
 
-	lang = "en"
+	lang = "es"
 	tdatabase = TDatabase()
+
+	grid = False
+	matrixGrid = False
+	matrixGridWidth = 16
+	matrixGridHeight = 16
 
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
@@ -60,6 +65,10 @@ class Data:
 		self.color = c
 		self.com.updateColor.emit()
 
-	def getText(self, sect, ident):
+	def getText(self, sect, ident): # Get some text in the current language
 
 		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8")
+
+	def getTextInLang(self, lang, sect, ident): # Get some text in a specific language
+
+		return self.tdatabase.getText(lang, sect, ident).decode("utf-8")

@@ -104,6 +104,9 @@ title = Guarda la imagen actual
 title = Modificar tamaño...
 dimension = Nuevas dimensiones
 
+[dialog_preferences]
+title=Preferencias
+
 [dialog_about]
 title = Acerca de Pix2Pics
 description = Pix2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.

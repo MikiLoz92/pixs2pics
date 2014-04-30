@@ -6,9 +6,10 @@ import ConfigParser
 
 class Language:
 
-	def __init__(self, lang, d):
+	def __init__(self, langCode, langName, d):
 
-		self.name = lang
+		self.code = langCode
+		self.name = langName
 		self.dict = d
 
 	def __getitem__(self, item):
@@ -24,15 +25,18 @@ class TDatabase:
 		l = os.listdir("lang")
 		for i in l:
 			cp.read("lang/" + i)
-			langname = cp.get("_lang", "name")
+			langname = cp.get("_lang", "name").decode("utf-8")
+			print langname
 			d2 = {}
 			for j in cp.sections()[1:]: # Sin la sección _lang
 				d3 = {}
 				for k, l in cp.items(j):
 					d3[k] = l
 				d2[j] = d3
-			lang = Language(i, d2)
+			lang = Language(i, langname, d2)
 			self.d[i] = lang
+
+		self.langNum = len(self.d.keys())
 
 	def getText(self, lang, sect, ident):
 
