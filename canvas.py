@@ -119,6 +119,7 @@ class Canvas(QtGui.QLabel):
 
 		if (event.buttons() and QtCore.Qt.LeftButton and self.data.currentTool == 0):
 
+			if not self.selection: self.selection = RubberBand(self.data, self)
 			self.selecting = True
 
 			w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
@@ -126,16 +127,16 @@ class Canvas(QtGui.QLabel):
 			x = event.pos().x() / self.data.zoom * self.data.zoom - 1
 			y = event.pos().y() / self.data.zoom * self.data.zoom - 1
 
-			if event.pos().x() > self.selOriginOnCanvas.x() + 1 and event.pos().y() > self.selOriginOnCanvas.y() + 1:
+			if event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
 				#print "Cuadrante 4"
 				self.selection.setGeometry( self.selOriginOnCanvas.x(), self.selOriginOnCanvas.y(), w+self.data.zoom+2, h+self.data.zoom+2)
-			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() > self.selOriginOnCanvas.y() + 1:
+			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
 				#print "Cuadrante 3"
 				self.selection.setGeometry( x, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, h+self.data.zoom+2)
 			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
 				#print "Cuadrante 2"
 				self.selection.setGeometry( x, y, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
-			elif event.pos().x() > self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
+			elif event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
 				#print "Cuadrante 1"
 				self.selection.setGeometry( self.selOriginOnCanvas.x(), y, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
 
