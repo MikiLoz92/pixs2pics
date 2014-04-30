@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #coding: utf-8
 
+import ConfigParser
+
 from PyQt4 import QtGui, QtCore
 from translation import *
 
@@ -23,13 +25,8 @@ class Data:
 	defaultFileName = ""
 	colorPicker = False
 
-	lang = "es"
-	tdatabase = TDatabase()
-
 	grid = False
 	matrixGrid = False
-	matrixGridWidth = 16
-	matrixGridHeight = 16
 
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
@@ -37,6 +34,9 @@ class Data:
 	def __init__(self, com):
 
 		self.com = com
+
+		# Cargamos TODA la configuración
+		self.loadDefaults()
 
 		# Creamos la QImage
 		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_ARGB32)
@@ -72,3 +72,59 @@ class Data:
 	def getTextInLang(self, lang, sect, ident): # Get some text in a specific language
 
 		return self.tdatabase.getText(lang, sect, ident).decode("utf-8")
+
+	def setDefault(self, sect, ident, value):
+
+		try:
+			self.cp.set(sect, ident, value)
+			f = open("defaults.cfg", "w")
+			self.cp.write(f)
+		except ConfigParser.NoSectionError:
+			print "Trying to set \"" + ident + "\" to \"" + value + "\" on section \"" + sect + "\", but given section does not exist."
+
+	def getDefault(self, sect, ident):
+
+		return self.cp.get(sect, ident)
+
+	def getBoolDefault(self, sect, ident):
+
+		try:
+			return self.cp.getboolean(sect, ident)
+		except ValueError:
+			print "Trying to get boolean value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not boolean."
+
+	def getIntDefault(self, sect, ident):
+
+		try:
+			return self.cp.getint(sect, ident)
+		except ValueError:
+			print "Trying to get integer value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not an integer."
+
+	def getFloatDefault(self, sect, ident):
+
+		try:
+			return self.cp.getfloat(sect, ident)
+		except ValueError:
+			print "Trying to get float value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not a floating point number."
+
+	def loadDefaults(self):
+
+		self.cp = ConfigParser.ConfigParser()
+		self.cp.read("defaults.cfg")
+
+		self.loadDefaultLanguage()
+		self.loadDefaultMatrixGridDimension()
+
+	def loadDefaultLanguage(self):
+
+		self.tdatabase = TDatabase()
+		lang = self.getDefault("language", "lang")
+		if lang in self.tdatabase.langAvailable:
+			self.lang = lang
+		else:
+			self.lang = "en"
+
+	def loadDefaultMatrixGridDimension(self):
+
+		self.matrixGridWidth = self.getIntDefault("matrix_grid", "width")
+		self.matrixGridHeight = self.getIntDefault("matrix_grid", "height")

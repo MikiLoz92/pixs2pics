@@ -107,6 +107,8 @@ dimension = New dimension
 [dialog_preferences]
 title=Preferences
 
+[dialog_preferences_language]
+
 [dialog_about]
 title = About Pix2Pics
 description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.

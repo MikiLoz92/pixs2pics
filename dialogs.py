@@ -133,8 +133,8 @@ class Preferences (QtGui.QDialog):
 		self.parent = Parent
 
 		# El QStackedWidget es un tipo de widget muy útil que tiene diferentes "páginas" y podemos ir cambiando entre ellas
-		# con sólo llamar a un método. En nuestro caso, conectamos (el signal que emite el QListWidget al cambiar de sección)
-		# -> (al método self.changeCurrentView, que cambia la página del QStackedWidget).
+		# con sólo llamar a un método. En nuestro caso, conectamos el signal que emite el QListWidget al cambiar de sección
+		# con el método self.changeCurrentView, que cambia la página del QStackedWidget.
 
 		self.view = QtGui.QStackedWidget()
 		self.view.addWidget(self.createLanguageView())
@@ -166,7 +166,7 @@ class Preferences (QtGui.QDialog):
 		self.vbox.addWidget(self.buttonBox)
 
 		self.setLayout(self.vbox)
-		self.setWindowTitle("Preferences")
+		self.setWindowTitle(self.data.getText("dialog_preferences", "title"))
 		self.adjustSize()
 		self.show()
 
@@ -185,11 +185,16 @@ class Preferences (QtGui.QDialog):
 		vbox = QtGui.QVBoxLayout()
 
 		self.language = QtGui.QComboBox()
+		self.langCodes = []
 
+		j = 0
 		for i in self.data.tdatabase.d.keys():
 			self.language.addItem(self.data.tdatabase.d[i].name)
-			self.langCode = self.data.tdatabase.d[i].code
-			#self.language.setCurrentIndex()
+			langCode = self.data.tdatabase.d[i].code
+			self.langCodes.append(langCode)
+			if self.data.lang == langCode:
+				self.language.setCurrentIndex(j)
+			j += 1
 
 		vbox.addWidget(self.language)
 		vbox.setStretch(1,1)
@@ -213,10 +218,6 @@ class Preferences (QtGui.QDialog):
 		g.setLayout(vbox)
 
 		return g
-
-	def createKeyboardShorcutsView(self):
-
-		return
 
 	def createMatrixGridView(self):
 
@@ -242,18 +243,24 @@ class Preferences (QtGui.QDialog):
 
 		return g
 
+	def createKeyboardShorcutsView(self):
+
+		return
+
 	def createDefaultsView(self):
 
 		return
 
 	def accept(self):
 
-		if self.language != self.data.lang:
+		if self.langCodes[self.language.currentIndex()] != self.data.lang:
 			QtGui.QMessageBox.information(self, "Language settings changed", "You will have to close Pix2Pics for the language settings to apply.")
-
+		self.data.setDefault("language", "lang", self.langCodes[self.language.currentIndex()])
 
 		self.data.matrixGridWidth = self.matrixGridWidth.value()
+		self.data.setDefault("matrix_grid", "width", self.data.matrixGridWidth)
 		self.data.matrixGridHeight = self.matrixGridHeight.value()
+		self.data.setDefault("matrix_grid", "height", self.data.matrixGridHeight)
 
 		self.com.updateCanvas.emit()
 		super(Preferences, self).accept()

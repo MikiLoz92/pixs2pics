@@ -438,7 +438,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["pixel_grid", "matrix_grid"]
 		icons = ["", ""]
 		shortcuts = ['', '']
-		connects = [self.setPixelGrid,0]
+		connects = [self.setPixelGrid, self.setMatrixGrid]
 
 		# Llista d'accions
 		l = []

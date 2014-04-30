@@ -21,6 +21,8 @@ class TDatabase:
 	def __init__(self):
 		
 		self.d = {}
+		self.langAvailable = []
+
 		cp = ConfigParser.ConfigParser()
 		l = os.listdir("lang")
 		for i in l:
@@ -35,6 +37,7 @@ class TDatabase:
 				d2[j] = d3
 			lang = Language(i, langname, d2)
 			self.d[i] = lang
+			self.langAvailable.append(i)
 
 		self.langNum = len(self.d.keys())
 

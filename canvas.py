@@ -172,7 +172,7 @@ class Canvas(QtGui.QLabel):
 		
 		#super(Canvas, self).paintEvent(event)
 		
-		#self.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
+		# Image
 		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.data.image)
 
@@ -191,6 +191,19 @@ class Canvas(QtGui.QLabel):
 				painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
 			for i in range(h):
 				painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
+
+		# Matrix Grid
+		if self.data.matrixGrid and self.data.zoom > 3:
+			painter.setPen(QtGui.QColor(127,67,167,128))
+			w = self.data.image.width()
+			h = self.data.image.height()
+			for i in range(w):
+				if i % self.data.matrixGridWidth == 0:
+					print i
+					painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
+			for i in range(h):
+				if i % self.data.matrixGridHeight == 0:
+					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 		
 	def drawLineTo(self, endPoint):
 
