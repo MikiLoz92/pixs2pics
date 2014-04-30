@@ -39,7 +39,7 @@ class Data:
 		self.loadDefaults()
 
 		# Creamos la QImage
-		self.image = QtGui.QImage(32,32,QtGui.QImage.Format_ARGB32)
+		self.newImage(32,32)
 
 		# Creamos los cursores
 		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
@@ -58,6 +58,8 @@ class Data:
 		self.image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
 		self.image.fill(QtGui.qRgb(255, 255, 255))
 		self.zoom = 1
+		self.history = [QtGui.QImage(self.image)]
+		self.posHistory = 0
 		self.com.newImage.emit()
 
 	def changeColor(self, c):

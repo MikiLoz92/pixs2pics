@@ -143,8 +143,6 @@ class Canvas(QtGui.QLabel):
 			#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
 			#print "Event x:", event.pos().x(), ", y:", event.pos().y()
 			
-			
-
 	def mouseReleaseEvent(self, event):
 
 		if event.button() == QtCore.Qt.LeftButton and self.drawing:
@@ -153,6 +151,13 @@ class Canvas(QtGui.QLabel):
 			y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
 			self.drawLineTo(QtCore.QPoint(x,y))
 			self.drawing = False
+
+			if self.data.posHistory != len(self.data.history)-1:
+				self.data.history = self.data.history[:self.data.posHistory+1]
+			self.data.history.append(QtGui.QImage(self.data.image))
+			self.data.posHistory += 1
+			print self.data.history
+
 			self.update()
 
 		if event.button() == QtCore.Qt.LeftButton and self.data.currentTool == 0:
@@ -187,9 +192,9 @@ class Canvas(QtGui.QLabel):
 			painter.setPen(pen)
 			w = self.data.image.width()
 			h = self.data.image.height()
-			for i in range(w):
+			for i in range(w)[1:]:
 				painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
-			for i in range(h):
+			for i in range(h)[1:]:
 				painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 
 		# Matrix Grid
@@ -197,11 +202,11 @@ class Canvas(QtGui.QLabel):
 			painter.setPen(QtGui.QColor(127,67,167,128))
 			w = self.data.image.width()
 			h = self.data.image.height()
-			for i in range(w):
+			for i in range(w)[1:]:
 				if i % self.data.matrixGridWidth == 0:
 					print i
 					painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
-			for i in range(h):
+			for i in range(h)[1:]:
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 		

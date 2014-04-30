@@ -414,7 +414,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
 		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
 		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		connects = [0,0,0,0,0,0, self.showPreferences]
+		connects = [self.undo,0,0,0,0,0, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -704,6 +704,16 @@ class MainWindow(QtGui.QMainWindow):
 					"*.bmp;;*.gif;;*.png;;*.xpm;;*.jpg")
 		self.data.image.save(fileName+filterName[1:])
 		self.data.defaultFileName = fileName + filterName[1:]
+
+	def undo(self):
+
+		print "Undo"
+		if self.data.posHistory > 0:
+			self.data.posHistory -= 1
+			print self.data.posHistory
+			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
+			self.com.updateCanvas.emit()
+			print self.data.history
 
 	def setPixelGrid(self):
 
