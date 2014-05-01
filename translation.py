@@ -28,7 +28,7 @@ class TDatabase:
 		for i in l:
 			cp.read("lang/" + i)
 			langname = cp.get("_lang", "name").decode("utf-8")
-			print langname
+			print langname.encode("utf-8")
 			d2 = {}
 			for j in cp.sections()[1:]: # Sin la sección _lang
 				d3 = {}

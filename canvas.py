@@ -94,7 +94,7 @@ class Canvas(QtGui.QLabel):
 				painter.drawPoint(x,y)
 				self.drawing = True
 			elif self.data.currentTool == 5:
-				self.fillImage( x, y, self.data.color, self.data.image.pixel(x,y), self.data.image )
+				self.fillImage( (x, y), self.data.color, self.data.image.pixel(x,y), self.data.image )
 			elif self.data.currentTool == 4:
 				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
 				self.com.updateColor.emit()
@@ -229,14 +229,39 @@ class Canvas(QtGui.QLabel):
 		self.data.zoom = 1
 		self.com.updateCanvas.emit()
 
-	def fillImage(self, x, y, paint, current, imagen):
-		if x<0 or y<0 or x>imagen.width() or y>imagen.height():
+	def fillImage(self, begin, paint, current, imagen):
+		if paint.rgb() == current :
+			print "pass activated"
 			pass
-		elif imagen.pixel(x,y) == current :
-			imagen.setPixel(x,y,paint.rgb())
-			self.fillImage(x+1, y, paint, current, imagen)
-			self.fillImage(x, y+1, paint, current, imagen)
-			self.fillImage(x-1, y, paint, current, imagen)
-			self.fillImage(x, y-1, paint, current, imagen)
+		else:
+			queue = [begin]
+			for x,y in queue:
+				if imagen.pixel(x,y) == current:
+					cond = True
+					nodes = [(x,y)]
+					xt = x-1
+					while xt>=0 and cond: 
+						cond = imagen.pixel(xt,y)==current
+						if cond:
+							nodes.append( (xt,y) ) 
+							xt = xt-1
+
+					cond = True
+					xt = x+1
+					while xt<imagen.width() and cond : 
+						cond = imagen.pixel(xt,y)==current
+						if cond:
+							nodes.append( (xt,y) ) 
+							xt = xt+1
+
+					for xp,yp in nodes:
+						imagen.setPixel(xp,yp,paint.rgb())
+						if yp<imagen.width()-1:
+							if imagen.pixel(xp,yp+1) == current: 
+								queue.append( (xp,yp+1) )
+						if yp>0:
+							if imagen.pixel(xp,yp-1) == current:
+								queue.append( (xp,yp-1) )
+
 
 		
