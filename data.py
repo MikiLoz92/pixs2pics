@@ -59,9 +59,15 @@ class Data:
 		self.posHistory = 0
 		self.com.newImage.emit()
 
-	def changeColor(self, c):
+	def changePrimaryColor(self, c):
 
-		self.color = c
+		#self.color = c
+		self.primaryColor = c
+		self.com.updateColor.emit()
+
+	def changeSecondaryColor(self, c):
+
+		self.secondaryColor = c
 		self.com.updateColor.emit()
 
 	def getText(self, sect, ident): # Get some text in the current language

@@ -89,7 +89,7 @@ class Canvas(QtGui.QLabel):
 			elif self.data.currentTool == 1:
 				self.lastPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
+				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,
 								QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 				painter.drawPoint(x,y)
 				self.drawing = True
@@ -213,7 +213,7 @@ class Canvas(QtGui.QLabel):
 	def drawLineTo(self, endPoint):
 
 		painter = QtGui.QPainter(self.data.image)
-		painter.setPen(QtGui.QPen(self.data.color, self.data.pencilSize,
+		painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,
 			QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 		painter.drawLine(self.lastPoint, endPoint)
 		self.modified = True
