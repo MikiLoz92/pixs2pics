@@ -124,6 +124,19 @@ class ToolProperties (QtGui.QDockWidget):
 		self.color1 = DegColor(self.data, self.com, self.data.color_deg_1, 1)
 		self.color2 = DegColor(self.data, self.com, self.data.color_deg_2, 2)
 
+		self.DegOp1 = QtGui.QRadioButton("2 Colores")
+		self.DegOp2 = QtGui.QRadioButton("1 color a Transparente")
+		self.DegOp3 = QtGui.QRadioButton("Colores + Trasnparencia")
+		self.DegOp1.setChecked(True)
+		DegSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+		DegSlider.setMaximum(255)
+		DegSlider.setMinimum(0)
+		DegSlider.setPageStep(1)
+
+		self.DegOp1.clicked.connect(self.changeDegState)
+		self.DegOp2.clicked.connect(self.changeDegState)
+		self.DegOp3.clicked.connect(self.changeDegState)
+
 		self.color1.com.updateColorDeg.connect(self.setColorDeg)
 		self.color1.com.updateColorDeg.connect(self.setColorDeg)
 
@@ -131,12 +144,18 @@ class ToolProperties (QtGui.QDockWidget):
 		grid.addWidget(self.color1,1,3)
 		grid.addWidget(label2,3,1)
 		grid.addWidget(self.color2,3,3)
+		grid.addWidget(self.DegOp1,5,1,1,3)
+		grid.addWidget(self.DegOp2,7,1,1,3)
+		grid.addWidget(self.DegOp3,9,1,1,3)
+		grid.addWidget(DegSlider,11,1,1,3)
+
 		grid.setRowMinimumHeight(0,3)
 		grid.setRowMinimumHeight(2,3)
+		grid.setRowMinimumHeight(4,8)
 		grid.setColumnMinimumWidth(0,3)
 		grid.setColumnMinimumWidth(2,3)
-		grid.setColumnStretch(4,1)
-		grid.setRowStretch(4,1)
+		grid.setColumnMinimumWidth(4,1)
+		grid.setRowStretch(12,1)
 
 		w.setLayout(grid)
 
@@ -144,9 +163,17 @@ class ToolProperties (QtGui.QDockWidget):
 
 	def setColorDeg(self, index):
 		if index == 1:
-			self.data.color_deg_1 == self.color1.color
+			self.data.color_deg_1 = self.color1.color
 		if index == 2:
-			self.data.color_deg_2 == self.color2.color
+			self.data.color_deg_2 = self.color2.color
+
+	def changeDegState(self):
+		if self.DegOp1.isChecked():
+			self.data.DegState = 1
+		elif self.DegOp2.isChecked():
+			self.data.DegState = 2
+		elif self.DegOp3.isChecked():
+			self.data.DegState = 3
 
 	def updateWidget(self):
 
@@ -274,7 +301,7 @@ class DegColor(Color):
 		super(DegColor,self).__init__(data, com, Parent)
 
 		self.color = color
-		self.indx = index
+		self.index = index
 
 	def mousePressEvent(self, e):
 
@@ -282,6 +309,7 @@ class DegColor(Color):
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.color = c
+				print type(self.color)
 				self.update()
 				self.com.updateColorDeg.emit(self.index)
 
