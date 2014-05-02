@@ -95,12 +95,18 @@ class Canvas(QtGui.QLabel):
 				self.drawing = True
 			elif self.data.currentTool == 5:
 				self.fillImage( (x, y), self.data.color, self.data.image.pixel(x,y), self.data.image )
+				self.com.updateCanvas.emit()
 			elif self.data.currentTool == 4:
 				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
 				self.com.updateColor.emit()
 			elif self.data.currentTool == 3:
 				print "Borrandooooo, me paso el día borrandoooo"
-
+			elif self.data.currentTool == 6:
+				if self.data.DegPoint == 0:
+					self.data.DegPoint = (x,y)
+				else:
+					if DegState == 1:
+						self.Grad2Color(self, (x,y))
 			self.update()
 
 		# DEBUG
@@ -231,8 +237,9 @@ class Canvas(QtGui.QLabel):
 
 	def fillImage(self, begin, paint, current, imagen):
 		if paint.rgb() == current :
+			print paint.rgb()
+			print current
 			print "pass activated"
-			pass
 		else:
 			queue = [begin]
 			for x,y in queue:
@@ -262,6 +269,33 @@ class Canvas(QtGui.QLabel):
 						if yp>0:
 							if imagen.pixel(xp,yp-1) == current:
 								queue.append( (xp,yp-1) )
+
+	def Grad2Colors(self,pf):
+		pi = self.data.DegPoint[0]
+		if pf[0] == pi[0]:
+			Var_y = self.data.DegPoint[1] - pf[1]
+			if Var_y > 0 :
+				dy = +1
+			elif Var_y < 0 :
+				dy = -1
+			else:
+				pass
+			color1 = self.data.color_deg_1.getRgb()
+			color2 = self.data.color_deg_2.getRgb()
+			Var_r = color1[0] - color[0]
+			dr = float(Var_r)/abs(Var_y)
+			Var_g = color1[1] - color[1]
+			dg = float(Var_r)/abs(Var_y)
+			Var_b = color1[2] - color[2]
+			db = float(Var_r)/abs(Var_y)
+			for i in range(1,Var_y-1):
+				R = color1[0] + i*dr
+				G = color1[1] + i*dg
+				B = color1[2] + i*db
+				tmp_c = QtGui.QColor(R,G,B,255)
+				self.data.image.setPixel(pi[0],pi[1]+i*dy,tmp_c.rgb())
+		elif pf[1] == pi[1]:
+			pass
 
 
 		
