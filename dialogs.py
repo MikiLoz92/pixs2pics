@@ -258,9 +258,9 @@ class Preferences (QtGui.QDialog):
 		self.data.setDefault("language", "lang", self.langCodes[self.language.currentIndex()])
 
 		self.data.matrixGridWidth = self.matrixGridWidth.value()
-		self.data.setDefault("matrix_grid", "width", self.data.matrixGridWidth)
+		self.data.setDefault("grid", "matrix_grid_width", self.data.matrixGridWidth)
 		self.data.matrixGridHeight = self.matrixGridHeight.value()
-		self.data.setDefault("matrix_grid", "height", self.data.matrixGridHeight)
+		self.data.setDefault("grid", "matrix_grid_height", self.data.matrixGridHeight)
 
 		self.com.updateCanvas.emit()
 		super(Preferences, self).accept()
