@@ -27,6 +27,8 @@ class Data:
 	DegState = 1
 	DegPoint = 0
 
+	"hOla"
+
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
 	print type(color_deg_2)
