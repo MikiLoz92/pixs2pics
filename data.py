@@ -25,9 +25,6 @@ class Data:
 	defaultFileName = ""
 	colorPicker = False
 
-	grid = False
-	matrixGrid = False
-
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
 
@@ -81,6 +78,7 @@ class Data:
 			self.cp.set(sect, ident, value)
 			f = open("defaults.cfg", "w")
 			self.cp.write(f)
+			f.close()
 		except ConfigParser.NoSectionError:
 			print "Trying to set \"" + ident + "\" to \"" + value + "\" on section \"" + sect + "\", but given section does not exist."
 
@@ -114,10 +112,11 @@ class Data:
 		self.cp = ConfigParser.ConfigParser()
 		self.cp.read("defaults.cfg")
 
-		self.loadDefaultLanguage()
-		self.loadDefaultMatrixGridDimension()
+		self.loadDefaultsLanguage()
+		self.loadDefaultsGrid()
+		self.loadDefaultsColor()
 
-	def loadDefaultLanguage(self):
+	def loadDefaultsLanguage(self):
 
 		self.tdatabase = TDatabase()
 		lang = self.getDefault("language", "lang")
@@ -126,7 +125,14 @@ class Data:
 		else:
 			self.lang = "en"
 
-	def loadDefaultMatrixGridDimension(self):
+	def loadDefaultsGrid(self):
 
-		self.matrixGridWidth = self.getIntDefault("matrix_grid", "width")
-		self.matrixGridHeight = self.getIntDefault("matrix_grid", "height")
+		self.grid = self.getBoolDefault("grid", "grid")
+		self.matrixGrid = self.getBoolDefault("grid", "matrix_grid")
+		self.matrixGridWidth = self.getIntDefault("grid", "matrix_grid_width")
+		self.matrixGridHeight = self.getIntDefault("grid", "matrix_grid_height")
+
+	def loadDefaultsColor(self):
+
+		self.primaryColor = QtGui.QColor(self.getIntDefault("color", "primary_color"))
+		self.secondaryColor = QtGui.QColor(self.getIntDefault("color", "secondary_color"))

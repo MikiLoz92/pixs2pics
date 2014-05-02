@@ -414,7 +414,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
 		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
 		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		connects = [self.undo,0,0,0,0,0, self.showPreferences]
+		connects = [self.undo,self.redo,0,0,0,0, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -456,7 +456,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Algunas opcionas son chekables, lo consideramos:
 		l[0].setCheckable(True)
+		if self.data.grid: l[0].setChecked(True)
 		l[1].setCheckable(True)
+		if self.data.matrixGrid: l[1].setChecked(True)
 
 		return l
 
@@ -715,15 +717,25 @@ class MainWindow(QtGui.QMainWindow):
 			self.com.updateCanvas.emit()
 			print self.data.history
 
+	def redo(self):
+
+		print "Redo"
+		if self.data.posHistory < len(self.data.history)-1:
+			self.data.posHistory += 1
+			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
+			self.com.updateCanvas.emit()
+
 	def setPixelGrid(self):
 
 		self.data.grid = not self.data.grid
 		self.com.updateCanvas.emit()
+		self.data.setDefault("grid", "grid", True)
 
 	def setMatrixGrid(self):
 
 		self.data.matrixGrid = not self.data.matrixGrid
 		self.com.updateCanvas.emit()
+		self.data.setDefault("grid", "matrix_grid", True)
 
 	def keyPressEvent(self, event):
 
@@ -769,3 +781,8 @@ class MainWindow(QtGui.QMainWindow):
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
 			self.data.changeColor(c)
+
+	def closeEvent(self, event):
+
+		self.data.setDefault("color", "primary_color", self.data.primaryColor.value())
+		super(MainWindow, self).closeEvent(event)
