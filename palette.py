@@ -14,6 +14,7 @@ class CurrentColor(QtGui.QLabel):
 
 		super(CurrentColor, self).__init__()
 
+		print "Hola"
 		self.parent = Parent
 		self.data = data
 		self.com = com
