@@ -42,7 +42,7 @@ class Data:
 		self.loadDefaults()
 
 		# Creamos la QImage
-		self.newImage(32,32)
+		self.newImage(32,32,QtGui.QColor(255,255,255))
 
 		# Creamos los cursores
 		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
@@ -55,11 +55,12 @@ class Data:
 		self.zoom = 1
 		self.com.newImage.emit()
 
-	def newImage(self, w, h):
+	def newImage(self, w, h, bg):
 
 		self.defaultFileName = ""
 		self.image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
-		self.image.fill(QtGui.qRgb(255, 255, 255))
+		self.image.fill(bg)
+		self.bgColor = bg
 		self.zoom = 1
 		self.history = [QtGui.QImage(self.image)]
 		self.posHistory = 0
@@ -75,6 +76,13 @@ class Data:
 
 		self.secondaryColor = c
 		self.com.updateColor.emit()
+
+	def addHistoryStep(self):
+
+		if self.posHistory != len(self.history)-1:
+			self.history = self.history[:self.posHistory+1]
+		self.history.append(QtGui.QImage(self.image))
+		self.posHistory += 1
 
 	def getText(self, sect, ident): # Get some text in the current language
 

@@ -7,32 +7,20 @@ from PyQt4.QtCore import Qt
 
 class RubberBand(QtGui.QRubberBand):
 
-	def __init__(self, data, parent=None):
-
-		self.data = data
+	def __init__(self, origin, data, parent=None):
 
 		super(RubberBand, self).__init__(QtGui.QRubberBand.Rectangle, parent)
 
-	"""
-	def resizeEvent(self, event):
+		self.data = data
 
-		super(RubberBand, self).resizeEvent(event)
-		w = (event.size().width()/self.data.zoom + 1) * self.data.zoom
-		h = (event.size().height()/self.data.zoom + 1) * self.data.zoom
-		self.resize(w, h)
-	"""
+		self.origin = QtCore.QPoint(origin)
+		self.finished = False
+		self.rect = QtCore.QRect()
 
-	"""
-	def paintEvent(self, event):
+	def setGeometry(self, x, y, w, h): # Todos los argumentos son el imagen, no en el Canvas
 
-		rect = event.rect()
-		x = (rect.x() + rect.width()) / self.data.zoom
-		y = (rect.y() + rect.height()) / self.data.zoom
-		self.resize(x*self.data.zoom+1+5, y*self.data.zoom+1+5)
-
-		super(RubberBand, self).paintEvent(QtGui.QPaintEvent(self.rect()))
-	"""
-	
+		self.rect = QtCore.QRect(x, y, w, h)
+		super(RubberBand, self).setGeometry( x * self.data.zoom - 1, y * self.data.zoom - 1, w * self.data.zoom + 2, h * self.data.zoom + 2 )
 
 
 ## Vista/View
@@ -53,6 +41,8 @@ class Canvas(QtGui.QLabel):
 		#self.setScaledContents(True)
 
 		self.com = com
+		self.com.zoomIn.connect(self.calcNewSelectionGeometry)
+		self.com.zoomOut.connect(self.calcNewSelectionGeometry)
 		self.com.updateCanvas.connect(self.update)
 		self.com.newImage.connect(self.resizeToNewImage)
 		self.parent = parent
@@ -89,7 +79,10 @@ class Canvas(QtGui.QLabel):
 				if not self.selection:
 					self.selOriginOnImage = QtCore.QPoint( x, y )
 					self.selOriginOnCanvas = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
-					self.selection = RubberBand(self.data, self)
+					self.selection = RubberBand(self.selOriginOnImage, self.data, self)
+				else:
+					if selection.rect.contains(QtCore.QPoint(x, y)):
+						print "Dentro!"
 			elif event.button() == Qt.RightButton:
 				pass
 
@@ -120,7 +113,11 @@ class Canvas(QtGui.QLabel):
 
 		# Cubo
 		elif self.data.currentTool == 5:
-			self.fillImage( (x, y), self.data.primaryColor, self.data.image.pixel(x,y), self.data.image )
+			if event.button() == Qt.LeftButton:
+				self.fillImage( (x, y), self.data.primaryColor, self.data.image.pixel(x,y), self.data.image )
+			elif event.button() == Qt.RightButton:
+				self.fillImage( (x, y), self.data.secondaryColor, self.data.image.pixel(x,y), self.data.image )
+			self.data.addHistoryStep()
 			self.com.updateCanvas.emit()
 
 		# Degradado
@@ -148,26 +145,8 @@ class Canvas(QtGui.QLabel):
 		if self.data.currentTool == 0:
 			if event.buttons() == Qt.LeftButton:
 				self.selecting = True
-				w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
-				h = (event.pos().y()-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
-				x = event.pos().x() / self.data.zoom * self.data.zoom - 1
-				y = event.pos().y() / self.data.zoom * self.data.zoom - 1
-				if event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
-					#print "Cuadrante 4"
-					self.selection.setGeometry( self.selOriginOnCanvas.x(), self.selOriginOnCanvas.y(), w+self.data.zoom+2, h+self.data.zoom+2)
-				elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
-					#print "Cuadrante 3"
-					self.selection.setGeometry( x, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, h+self.data.zoom+2)
-				elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
-					#print "Cuadrante 2"
-					self.selection.setGeometry( x, y, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
-				elif event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
-					#print "Cuadrante 1"
-					self.selection.setGeometry( self.selOriginOnCanvas.x(), y, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
-				self.selection.show()
-				#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
-				#print "Event x:", event.pos().x(), ", y:", event.pos().y()
-		
+				self.calcNewSelectionGeometry(event.pos().x(), event.pos().y())
+				
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
@@ -193,6 +172,7 @@ class Canvas(QtGui.QLabel):
 
 		# Selección
 		if self.data.currentTool == 0 and event.button() == QtCore.Qt.LeftButton:
+			"""
 			if self.selecting:
 				print "Selection made starting at (" + str(self.selOriginOnImage.x()) + ", " + str(self.selOriginOnImage.y()) + ") and ending at (" + str(x) + ", " + str(y) + ")"
 			else:
@@ -202,17 +182,15 @@ class Canvas(QtGui.QLabel):
 			self.selection = None
 			self.selOriginOnImage = None
 			self.selOriginOnCanvas = None
+			"""
+			#self.selection.finished = True
+			self.selection.hide()
+			self.selection = None	
 
 		# Lápiz
 		elif self.data.currentTool == 1 and self.drawing:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
-				if self.data.posHistory != len(self.data.history)-1:
-					self.data.history = self.data.history[:self.data.posHistory+1]
-				self.data.history.append(QtGui.QImage(self.data.image))
-				self.data.posHistory += 1
-				self.update()
-
-		
+				self.data.addHistoryStep()
 	
 	def paintEvent(self, event):
 		
@@ -338,4 +316,45 @@ class Canvas(QtGui.QLabel):
 			self.fillImage(x-1, y, paint, current, imagen)
 			self.fillImage(x, y-1, paint, current, imagen)
 
-		
+	def calcNewSelectionGeometry(self, xevent, yevent):
+
+		"""
+		w = (xevent-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
+		h = (yevent-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
+		xorig = self.selOriginOnImage.x() * self.data.zoom - 1
+		yorig = self.selOriginOnImage.y() * self.data.zoom - 1
+		xdest = xevent / self.data.zoom * self.data.zoom - 1
+		ydest = yevent / self.data.zoom * self.data.zoom - 1
+		if xevent >= self.selOriginOnCanvas.x() + 1 and yevent >= self.selOriginOnCanvas.y() + 1:
+			#print "Cuadrante 4"
+			self.selection.setGeometry( xorig, yorig, w+self.data.zoom+2, h+self.data.zoom+2)
+		elif xevent < self.selOriginOnCanvas.x() + 1 and yevent >= self.selOriginOnCanvas.y() + 1:
+			#print "Cuadrante 3"
+			self.selection.setGeometry( xdest, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - xdest, h+self.data.zoom+2)
+		elif xevent < self.selOriginOnCanvas.x() + 1 and yevent < self.selOriginOnCanvas.y() + 1:
+			#print "Cuadrante 2"
+			self.selection.setGeometry( xdest, ydest, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - xdest, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - ydest)
+		elif xevent >= self.selOriginOnCanvas.x() + 1 and yevent < self.selOriginOnCanvas.y() + 1:
+			#print "Cuadrante 1"
+			self.selection.setGeometry( self.selOriginOnCanvas.x(), ydest, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - ydest)
+		self.selection.show()
+		#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
+		#print "Event x:", xevent, ", y:", yevent
+		"""
+
+		# En la imagen
+		x = xevent / self.data.zoom
+		y = yevent / self.data.zoom
+
+		if x >= self.selection.origin.x() and y >= self.selection.origin.y():
+			self.selection.setGeometry( self.selection.origin.x(), self.selection.origin.y(), x - self.selection.origin.x() + 1, y - self.selection.origin.y() + 1 )
+		elif x < self.selection.origin.x() and y >= self.selection.origin.y():
+			self.selection.setGeometry( x, self.selection.origin.y(), self.selection.origin.x() - x + 1, y - self.selection.origin.y() + 1 )
+		elif x < self.selection.origin.x() and y < self.selection.origin.y():
+			self.selection.setGeometry( x, y, self.selection.origin.x() - x + 1, self.selection.origin.y() - y + 1 )
+		elif x >= self.selection.origin.x() and y < self.selection.origin.y():
+			self.selection.setGeometry( self.selection.origin.x(), y, x - self.selection.origin.x() + 1, self.selection.origin.y() - y + 1 )
+		else:
+			self.selection.setGeometry( xorig, yorig, 1, 1 )
+
+		self.selection.show()

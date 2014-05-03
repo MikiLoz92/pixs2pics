@@ -10,9 +10,10 @@ class NewFileDialog(QtGui.QDialog):
 	La ventanita que se abre cuando queremos crear un archivo nuevo.
 	"""
 
-	def __init__(self, Parent=None):
+	def __init__(self, data, Parent=None):
 
 		super(NewFileDialog,self).__init__(Parent)
+		self.data = data
 		self.parent = Parent
 
 		dimensionGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_new_image", "dimension"))
@@ -31,15 +32,15 @@ class NewFileDialog(QtGui.QDialog):
 
 		backgroundGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_new_image", "background"))
 		backgroundLayout = QtGui.QVBoxLayout()
-		r1 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "transparent"))
-		r1.setChecked(True)
+		self.r1 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "transparent"))
+		self.r1.setChecked(True)
 		self.r2 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "color"))
 		self.cButton = QtGui.QPushButton()
 		self.cButton.clicked.connect(self.getColor)
 		colorLayout = QtGui.QHBoxLayout()
 		colorLayout.addWidget(self.r2)
 		colorLayout.addWidget(self.cButton)
-		backgroundLayout.addWidget(r1)
+		backgroundLayout.addWidget(self.r1)
 		#backgroundLayout.addWidget(r2)
 		backgroundLayout.addLayout(colorLayout)
 		backgroundGroup.setLayout(backgroundLayout)
@@ -56,28 +57,28 @@ class NewFileDialog(QtGui.QDialog):
 		self.setWindowTitle(self.parent.data.getText("dialog_new_image", "title"))
 		self.initUI()
 
-		# Definim les senyals
-		newfile = pyqtSignal([int],[int],['QColor'])
-
 	def initUI(self):
 
 		self.show()
 
 	def getColor(self):
 
-		color = QtGui.QColorDialog.getColor(Qt.green, self)
-		if color.isValid(): 
+		self.color = QtGui.QColorDialog.getColor(Qt.green, self)
+		if self.color.isValid(): 
 			self.r2.setChecked(True)
 			self.cButton.setStyleSheet("QPushButton {"
-										"background: " + color.name() +";"
+										"background: " + self.color.name() +";"
 										"}")
-			self.cButton.setText(color.name())
-			self.cButton.setPalette(QtGui.QPalette(color))
+			self.cButton.setText(self.color.name())
+			self.cButton.setPalette(QtGui.QPalette(self.color))
 			self.cButton.setAutoFillBackground(True)
 
 	def accept(self):
 
-		self.parent.newImage(self.width.value(), self.height.value())
+		if self.r1.isChecked():
+			self.data.newImage(self.width.value(), self.height.value(), QtGui.QColor(0,0,0,0))
+		else:
+			self.data.newImage(self.width.value(), self.height.value(), self.color)
 		super(NewFileDialog, self).accept()
 
 

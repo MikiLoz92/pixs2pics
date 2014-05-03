@@ -581,10 +581,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.statusBar.removeWidget(self.imagePosLabel)
 	
-
 	def showNewFileDialog(self):
 
-		d = NewFileDialog(self)
+		d = NewFileDialog(self.data, self)
 
 	def showAboutDialog(self):
 
