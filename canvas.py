@@ -59,6 +59,7 @@ class Canvas(QtGui.QLabel):
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
 
+		# Selección
 		if self.data.currentTool == 0:
 			if event.button() == Qt.LeftButton:
 				if not self.selection:
@@ -68,6 +69,7 @@ class Canvas(QtGui.QLabel):
 			elif event.button() == Qt.RightButton:
 				pass
 
+		# Lápiz
 		elif self.data.currentTool == 1:
 			self.lastPoint = QtCore.QPoint(x,y)
 			painter = QtGui.QPainter(self.data.image)
@@ -80,9 +82,11 @@ class Canvas(QtGui.QLabel):
 				painter.drawPoint(x,y)
 				self.drawing = True
 
+		# Goma
 		elif self.data.currentTool == 3:
 			print "Borrandooooo, me paso el día borrandoooo"
 
+		# Pipeta de color
 		elif self.data.currentTool == 4:
 			if event.button() == Qt.LeftButton:
 				self.data.changePrimaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
@@ -90,10 +94,12 @@ class Canvas(QtGui.QLabel):
 				self.data.changeSecondaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
 			self.updateColor.emit()
 
+		# Cubo
 		elif self.data.currentTool == 5:
 			self.fillImage( (x, y), self.data.primaryColor, self.data.image.pixel(x,y), self.data.image )
 			self.com.updateCanvas.emit()
 
+		# Degradado
 		elif self.data.currentTool == 6:
 			if self.data.DegPoint == 0:
 				self.data.DegPoint = (x,y)
@@ -114,6 +120,7 @@ class Canvas(QtGui.QLabel):
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
 
+		# Selección
 		if self.data.currentTool == 0:
 			if event.buttons() == Qt.LeftButton:
 				self.selecting = True
@@ -137,6 +144,7 @@ class Canvas(QtGui.QLabel):
 				#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
 				#print "Event x:", event.pos().x(), ", y:", event.pos().y()
 		
+		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
 			painter = QtGui.QPainter(self.data.image)
@@ -155,20 +163,12 @@ class Canvas(QtGui.QLabel):
 			
 	def mouseReleaseEvent(self, event):
 
-		if event.button() == QtCore.Qt.LeftButton and self.drawing:
-			
+		pos = event.pos()
+		x = pos.x() / self.data.zoom # x de la imagen
+		y = pos.y() / self.data.zoom # y de la imagen
 
-			if self.data.posHistory != len(self.data.history)-1:
-				self.data.history = self.data.history[:self.data.posHistory+1]
-			self.data.history.append(QtGui.QImage(self.data.image))
-			self.data.posHistory += 1
-			print self.data.history
-
-			self.update()
-
-		if event.button() == QtCore.Qt.LeftButton and self.data.currentTool == 0:
-			x = event.pos().x() / self.data.zoom
-			y = event.pos().y() / self.data.zoom
+		# Selección
+		if self.data.currentTool == 0 and event.button() == QtCore.Qt.LeftButton:
 			if self.selecting:
 				print "Selection made starting at (" + str(self.selOriginOnImage.x()) + ", " + str(self.selOriginOnImage.y()) + ") and ending at (" + str(x) + ", " + str(y) + ")"
 			else:
@@ -178,6 +178,17 @@ class Canvas(QtGui.QLabel):
 			self.selection = None
 			self.selOriginOnImage = None
 			self.selOriginOnCanvas = None
+
+		# Lápiz
+		elif self.data.currentTool == 1 and self.drawing:
+			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
+				if self.data.posHistory != len(self.data.history)-1:
+					self.data.history = self.data.history[:self.data.posHistory+1]
+				self.data.history.append(QtGui.QImage(self.data.image))
+				self.data.posHistory += 1
+				self.update()
+
+		
 	
 	def paintEvent(self, event):
 		

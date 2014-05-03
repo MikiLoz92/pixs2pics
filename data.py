@@ -89,7 +89,7 @@ class Data:
 			self.cp.write(f)
 			f.close()
 		except ConfigParser.NoSectionError:
-			print "Trying to set \"" + ident + "\" to \"" + value + "\" on section \"" + sect + "\", but given section does not exist."
+			print "Trying to set \"" + ident + "\" to \"" + str(value) + "\" on section \"" + sect + "\", but given section does not exist."
 
 	def getDefault(self, sect, ident):
 
