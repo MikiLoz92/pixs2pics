@@ -86,6 +86,8 @@ class Color(QtGui.QFrame):
 		if e.button() == Qt.LeftButton:
 			self.data.changePrimaryColor(self.color)
 		elif e.button() == Qt.RightButton:
+			self.data.changeSecondaryColor(self.color)
+		elif e.button == Qt.MidButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.color = c

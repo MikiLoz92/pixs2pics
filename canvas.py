@@ -80,83 +80,104 @@ class Canvas(QtGui.QLabel):
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
 
-		if event.button() == QtCore.Qt.LeftButton:
-			if self.data.currentTool == 0:
+		if self.data.currentTool == 0:
+			if event.button() == Qt.LeftButton:
 				if not self.selection:
 					self.selOriginOnImage = QtCore.QPoint( x, y )
 					self.selOriginOnCanvas = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
 					self.selection = RubberBand(self.data, self)
-			elif self.data.currentTool == 1:
-				self.lastPoint = QtCore.QPoint(x,y)
-				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,
-								QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+			elif event.button() == Qt.RightButton:
+				pass
+
+		elif self.data.currentTool == 1:
+			self.lastPoint = QtCore.QPoint(x,y)
+			painter = QtGui.QPainter(self.data.image)
+			if event.button() == Qt.LeftButton:
+				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 				painter.drawPoint(x,y)
 				self.drawing = True
-			elif self.data.currentTool == 5:
-				self.fillImage( (x, y), self.data.color, self.data.image.pixel(x,y), self.data.image )
-				self.com.updateCanvas.emit()
-			elif self.data.currentTool == 4:
-				self.data.color = QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y)))
-				self.com.updateColor.emit()
-			elif self.data.currentTool == 3:
-				print "Borrandooooo, me paso el día borrandoooo"
-			elif self.data.currentTool == 6:
-				if self.data.DegPoint == 0:
-					self.data.DegPoint = (x,y)
-				else:
-					if DegState == 1:
-						self.Grad2Color(self, (x,y))
-			self.update()
+			elif event.button() == Qt.RightButton:
+				painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.drawPoint(x,y)
+				self.drawing = True
+
+		elif self.data.currentTool == 3:
+			print "Borrandooooo, me paso el día borrandoooo"
+
+		elif self.data.currentTool == 4:
+			if event.button() == Qt.LeftButton:
+				self.data.changePrimaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
+			elif event.button() == Qt.RightButton:
+				self.data.changeSecondaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
+			self.updateColor.emit()
+
+		elif self.data.currentTool == 5:
+			self.fillImage( (x, y), self.data.primaryColor, self.data.image.pixel(x,y), self.data.image )
+			self.com.updateCanvas.emit()
+
+		elif self.data.currentTool == 6:
+			if self.data.DegPoint == 0:
+				self.data.DegPoint = (x,y)
+			else:
+				if DegState == 1:
+					self.Grad2Color(self, (x,y))
+
+		self.update()
 
 		# DEBUG
-		print self.width(), self.height()
-		print self.data.image.width(), self.data.image.height()
-		print x,y
+		# print self.width(), self.height()
+		# print self.data.image.width(), self.data.image.height()
+		# print x,y
 
 	def mouseMoveEvent(self, event):
 
-		if (event.buttons() and QtCore.Qt.LeftButton) and self.drawing:
-			pos = event.pos()
-			x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
-			y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
-			self.drawLineTo(QtCore.QPoint(x,y))
-			self.update()
+		pos = event.pos()
+		x = pos.x() / self.data.zoom # x de la imagen
+		y = pos.y() / self.data.zoom # y de la imagen
 
-		if (event.buttons() and QtCore.Qt.LeftButton and self.data.currentTool == 0):
+		if self.data.currentTool == 0:
+			if event.buttons() == Qt.LeftButton:
+				self.selecting = True
+				w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
+				h = (event.pos().y()-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
+				x = event.pos().x() / self.data.zoom * self.data.zoom - 1
+				y = event.pos().y() / self.data.zoom * self.data.zoom - 1
+				if event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
+					#print "Cuadrante 4"
+					self.selection.setGeometry( self.selOriginOnCanvas.x(), self.selOriginOnCanvas.y(), w+self.data.zoom+2, h+self.data.zoom+2)
+				elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
+					#print "Cuadrante 3"
+					self.selection.setGeometry( x, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, h+self.data.zoom+2)
+				elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
+					#print "Cuadrante 2"
+					self.selection.setGeometry( x, y, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
+				elif event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
+					#print "Cuadrante 1"
+					self.selection.setGeometry( self.selOriginOnCanvas.x(), y, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
+				self.selection.show()
+				#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
+				#print "Event x:", event.pos().x(), ", y:", event.pos().y()
+		
+		elif self.data.currentTool == 1:
+			endPoint = QtCore.QPoint(x,y)
+			painter = QtGui.QPainter(self.data.image)
+			if event.buttons() == Qt.LeftButton:
+				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.drawLine(self.lastPoint, endPoint)
+				self.com.updateCanvas.emit()
+				self.lastPoint = QtCore.QPoint(endPoint)
+			elif event.buttons() == Qt.RightButton:
+				painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.drawLine(self.lastPoint, endPoint)
+				self.com.updateCanvas.emit()
+				self.lastPoint = QtCore.QPoint(endPoint)
 
-			self.selecting = True
-
-			w = (event.pos().x()-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
-			h = (event.pos().y()-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
-			x = event.pos().x() / self.data.zoom * self.data.zoom - 1
-			y = event.pos().y() / self.data.zoom * self.data.zoom - 1
-
-			if event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
-				#print "Cuadrante 4"
-				self.selection.setGeometry( self.selOriginOnCanvas.x(), self.selOriginOnCanvas.y(), w+self.data.zoom+2, h+self.data.zoom+2)
-			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() >= self.selOriginOnCanvas.y() + 1:
-				#print "Cuadrante 3"
-				self.selection.setGeometry( x, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, h+self.data.zoom+2)
-			elif event.pos().x() < self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
-				#print "Cuadrante 2"
-				self.selection.setGeometry( x, y, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - x, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
-			elif event.pos().x() >= self.selOriginOnCanvas.x() + 1 and event.pos().y() < self.selOriginOnCanvas.y() + 1:
-				#print "Cuadrante 1"
-				self.selection.setGeometry( self.selOriginOnCanvas.x(), y, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - y)
-
-			self.selection.show()
-			#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
-			#print "Event x:", event.pos().x(), ", y:", event.pos().y()
+		self.update()
 			
 	def mouseReleaseEvent(self, event):
 
 		if event.button() == QtCore.Qt.LeftButton and self.drawing:
-			pos = event.pos()
-			x = self.data.image.width() * pos.x() / ( self.data.image.width() * self.data.zoom )
-			y = self.data.image.height() * pos.y() / ( self.data.image.height() * self.data.zoom )
-			self.drawLineTo(QtCore.QPoint(x,y))
-			self.drawing = False
+			
 
 			if self.data.posHistory != len(self.data.history)-1:
 				self.data.history = self.data.history[:self.data.posHistory+1]

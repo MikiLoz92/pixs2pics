@@ -7,7 +7,7 @@ import random
 
 from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog, Preferences
-from palette import Palette
+from palette import Palette, Color
 
 
 class Preview (QtGui.QDockWidget):
@@ -187,7 +187,7 @@ class PenSizeValueLabel(QtGui.QLabel):
 
 		super(PenSizeValueLabel, self).setText(str(text))
 
-
+"""
 class CurrentColor(QtGui.QLabel):
 
 	def __init__(self, data, com, Parent=None):
@@ -240,11 +240,9 @@ class CurrentColor(QtGui.QLabel):
 
 		self.color = self.data.color
 		super(CurrentColor, self).update()
-
-
+"""
+"""
 class Color(QtGui.QFrame):
-	"""
-	"""
 
 	def __init__(self, data, com, Parent=None):
 
@@ -293,6 +291,7 @@ class Color(QtGui.QFrame):
 		position = e.pos()
 		e.setDropAction(QtCore.Qt.CopyAction)
 		e.accept()
+"""
 
 class DegColor(Color):
 
@@ -575,6 +574,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.palette.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
+		"""
 		paletteWidget = QtGui.QWidget()
 		hbox = QtGui.QHBoxLayout()
 		grid = QtGui.QGridLayout()
@@ -598,6 +598,7 @@ class MainWindow(QtGui.QMainWindow):
 		hbox.setSpacing(0)
 		grid.setSpacing(0)
 		paletteWidget.setLayout(hbox)
+		"""
 
 		paletteWidgetNew = Palette(self.data, self.com)
 
@@ -773,6 +774,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.onClickPalette = True
 			QtCore.QCoreApplication.instance().setOverrideCursor(self.data.colorPickerCur)
 			self.grabMouse()
+			self.grabKeyboard()
 
 	def keyReleaseEvent(self, event):
 
@@ -782,6 +784,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.onClickPalette = False
 			QtCore.QCoreApplication.instance().restoreOverrideCursor()
 			self.releaseMouse()
+			self.releaseKeyboard()
 
 	def mousePressEvent(self, event):
 
@@ -791,24 +794,30 @@ class MainWindow(QtGui.QMainWindow):
 		# Cuando pulsamos Ctrl y hacemos click con el mouse creamos una captura de pantalla.
 		# Luego de esa captura extraemos el color en la posición del cursor y lo establecemos
 		# como color principal.
-		if event.button() == QtCore.Qt.LeftButton and self.onClickPalette:
+		if self.onClickPalette:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
-			self.data.changeColor(c) # Cambiamos el color actual por el que hemos cogido
-
+			if event.button() == Qt.LeftButton:
+				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
+			elif event.button() == Qt.RightButton:
+				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
 			# im.save("desktop.png") # Guardar la captura de pantalla en un archivo
 			# print "Getting color " + c.red(), c.green(), c.blue() + " from screen" # Comprueba qué color coge
 
 	def mouseMoveEvent(self, event):
 
 		super(MainWindow, self).mouseMoveEvent(event)
+
 		# Lo mismo de antes pero para cuando el ratón se mueve
-		if self.onClickPalette and event.buttons() == QtCore.Qt.LeftButton:
+		if self.onClickPalette:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
-			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
-			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
-			self.data.changeColor(c)
+			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
+			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
+			if event.buttons() == Qt.LeftButton:
+				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
+			elif event.buttons() == Qt.RightButton:
+				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
 
 	def closeEvent(self, event):
 
