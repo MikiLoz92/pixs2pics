@@ -18,3 +18,5 @@ class Communication(QtCore.QObject):
 	zoomOut = QtCore.pyqtSignal()
 	colorPickerOn = QtCore.pyqtSignal()
 	colorPickerOff = QtCore.pyqtSignal()
+	enterCanvas = QtCore.pyqtSignal()
+	leaveCanvas = QtCore.pyqtSignal()

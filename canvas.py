@@ -48,6 +48,7 @@ class Canvas(QtGui.QLabel):
 
 		self.setBackgroundRole(QtGui.QPalette.Base)
 		self.setAttribute(Qt.WA_TranslucentBackground)
+		self.setMouseTracking(True)
 		#self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
 		#self.setScaledContents(True)
 
@@ -68,11 +69,13 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).enterEvent(event)
 		if not self.data.colorPicker:
 			self.setCursor(self.data.pencilCur)
+		self.com.enterCanvas.emit()
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
 
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
+		self.com.leaveCanvas.emit()
 
 	def mousePressEvent(self, event):
 
@@ -109,6 +112,10 @@ class Canvas(QtGui.QLabel):
 		print x,y
 
 	def mouseMoveEvent(self, event):
+
+		self.data.ximage = event.pos().x() / self.data.zoom # x de la imagen
+		self.data.yimage = event.pos().y() / self.data.zoom # y de la imagen
+		print self.data.ximage, self.data.yimage
 
 		if (event.buttons() and QtCore.Qt.LeftButton) and self.drawing:
 			pos = event.pos()

@@ -28,6 +28,9 @@ class Data:
 	grid = False
 	matrixGrid = False
 
+	ximage = 0
+	yimage = 0
+
 	color_deg_1 = QtCore.Qt.white
 	color_deg_2 = QtCore.Qt.black
 

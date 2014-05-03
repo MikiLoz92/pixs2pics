@@ -298,14 +298,20 @@ class MainWindow(QtGui.QMainWindow):
 		self.com = com
 		self.data = data
 
+		self.com.enterCanvas.connect(self.showImagePosition)
+		self.com.leaveCanvas.connect(self.hideImagePosition)
+
 		self.onClickPalette = False
 		self.resize(640,480)
 		self.setWindowTitle(self.data.getText("pix2pics", "title"))
-		self.statusBar = self.statusBar().showMessage(self.data.getText("status", "ready"))
+		self.statusBar = self.statusBar()
 		self.menuBar = self.createMenuBar()
 		self.toolBar = self.createToolBar()
 		self.createDockWidgets()
 		self.mainWidget = MainWidget(128, 96, data, com, Qt.red, self)
+
+		self.imagePosLabel = QtGui.QLabel()
+		self.imagePosLabel.setObjectName("ImagePosLabel")
 
 		# El Widget alrededor del cual gira la MainWindow es mainWidget
 		self.setCentralWidget(self.mainWidget)
@@ -662,6 +668,20 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.data.currentTool = 6
 		self.com.updateTool.emit()
+
+	
+	def showImagePosition(self):
+
+		if self.imagePosLabel.isHidden():
+			self.imagePosLabel.setText( str(self.data.ximage) + str(self.data.yimage) )
+			self.statusBar.addWidget(self.imagePosLabel)
+			self.imagePosLabel.show()
+			self.imagePosLabel.move(self.statusBar.width()/2,self.imagePosLabel.y())
+
+	def hideImagePosition(self):
+
+		self.statusBar.removeWidget(self.imagePosLabel)
+	
 
 	def showNewFileDialog(self):
 
