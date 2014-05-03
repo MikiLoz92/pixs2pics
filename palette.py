@@ -104,28 +104,11 @@ class Palette (QtGui.QWidget):
 		self.data = data
 		self.com = com
 
-		"""
-		palette = QtGui.QGridLayout()
-		palette.setSpacing(0)
-		palette.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-		i = 0
-		j = 0
-		for k in range(16):
-			c = Color(self.data, self.com, self)
-			palette.addWidget(c,j,i)
-			i += 1
-			if j == 0 and i > 7:
-				j = 1
-				i = 0
-		"""
-
-		
 		palette = FlowLayout()
 		for i in range(random.randint(20,50)):
 			palette.addWidget(Color(self.data, self.com))
 		palette.setSpacing(0)
 		
-
 		hbox = QtGui.QHBoxLayout()
 		hbox.addWidget(CurrentColor(True, self.data, self.com))
 		hbox.addWidget(CurrentColor(False, self.data, self.com))

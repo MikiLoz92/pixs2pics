@@ -318,30 +318,6 @@ class Canvas(QtGui.QLabel):
 
 	def calcNewSelectionGeometry(self, xevent, yevent):
 
-		"""
-		w = (xevent-self.selOriginOnCanvas.x()) / self.data.zoom * self.data.zoom
-		h = (yevent-self.selOriginOnCanvas.y()) / self.data.zoom * self.data.zoom
-		xorig = self.selOriginOnImage.x() * self.data.zoom - 1
-		yorig = self.selOriginOnImage.y() * self.data.zoom - 1
-		xdest = xevent / self.data.zoom * self.data.zoom - 1
-		ydest = yevent / self.data.zoom * self.data.zoom - 1
-		if xevent >= self.selOriginOnCanvas.x() + 1 and yevent >= self.selOriginOnCanvas.y() + 1:
-			#print "Cuadrante 4"
-			self.selection.setGeometry( xorig, yorig, w+self.data.zoom+2, h+self.data.zoom+2)
-		elif xevent < self.selOriginOnCanvas.x() + 1 and yevent >= self.selOriginOnCanvas.y() + 1:
-			#print "Cuadrante 3"
-			self.selection.setGeometry( xdest, self.selOriginOnCanvas.y(), (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - xdest, h+self.data.zoom+2)
-		elif xevent < self.selOriginOnCanvas.x() + 1 and yevent < self.selOriginOnCanvas.y() + 1:
-			#print "Cuadrante 2"
-			self.selection.setGeometry( xdest, ydest, (self.selOriginOnImage.x()+1)*self.data.zoom + 1 - xdest, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - ydest)
-		elif xevent >= self.selOriginOnCanvas.x() + 1 and yevent < self.selOriginOnCanvas.y() + 1:
-			#print "Cuadrante 1"
-			self.selection.setGeometry( self.selOriginOnCanvas.x(), ydest, w+self.data.zoom+2, (self.selOriginOnImage.y()+1)*self.data.zoom + 1 - ydest)
-		self.selection.show()
-		#print "Origin x:", self.selOriginOnCanvas.x(), ", y:", self.selOriginOnCanvas.y(), "w:", w, ", h:", h
-		#print "Event x:", xevent, ", y:", yevent
-		"""
-
 		# En la imagen
 		x = xevent / self.data.zoom
 		y = yevent / self.data.zoom
