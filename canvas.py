@@ -13,27 +13,6 @@ class RubberBand(QtGui.QRubberBand):
 
 		super(RubberBand, self).__init__(QtGui.QRubberBand.Rectangle, parent)
 
-	"""
-	def resizeEvent(self, event):
-
-		super(RubberBand, self).resizeEvent(event)
-		w = (event.size().width()/self.data.zoom + 1) * self.data.zoom
-		h = (event.size().height()/self.data.zoom + 1) * self.data.zoom
-		self.resize(w, h)
-	"""
-
-	"""
-	def paintEvent(self, event):
-
-		rect = event.rect()
-		x = (rect.x() + rect.width()) / self.data.zoom
-		y = (rect.y() + rect.height()) / self.data.zoom
-		self.resize(x*self.data.zoom+1+5, y*self.data.zoom+1+5)
-
-		super(RubberBand, self).paintEvent(QtGui.QPaintEvent(self.rect()))
-	"""
-	
-
 
 ## Vista/View
 class Canvas(QtGui.QLabel):

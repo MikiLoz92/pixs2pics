@@ -187,111 +187,6 @@ class PenSizeValueLabel(QtGui.QLabel):
 
 		super(PenSizeValueLabel, self).setText(str(text))
 
-"""
-class CurrentColor(QtGui.QLabel):
-
-	def __init__(self, data, com, Parent=None):
-
-		super(CurrentColor, self).__init__(Parent)
-
-		self.data = data
-		self.com = com
-		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
-		self.setFixedSize(32,32)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
-		self.parent = Parent
-		self.data.color = self.color
-
-		self.com.updateColor.connect(self.update)
-
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(CurrentColor, self).paintEvent(e)
-
-	def mouseReleaseEvent(self, e):
-
-		if e.button() == Qt.LeftButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
-			if c.isValid():
-				self.data.color = c
-				self.com.updateColor.emit()
-
-	def mouseMoveEvent(self, e):
-
-		if e.buttons() != QtCore.Qt.LeftButton:
-			return
-
-		mimeData = QtCore.QMimeData()
-
-		drag = QtGui.QDrag(self)
-		drag.setMimeData(mimeData)
-		drag.setHotSpot(QtCore.QPoint(0,-10))
-
-		dropAction = drag.start(QtCore.Qt.MoveAction)
-
-	def update(self):
-
-		self.color = self.data.color
-		super(CurrentColor, self).update()
-"""
-"""
-class Color(QtGui.QFrame):
-
-	def __init__(self, data, com, Parent=None):
-
-		super(Color, self).__init__(Parent)
-
-		self.parent = Parent
-		self.data = data
-		self.com = com
-
-		self.setAcceptDrops(True)
-		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
-		self.setFixedSize(16,16)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
-
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(Color, self).paintEvent(e)
-
-	def mousePressEvent(self, e):
-
-		if e.button() == Qt.LeftButton:
-			#self.setFrameStyle(QtGui.QFrame.Box)
-			#self.setFrameShadow(QtGui.QFrame.Plain)
-			#self.setLineWidth(2)
-			self.data.color = self.color
-			self.com.updateColor.emit()
-		elif e.button() == Qt.RightButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
-			if c.isValid():
-				self.color = c
-				self.update()
-
-	def dragEnterEvent(self, e):
-
-		e.accept()
-
-	def dropEvent(self, e):
-
-		position = e.pos()
-		e.setDropAction(QtCore.Qt.CopyAction)
-		e.accept()
-"""
 
 class DegColor(Color):
 
@@ -574,36 +469,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.palette.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
-		"""
-		paletteWidget = QtGui.QWidget()
-		hbox = QtGui.QHBoxLayout()
-		grid = QtGui.QGridLayout()
+		paletteWidget = Palette(self.data, self.com)
 
-		self.currentColor = CurrentColor(self.data, self.com, self)
-		
-		i = 0
-		j = 0
-		for k in range(12):
-			c = Color(self.data, self.com, self)
-			grid.addWidget(c,j,i)
-			i += 1
-			if j == 0 and i > 5:
-				j = 1
-				i = 0
-
-		hbox.addWidget(self.currentColor)
-		hbox.addLayout(grid)
-		hbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-		grid.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-		hbox.setSpacing(0)
-		grid.setSpacing(0)
-		paletteWidget.setLayout(hbox)
-		"""
-
-		paletteWidgetNew = Palette(self.data, self.com)
-
-		#self.palette.setWidget(paletteWidget)
-		self.palette.setWidget(paletteWidgetNew) # NUEVA Paleta
+		self.palette.setWidget(paletteWidget)
 
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 
@@ -821,5 +689,6 @@ class MainWindow(QtGui.QMainWindow):
 
 	def closeEvent(self, event):
 
-		self.data.setDefault("color", "primary_color", self.data.primaryColor.value())
+		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
+		self.data.setDefault("color", "secondary_color", self.data.secondaryColor.rgb())
 		super(MainWindow, self).closeEvent(event)
