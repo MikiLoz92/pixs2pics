@@ -18,9 +18,10 @@ class CurrentColor(QtGui.QLabel):
 		self.data = data
 		self.com = com
 		self.com.updateColor.connect(self.update)
+		self.primary = primary
 
-		if primary: self.color = QtGui.QColor(0,0,0)
-		else: self.color = QtGui.QColor(255,255,255)
+		if primary: self.color = self.data.primaryColor
+		else: self.color = self.data.secondaryColor
 
 		self.setFixedHeight(24)
 		self.setPalette(QtGui.QPalette(self.color))
@@ -41,12 +42,14 @@ class CurrentColor(QtGui.QLabel):
 		if e.button() == Qt.LeftButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
-				self.color = c
-				self.update()
+				if self.primary: self.data.changePrimaryColor(c)
+				else: self.color = self.data.changeSecondaryColor(c)
 
 	def update(self):
 
-		self.color = self.data.color
+		if self.primary: self.color = self.data.primaryColor
+		else: self.color = self.data.secondaryColor
+		
 		super(CurrentColor, self).update()
 
 
@@ -81,8 +84,10 @@ class Color(QtGui.QFrame):
 	def mousePressEvent(self, e):
 
 		if e.button() == Qt.LeftButton:
-			self.data.changeColor(self.color)
+			self.data.changePrimaryColor(self.color)
 		elif e.button() == Qt.RightButton:
+			self.data.changeSecondaryColor(self.color)
+		elif e.button == Qt.MidButton:
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.color = c

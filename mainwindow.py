@@ -7,7 +7,7 @@ import random
 
 from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog, Preferences
-from palette import Palette
+from palette import Palette, Color
 
 
 class Preview (QtGui.QDockWidget):
@@ -124,6 +124,19 @@ class ToolProperties (QtGui.QDockWidget):
 		self.color1 = DegColor(self.data, self.com, self.data.color_deg_1, 1)
 		self.color2 = DegColor(self.data, self.com, self.data.color_deg_2, 2)
 
+		self.DegOp1 = QtGui.QRadioButton("2 Colores")
+		self.DegOp2 = QtGui.QRadioButton("1 color a Transparente")
+		self.DegOp3 = QtGui.QRadioButton("Colores + Trasnparencia")
+		self.DegOp1.setChecked(True)
+		DegSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+		DegSlider.setMaximum(255)
+		DegSlider.setMinimum(0)
+		DegSlider.setPageStep(1)
+
+		self.DegOp1.clicked.connect(self.changeDegState)
+		self.DegOp2.clicked.connect(self.changeDegState)
+		self.DegOp3.clicked.connect(self.changeDegState)
+
 		self.color1.com.updateColorDeg.connect(self.setColorDeg)
 		self.color1.com.updateColorDeg.connect(self.setColorDeg)
 
@@ -131,12 +144,18 @@ class ToolProperties (QtGui.QDockWidget):
 		grid.addWidget(self.color1,1,3)
 		grid.addWidget(label2,3,1)
 		grid.addWidget(self.color2,3,3)
+		grid.addWidget(self.DegOp1,5,1,1,3)
+		grid.addWidget(self.DegOp2,7,1,1,3)
+		grid.addWidget(self.DegOp3,9,1,1,3)
+		grid.addWidget(DegSlider,11,1,1,3)
+
 		grid.setRowMinimumHeight(0,3)
 		grid.setRowMinimumHeight(2,3)
+		grid.setRowMinimumHeight(4,8)
 		grid.setColumnMinimumWidth(0,3)
 		grid.setColumnMinimumWidth(2,3)
-		grid.setColumnStretch(4,1)
-		grid.setRowStretch(4,1)
+		grid.setColumnMinimumWidth(4,1)
+		grid.setRowStretch(12,1)
 
 		w.setLayout(grid)
 
@@ -144,9 +163,17 @@ class ToolProperties (QtGui.QDockWidget):
 
 	def setColorDeg(self, index):
 		if index == 1:
-			self.data.color_deg_1 == self.color1.color
+			self.data.color_deg_1 = self.color1.color
 		if index == 2:
-			self.data.color_deg_2 == self.color2.color
+			self.data.color_deg_2 = self.color2.color
+
+	def changeDegState(self):
+		if self.DegOp1.isChecked():
+			self.data.DegState = 1
+		elif self.DegOp2.isChecked():
+			self.data.DegState = 2
+		elif self.DegOp3.isChecked():
+			self.data.DegState = 3
 
 	def updateWidget(self):
 
@@ -161,112 +188,6 @@ class PenSizeValueLabel(QtGui.QLabel):
 		super(PenSizeValueLabel, self).setText(str(text))
 
 
-class CurrentColor(QtGui.QLabel):
-
-	def __init__(self, data, com, Parent=None):
-
-		super(CurrentColor, self).__init__(Parent)
-
-		self.data = data
-		self.com = com
-		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
-		self.setFixedSize(32,32)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
-		self.parent = Parent
-		self.data.color = self.color
-
-		self.com.updateColor.connect(self.update)
-
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(CurrentColor, self).paintEvent(e)
-
-	def mouseReleaseEvent(self, e):
-
-		if e.button() == Qt.LeftButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
-			if c.isValid():
-				self.data.color = c
-				self.com.updateColor.emit()
-
-	def mouseMoveEvent(self, e):
-
-		if e.buttons() != QtCore.Qt.LeftButton:
-			return
-
-		mimeData = QtCore.QMimeData()
-
-		drag = QtGui.QDrag(self)
-		drag.setMimeData(mimeData)
-		drag.setHotSpot(QtCore.QPoint(0,-10))
-
-		dropAction = drag.start(QtCore.Qt.MoveAction)
-
-	def update(self):
-
-		self.color = self.data.color
-		super(CurrentColor, self).update()
-
-
-class Color(QtGui.QFrame):
-	"""
-	"""
-
-	def __init__(self, data, com, Parent=None):
-
-		super(Color, self).__init__(Parent)
-
-		self.parent = Parent
-		self.data = data
-		self.com = com
-
-		self.setAcceptDrops(True)
-		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
-		self.setFixedSize(16,16)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
-
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(Color, self).paintEvent(e)
-
-	def mousePressEvent(self, e):
-
-		if e.button() == Qt.LeftButton:
-			#self.setFrameStyle(QtGui.QFrame.Box)
-			#self.setFrameShadow(QtGui.QFrame.Plain)
-			#self.setLineWidth(2)
-			self.data.color = self.color
-			self.com.updateColor.emit()
-		elif e.button() == Qt.RightButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
-			if c.isValid():
-				self.color = c
-				self.update()
-
-	def dragEnterEvent(self, e):
-
-		e.accept()
-
-	def dropEvent(self, e):
-
-		position = e.pos()
-		e.setDropAction(QtCore.Qt.CopyAction)
-		e.accept()
-
 class DegColor(Color):
 
 	def __init__(self, data, com, color, index, Parent = None):
@@ -274,7 +195,7 @@ class DegColor(Color):
 		super(DegColor,self).__init__(data, com, Parent)
 
 		self.color = color
-		self.indx = index
+		self.index = index
 
 	def mousePressEvent(self, e):
 
@@ -282,6 +203,7 @@ class DegColor(Color):
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.color = c
+				print type(self.color)
 				self.update()
 				self.com.updateColorDeg.emit(self.index)
 
@@ -420,7 +342,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
 		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
 		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		connects = [self.undo,0,0,0,0,0, self.showPreferences]
+		connects = [self.undo,self.redo,0,0,0,0, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -462,7 +384,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Algunas opcionas son chekables, lo consideramos:
 		l[0].setCheckable(True)
+		if self.data.grid: l[0].setChecked(True)
 		l[1].setCheckable(True)
+		if self.data.matrixGrid: l[1].setChecked(True)
 
 		return l
 
@@ -551,34 +475,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.palette.setAllowedAreas(Qt.RightDockWidgetArea)
 		self.palette.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
-		paletteWidget = QtGui.QWidget()
-		hbox = QtGui.QHBoxLayout()
-		grid = QtGui.QGridLayout()
+		paletteWidget = Palette(self.data, self.com)
 
-		self.currentColor = CurrentColor(self.data, self.com, self)
-		
-		i = 0
-		j = 0
-		for k in range(12):
-			c = Color(self.data, self.com, self)
-			grid.addWidget(c,j,i)
-			i += 1
-			if j == 0 and i > 5:
-				j = 1
-				i = 0
-
-		hbox.addWidget(self.currentColor)
-		hbox.addLayout(grid)
-		hbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-		grid.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-		hbox.setSpacing(0)
-		grid.setSpacing(0)
-		paletteWidget.setLayout(hbox)
-
-		paletteWidgetNew = Palette(self.data, self.com)
-
-		#self.palette.setWidget(paletteWidget)
-		self.palette.setWidget(paletteWidgetNew) # NUEVA Paleta
+		self.palette.setWidget(paletteWidget)
 
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 
@@ -735,15 +634,25 @@ class MainWindow(QtGui.QMainWindow):
 			self.com.updateCanvas.emit()
 			print self.data.history
 
+	def redo(self):
+
+		print "Redo"
+		if self.data.posHistory < len(self.data.history)-1:
+			self.data.posHistory += 1
+			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
+			self.com.updateCanvas.emit()
+
 	def setPixelGrid(self):
 
 		self.data.grid = not self.data.grid
 		self.com.updateCanvas.emit()
+		self.data.setDefault("grid", "grid", True)
 
 	def setMatrixGrid(self):
 
 		self.data.matrixGrid = not self.data.matrixGrid
 		self.com.updateCanvas.emit()
+		self.data.setDefault("grid", "matrix_grid", True)
 
 	def keyPressEvent(self, event):
 
@@ -753,6 +662,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.onClickPalette = True
 			QtCore.QCoreApplication.instance().setOverrideCursor(self.data.colorPickerCur)
 			self.grabMouse()
+			self.grabKeyboard()
 
 	def keyReleaseEvent(self, event):
 
@@ -762,6 +672,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.onClickPalette = False
 			QtCore.QCoreApplication.instance().restoreOverrideCursor()
 			self.releaseMouse()
+			self.releaseKeyboard()
 
 	def mousePressEvent(self, event):
 
@@ -771,21 +682,33 @@ class MainWindow(QtGui.QMainWindow):
 		# Cuando pulsamos Ctrl y hacemos click con el mouse creamos una captura de pantalla.
 		# Luego de esa captura extraemos el color en la posición del cursor y lo establecemos
 		# como color principal.
-		if event.button() == QtCore.Qt.LeftButton and self.onClickPalette:
+		if self.onClickPalette:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
-			self.data.changeColor(c) # Cambiamos el color actual por el que hemos cogido
-
+			if event.button() == Qt.LeftButton:
+				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
+			elif event.button() == Qt.RightButton:
+				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
 			# im.save("desktop.png") # Guardar la captura de pantalla en un archivo
 			# print "Getting color " + c.red(), c.green(), c.blue() + " from screen" # Comprueba qué color coge
 
 	def mouseMoveEvent(self, event):
 
 		super(MainWindow, self).mouseMoveEvent(event)
+
 		# Lo mismo de antes pero para cuando el ratón se mueve
-		if self.onClickPalette and event.buttons() == QtCore.Qt.LeftButton:
+		if self.onClickPalette:
 			widget = QtCore.QCoreApplication.instance().desktop().screen()
-			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage()
-			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos()))
-			self.data.changeColor(c)
+			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
+			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
+			if event.buttons() == Qt.LeftButton:
+				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
+			elif event.buttons() == Qt.RightButton:
+				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
+
+	def closeEvent(self, event):
+
+		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
+		self.data.setDefault("color", "secondary_color", self.data.secondaryColor.rgb())
+		super(MainWindow, self).closeEvent(event)
