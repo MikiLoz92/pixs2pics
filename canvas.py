@@ -117,7 +117,7 @@ class Canvas(QtGui.QLabel):
 				self.data.changePrimaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
 			elif event.button() == Qt.RightButton:
 				self.data.changeSecondaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
-			self.updateColor.emit()
+			self.com.updateColor.emit()
 
 		# Cubo
 		elif self.data.currentTool == 5:
