@@ -243,9 +243,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.show()
 
-	def getText(self, sect, ident):
+	def createPopupMenu(self):
 
-		return self.data.tdatabase.getText(self.data.lang, sect, ident)
+		pass # Reimplementando esta función conseguimos que no se creen los menús popup cuando hacemos click derecho en toolbars/dockwidgets.
 
 	def createToolBarActions(self):
 
@@ -481,6 +481,7 @@ class MainWindow(QtGui.QMainWindow):
 		paletteWidget = Palette(self.data, self.com)
 
 		self.palette.setWidget(paletteWidget)
+		self.palette.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
 
 		self.addDockWidget(Qt.RightDockWidgetArea, self.palette)
 
@@ -488,6 +489,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.toolProperties = ToolProperties(self.data.getText("dock_widgets", "tool_properties"), self.data, self.com)
 		self.addDockWidget(Qt.RightDockWidgetArea, self.toolProperties)
+		self.palette.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
 
 		# Preview
 
@@ -648,13 +650,12 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.data.grid = not self.data.grid
 		self.com.updateCanvas.emit()
-		self.data.setDefault("grid", "grid", True)
-
+		self.data.setDefault("grid", "grid", self.data.grid)
 	def setMatrixGrid(self):
 
 		self.data.matrixGrid = not self.data.matrixGrid
 		self.com.updateCanvas.emit()
-		self.data.setDefault("grid", "matrix_grid", True)
+		self.data.setDefault("grid", "matrix_grid", self.data.matrixGrid)
 
 	def keyPressEvent(self, event):
 

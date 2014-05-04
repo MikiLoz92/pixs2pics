@@ -2,6 +2,7 @@ QWidget {
 	background-color: rgb(61,69,72);
 	background-color: rgb(45,46,48);
 	color: white;
+	selection-background-color: rgb(24,112,175);
 }
 
 QScrollBar::handle {
@@ -40,7 +41,6 @@ QMenuBar::item:selected {
 
 QMenuBar::item:pressed {
 	background-color: rgb(24,112,175);
-
 }
 
 QMenu {
@@ -117,24 +117,28 @@ QSpinBox::down-arrow  {
 }
 
 QRadioButton::indicator {
-	width: 13px;
-	height: 13px;
+	width: 12px;
+	height: 12px;
+	border-radius: 6px;
+	background-color: rgb(49,148,217);
+	margin: 5px 0px;
 }
 
-QRadioButton::indicator::unchecked  {
-    image: url(images/radiobutton.png);
+QRadioButton::indicator:unchecked {
+	background-color: rgb(49,148,217);
 }
- 
-QRadioButton::indicator:unchecked:hover  {
-    image: url(images/radiobuttonhover.png);
+
+QRadioButton::indicator:unchecked:hover {
+	background-color: rgb(24,112,175);
 }
- 
-QRadioButton::indicator::checked  {
-    image: url(images/radiobuttonchecked.png);
+
+QRadioButton::indicator:checked {
+	background-color: rgb(24,112,175);
+	background-image: url("images/tick.png")
 }
- 
-QRadioButton::indicator:checked:hover  {
-    image: url(images/radiobuttoncheckedhover.png);
+
+QRadioButton::indicator:checked:hover {
+	background-color: rgb(24,112,175);
 }
 
 QPushButton {
@@ -213,11 +217,13 @@ QScrollArea#MainWidget {
 
 QListWidget {
 	border: none;
+	border-radius: 2px;
 	background-color: rgb(49,148,217);
 }
 
 QListWidget::item {
 	background-color: rgb(49,148,217);
+	border-radius: 2px;
 }
 
 QListWidget::item:selected {
@@ -234,4 +240,34 @@ QDockWidget::title {
 
 QWidget#Palette, QWidget#ToolProperties, QWidget#Preview  {
 	background-color: rgb(45,46,48);
+}
+
+QSlider::groove:horizontal {
+	border: none;
+	height: 2px;
+	background-color: rgb(61,69,72);
+	margin: 4px;
+}
+
+QSlider::handle:horizontal {
+	background-color: rgb(49,148,217);
+	border: none;
+	width: 16px;
+	border-radius: 8px;
+	margin-top: -7px;
+	margin-bottom: -7px;
+}
+
+QSlider::handle:horizontal:pressed {
+	background-color: rgb(24,112,175);
+}
+
+QLabel#PrimaryColor,  QLabel#SecondaryColor {
+ 	border: none;
+ 	border-radius: 2px;
+}
+
+QFrame#Color {
+ 	border: none;
+ 	border-radius: 2px;
 }

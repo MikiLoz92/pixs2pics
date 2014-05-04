@@ -39,6 +39,7 @@ class NewFileDialog(QtGui.QDialog):
 		self.r2 = QtGui.QRadioButton(self.parent.data.getText("dialog_new_image", "color"))
 		self.cButton = QtGui.QPushButton()
 		self.cButton.clicked.connect(self.getColor)
+		self.cButton.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
 		colorLayout = QtGui.QHBoxLayout()
 		colorLayout.addWidget(self.r2)
 		colorLayout.addWidget(self.cButton)

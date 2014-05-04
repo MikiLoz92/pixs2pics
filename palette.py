@@ -20,35 +20,32 @@ class CurrentColor(QtGui.QLabel):
 		self.com.updateColor.connect(self.update)
 		self.primary = primary
 
-		if primary: self.color = self.data.primaryColor
-		else: self.color = self.data.secondaryColor
+		if primary:
+			self.color = self.data.primaryColor
+			self.setObjectName("PrimaryColor")
+		else:
+			self.color = self.data.secondaryColor
+			self.setObjectName("SecondaryColor")
 
+		self.setStyleSheet("background-color: " + self.color.name() + ";")
 		self.setFixedHeight(24)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
-
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(CurrentColor, self).paintEvent(e)
 
 	def mouseReleaseEvent(self, e):
 
 		if e.button() == Qt.LeftButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
+			c = QtGui.QColorDialog.getColor(self.color)
 			if c.isValid():
 				if self.primary: self.data.changePrimaryColor(c)
 				else: self.color = self.data.changeSecondaryColor(c)
 
 	def update(self):
 
-		if self.primary: self.color = self.data.primaryColor
-		else: self.color = self.data.secondaryColor
+		if self.primary:
+			self.color = self.data.primaryColor
+			self.setStyleSheet("background-color: " + self.color.name() + ";")
+		else:
+			self.color = self.data.secondaryColor
+			self.setStyleSheet("background-color: " + self.color.name() + ";")
 		
 		super(CurrentColor, self).update()
 
@@ -68,18 +65,9 @@ class Color(QtGui.QFrame):
 
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
 		self.setFixedSize(12,12)
-		self.setPalette(QtGui.QPalette(self.color))
-		self.setAutoFillBackground(True)
 
-	def paintEvent(self, e):
-
-		painter = QtGui.QPainter(self)	
-		painter.setBackgroundMode(Qt.OpaqueMode)
-		brush = QtGui.QBrush(self.color)
-		painter.setBrush(brush)
-		painter.fillRect(0,0,self.width(),self.height(),brush)
-
-		super(Color, self).paintEvent(e)
+		self.setObjectName("Color")
+		self.setStyleSheet("background-color: " + self.color.name() + ";")
 
 	def mousePressEvent(self, e):
 
@@ -123,3 +111,4 @@ class Palette (QtGui.QWidget):
 		vbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
 
 		self.setLayout(vbox)
+		self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
