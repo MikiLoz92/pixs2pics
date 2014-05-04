@@ -122,39 +122,45 @@ class ToolProperties (QtGui.QDockWidget):
 		w = QtGui.QWidget()
 		grid = QtGui.QGridLayout()
 
-		label1 = QtGui.QLabel("Color 1:", self)
-		label2 = QtGui.QLabel("Color 2:", self)
+		self.label1 = QtGui.QLabel("Color 1:", self)
+		self.label2 = QtGui.QLabel("Color 2:", self)
+		self.label3 = QtGui.QLabel("Transparencia:", self)
 		self.color1 = DegColor(self.data, self.com, self.data.color_deg_1, 1)
 		self.color2 = DegColor(self.data, self.com, self.data.color_deg_2, 2)
 
 		self.DegOp1 = QtGui.QRadioButton("2 Colores")
 		self.DegOp2 = QtGui.QRadioButton("1 color a Transparente")
-		self.DegOp3 = QtGui.QRadioButton("Colores + Trasnparencia")
 		self.DegOp1.setChecked(True)
-		DegSlider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-		DegSlider.setMaximum(255)
-		DegSlider.setMinimum(0)
-		DegSlider.setPageStep(1)
+
+		self.AlphaSpin = QtGui.QSpinBox(self) 
+		self.AlphaSpin.setMinimum(0)
+		self.AlphaSpin.setMaximum(255)
+		self.AlphaSpin.setValue(255)
+		self.AlphaSpin.valueChanged.connect(self.setAlphaValue)
+
+		hbox = QtGui.QHBoxLayout()
+		hbox.addWidget(self.label3)
+		hbox.addWidget(self.AlphaSpin)
+		hbox.setAlignment(QtCore.Qt.AlignTop)
 
 		self.DegOp1.clicked.connect(self.changeDegState)
 		self.DegOp2.clicked.connect(self.changeDegState)
-		self.DegOp3.clicked.connect(self.changeDegState)
 
-		self.color1.com.updateColorDeg.connect(self.setColorDeg)
-		self.color1.com.updateColorDeg.connect(self.setColorDeg)
+		self.color1.com.updateColorDeg.connect(self.setColorDeg1)
+		self.color2.com.updateColorDeg.connect(self.setColorDeg2)
 
-		grid.addWidget(label1,1,1)
+		grid.addWidget(self.label1,1,1)
 		grid.addWidget(self.color1,1,3)
-		grid.addWidget(label2,3,1)
+		grid.addWidget(self.label2,3,1)
 		grid.addWidget(self.color2,3,3)
-		grid.addWidget(self.DegOp1,5,1,1,3)
-		grid.addWidget(self.DegOp2,7,1,1,3)
-		grid.addWidget(self.DegOp3,9,1,1,3)
-		grid.addWidget(DegSlider,11,1,1,3)
+		grid.addLayout(hbox,5,1,1,3)
+		grid.addWidget(self.DegOp1,7,1,1,3)
+		grid.addWidget(self.DegOp2,9,1,1,3)
 
 		grid.setRowMinimumHeight(0,3)
 		grid.setRowMinimumHeight(2,3)
-		grid.setRowMinimumHeight(4,8)
+		grid.setRowMinimumHeight(4,3)
+		grid.setRowMinimumHeight(6,8)
 		grid.setColumnMinimumWidth(0,3)
 		grid.setColumnMinimumWidth(2,3)
 		grid.setColumnMinimumWidth(4,1)
@@ -164,19 +170,29 @@ class ToolProperties (QtGui.QDockWidget):
 
 		return w
 
-	def setColorDeg(self, index):
-		if index == 1:
-			self.data.color_deg_1 = self.color1.color
-		if index == 2:
-			self.data.color_deg_2 = self.color2.color
+	def setColorDeg1(self):
+		self.data.color_deg_1 = self.color1.color
+
+	def setColorDeg2(self):
+		self.data.color_deg_2 = self.color2.color
+
+	def setAlphaValue(self,alpha):
+		self.data.DegAlpha = alpha
+		print "alpha",alpha
 
 	def changeDegState(self):
 		if self.DegOp1.isChecked():
 			self.data.DegState = 1
+			self.color2.show()
+			self.label2.show()
+			self.label3.show()
+			self.AlphaSpin.show()
 		elif self.DegOp2.isChecked():
 			self.data.DegState = 2
-		elif self.DegOp3.isChecked():
-			self.data.DegState = 3
+			self.color2.hide()
+			self.label2.hide()
+			self.label3.hide()
+			self.AlphaSpin.hide()
 
 	def updateWidget(self):
 
@@ -206,9 +222,8 @@ class DegColor(Color):
 			c = QtGui.QColorDialog.getColor(self.color, self)
 			if c.isValid():
 				self.color = c
-				print type(self.color)
 				self.update()
-				self.com.updateColorDeg.emit(self.index)
+				self.com.updateColorDeg.emit()
 
 
 class MainWindow(QtGui.QMainWindow):

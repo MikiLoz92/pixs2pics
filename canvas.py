@@ -8,6 +8,7 @@ from PyQt4.QtCore import Qt
 
 try:
     from OpenGL import GL
+
 except ImportError:
     print "Error: pyOpenGL must be installed if you want to use OpenGL acceleration."
     sys.exit(1)
@@ -129,11 +130,35 @@ class Canvas(QtGui.QLabel):
 
 		# Degradado
 		elif self.data.currentTool == 6:
-			if self.data.DegPoint == 0:
-				self.data.DegPoint = (x,y)
-			else:
-				if DegState == 1:
-					self.Grad2Color(self, (x,y))
+
+			if event.button() == Qt.LeftButton:
+
+				if self.data.DegPoint == 0:
+					self.data.DegPoint = (x,y)
+					self.data.save_color = QtGui.QColor( self.data.image.pixel(x,y) )
+					self.data.color_deg_1.setAlpha(self.data.DegAlpha)
+					if self.data.DegState == 1:
+						self.data.image.setPixel(x,y,self.data.color_deg_1.rgba())
+					elif self.data.DegState == 2:
+						self.data.image.setPixel(x,y,self.data.color_deg_1.rgb())
+
+				elif (x,y) != self.data.DegPoint :
+					if self.data.DegState == 1:
+						i = self.Grad2Colors((x,y))
+						if i==0:
+							self.data.DegPoint = 0
+					elif self.data.DegState == 2:
+						i = self.GradColorAlpha((x,y))
+						if i==0:
+							self.data.DegPoint = 0
+
+			elif event.button() == QtCore.Qt.RightButton:
+
+				#Degradado - Cancelar primera selección
+				if self.data.currentTool==6 and self.data.DegPoint!=0:
+					x, y = self.data.DegPoint
+					self.data.image.setPixel(x,y,self.data.save_color.rgba())
+					self.data.DegPoint = 0
 
 		# Mover canvas
 		if event.button() == Qt.MiddleButton:
@@ -275,8 +300,6 @@ class Canvas(QtGui.QLabel):
 
 	def fillImage(self, begin, paint, current, imagen):
 		if paint.rgb() == current :
-			print paint.rgb()
-			print current
 			print "pass activated"
 		else:
 			queue = [begin]
@@ -308,38 +331,137 @@ class Canvas(QtGui.QLabel):
 							if imagen.pixel(xp,yp-1) == current:
 								queue.append( (xp,yp-1) )
 
-	def Grad2Colors(self,pf):
-		pi = self.data.DegPoint[0]
+	def Grad2Colors(self, pf):
+
+		pi = self.data.DegPoint
+		alpha = self.data.DegAlpha
+		print pi,pf
+
 		if pf[0] == pi[0]:
-			Var_y = self.data.DegPoint[1] - pf[1]
+
+			Var_y = pf[1] - pi[1]
 			if Var_y > 0 :
 				dy = +1
 			elif Var_y < 0 :
 				dy = -1
 			else:
-				pass
+				return 0
+
 			color1 = self.data.color_deg_1.getRgb()
 			color2 = self.data.color_deg_2.getRgb()
-			Var_r = color1[0] - color[0]
+			print color1,color2
+
+			Var_r = color2[0] - color1[0]
 			dr = float(Var_r)/abs(Var_y)
-			Var_g = color1[1] - color[1]
-			dg = float(Var_r)/abs(Var_y)
-			Var_b = color1[2] - color[2]
-			db = float(Var_r)/abs(Var_y)
-			for i in range(1,Var_y-1):
+			Var_g = color2[1] - color1[1]
+			dg = float(Var_g)/abs(Var_y)
+			Var_b = color2[2] - color1[2]
+			db = float(Var_b)/abs(Var_y)
+			print dr, dg, db
+
+			for i in range(1,abs(Var_y)+1):
 				R = color1[0] + i*dr
 				G = color1[1] + i*dg
 				B = color1[2] + i*db
-				tmp_c = QtGui.QColor(R,G,B,255)
-				self.data.image.setPixel(pi[0],pi[1]+i*dy,tmp_c.rgb())
+				R = int( round(R) )
+				G = int( round(G) )
+				B = int( round(B) )
+				print R,G,B
+
+				tmp_c = QtGui.QColor(R,G,B,alpha)
+				print "changed color"
+				self.data.image.setPixel(pi[0],pi[1]+i*dy,tmp_c.rgba())
+
+			return 0
+
 		elif pf[1] == pi[1]:
-			pass
-		elif imagen.pixel(x,y) == current :
-			imagen.setPixel(x,y,paint.rgb())
-			self.fillImage(x+1, y, paint, current, imagen)
-			self.fillImage(x, y+1, paint, current, imagen)
-			self.fillImage(x-1, y, paint, current, imagen)
-			self.fillImage(x, y-1, paint, current, imagen)
+
+			Var_x = pf[0] - pi[0]
+			if Var_x > 0 :
+				dx = +1
+			elif Var_x < 0 :
+				dx = -1
+			else:
+				return 0
+
+			color1 = self.data.color_deg_1.getRgb()
+			color2 = self.data.color_deg_2.getRgb()
+			print color1,color2
+
+			Var_r = color2[0] - color1[0]
+			dr = float(Var_r)/abs(Var_x)
+			Var_g = color2[1] - color1[1]
+			dg = float(Var_g)/abs(Var_x)
+			Var_b = color2[2] - color1[2]
+			db = float(Var_b)/abs(Var_x)
+			print dr, dg, db
+
+			for i in range(1,abs(Var_x)+1):
+				R = color1[0] + i*dr
+				G = color1[1] + i*dg
+				B = color1[2] + i*db
+				R = int( round(R) )
+				G = int( round(G) )
+				B = int( round(B) )
+				print R,G,B
+
+				tmp_c = QtGui.QColor(R,G,B,alpha)
+				self.data.image.setPixel(pi[0]+i*dx,pi[1],tmp_c.rgba())
+			return 0
+
+		else:
+			return 1
+
+	def GradColorAlpha(self, pf):
+
+		pi = self.data.DegPoint
+		alpha = self.data.DegAlpha
+		print pi,pf
+
+		if pf[0] == pi[0]:
+
+			Var_y = pf[1] - pi[1]
+			if Var_y > 0 :
+				dy = +1
+			elif Var_y < 0 :
+				dy = -1
+			else:
+				return 0
+
+			color = self.data.color_deg_1
+			da = 255/abs(Var_y)
+
+			for i in range(1,abs(Var_y)+1):
+
+				color.setAlpha(255-da*i)
+				print "changed color"
+				self.data.image.setPixel(pi[0],pi[1]+i*dy,color.rgba())
+
+			return 0
+
+		elif pf[1] == pi[1]:
+
+			Var_x = pf[0] - pi[0]
+			if Var_x > 0 :
+				dx = +1
+			elif Var_x < 0 :
+				dx = -1
+			else:
+				return 0
+
+			color = self.data.color_deg_1
+			da = 255/abs(Var_x)
+
+			for i in range(1,abs(Var_x)+1):
+
+				color.setAlpha(255-da*i)
+				print "changed color"
+				self.data.image.setPixel(pi[0]+i*dx,pi[1],color.rgba())
+
+			return 0
+
+		else:
+			return 1
 
 	def calcNewSelectionGeometry(self, xevent, yevent):
 
