@@ -1,8 +1,16 @@
 #!/usr/bin/env python
 #coding: utf-8
 
-from PyQt4 import QtGui, QtCore
+import sys
+
+from PyQt4 import QtGui, QtCore, QtOpenGL
 from PyQt4.QtCore import Qt
+
+try:
+    from OpenGL import GL
+except ImportError:
+    print "Error: pyOpenGL must be installed if you want to use OpenGL acceleration."
+    sys.exit(1)
 
 
 class RubberBand(QtGui.QRubberBand):
@@ -32,13 +40,12 @@ class Canvas(QtGui.QLabel):
 
 	def __init__(self, w, h, data, com, color, parent=None):
 
-		super(Canvas, self).__init__()
+		#super(Canvas, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+		super(Canvas, self).__init__(parent)
 
 		self.setBackgroundRole(QtGui.QPalette.Base)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
-		#self.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
-		#self.setScaledContents(True)
 
 		self.com = com
 		self.com.zoomIn.connect(self.calcNewSelectionGeometry)
@@ -47,9 +54,9 @@ class Canvas(QtGui.QLabel):
 		self.com.newImage.connect(self.resizeToNewImage)
 		self.parent = parent
 		self.data = data
-		#self.image = data.image
-		self.data.image.fill(QtGui.qRgb(255, 255, 255))
+
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+
 		self.drawing = False
 		self.selecting = False
 		self.selection = None
@@ -128,6 +135,10 @@ class Canvas(QtGui.QLabel):
 				if DegState == 1:
 					self.Grad2Color(self, (x,y))
 
+		# Mover canvas
+		if event.button() == Qt.MiddleButton:
+			self.grabPoint = event.pos()
+
 		self.update()
 
 		# DEBUG
@@ -161,6 +172,20 @@ class Canvas(QtGui.QLabel):
 				painter.drawLine(self.lastPoint, endPoint)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
+
+		if event.buttons() == Qt.MiddleButton:
+			
+			self.move(self.mapToParent(event.pos() - self.grabPoint))
+
+			print "event pos:", self.mapToParent(pos).x(), "parent.width:", self.parent.width(), "width:", self.width()
+			if (self.mapToParent(pos).x() + self.width() - self.grabPoint.x()) > (self.parent.width() ):
+				self.move(self.parent.width()-self.width(), self.y())
+			elif (self.mapToParent(pos).x() - self.grabPoint.x()) < 0:
+				self.move(0, self.y())
+			if (self.mapToParent(pos).y() + self.height() - self.grabPoint.y()) > (self.parent.height() ):
+				self.move(self.x(), self.parent.height()-self.height())
+			elif (self.mapToParent(pos).y() - self.grabPoint.y()) < 0:
+				self.move(self.x(), 0)
 
 		self.update()
 			

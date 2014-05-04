@@ -3,7 +3,7 @@
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
-import random
+import os, random
 
 from mainwidget import MainWidget
 from dialogs import ResizeImageDialog, NewFileDialog, Preferences
@@ -20,9 +20,11 @@ class Preview (QtGui.QDockWidget):
 		self.com = com
 		self.parent = Parent
 		self.setAllowedAreas(Qt.RightDockWidgetArea)
+		self.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
 		self.label = QtGui.QLabel()
 		self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
+		self.label.setObjectName("Preview")
 		self.layout = QtGui.QHBoxLayout()
 		self.layout.addWidget(self.label)
 		self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -88,6 +90,7 @@ class ToolProperties (QtGui.QDockWidget):
 	def createPencilWidget(self):
 
 		w = QtGui.QWidget()
+		w.setObjectName("ToolProperties")
 		hbox = QtGui.QHBoxLayout()
 
 		pencilSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
@@ -251,48 +254,48 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		self.selectionAction = QtGui.QAction(QtGui.QIcon('images/selection.png'), self.data.getText("tools", "selection"), self.tools)
+		self.selectionAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "selection.png") ), self.data.getText("tools", "selection"), self.tools)
 		self.selectionAction.setCheckable(True)
 		self.selectionAction.toggled.connect(self.setSelectionTool)
 		l.append(self.selectionAction)
 
-		self.pencilAction = QtGui.QAction(QtGui.QIcon('images/pencil.png'), self.data.getText("tools", "pencil"), self.tools)
+		self.pencilAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "pencil.png") ), self.data.getText("tools", "pencil"), self.tools)
 		self.pencilAction.setCheckable(True)
 		self.pencilAction.toggled.connect(self.setPencilTool)
 		self.pencilAction.toggle()
 		l.append(self.pencilAction)
 
-		self.brushAction = QtGui.QAction(QtGui.QIcon('images/brush.png'), self.data.getText("tools", "brush"), self.tools)
+		self.brushAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "brush.png") ), self.data.getText("tools", "brush"), self.tools)
 		self.brushAction.setCheckable(True)
 		self.brushAction.toggled.connect(self.setBrushTool)
 		l.append(self.brushAction)
 
-		self.eraserAction = QtGui.QAction(QtGui.QIcon('images/eraser.png'), self.data.getText("tools", "eraser"), self.tools)
+		self.eraserAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "eraser.png") ), self.data.getText("tools", "eraser"), self.tools)
 		self.eraserAction.setCheckable(True)
 		self.eraserAction.toggled.connect(self.setEraserTool)
 		l.append(self.eraserAction)
 
-		self.colorPickerAction = QtGui.QAction(QtGui.QIcon('images/dropper.png'), self.data.getText("tools", "colorpicker"), self.tools)
+		self.colorPickerAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "dropper.png") ), self.data.getText("tools", "colorpicker"), self.tools)
 		self.colorPickerAction.setCheckable(True)
 		self.colorPickerAction.toggled.connect(self.setColorPickerTool)
 		l.append(self.colorPickerAction)
 
-		self.zoomInAction = QtGui.QAction(QtGui.QIcon('images/zoomin.png'), self.data.getText("tools", "zoomin"), self.tools)
+		self.zoomInAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomin.png") ), self.data.getText("tools", "zoomin"), self.tools)
 		self.zoomInAction.setShortcut("+")
 		self.zoomInAction.triggered.connect(self.zoomIn)
 		l.append(self.zoomInAction)
 
-		self.zoomOutAction = QtGui.QAction(QtGui.QIcon('images/zoomout.png'), self.data.getText("tools", "zoomout"), self.tools)
+		self.zoomOutAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomout.png") ), self.data.getText("tools", "zoomout"), self.tools)
 		self.zoomOutAction.setShortcut("-")
 		self.zoomOutAction.triggered.connect(self.zoomOut)
 		l.append(self.zoomOutAction)
 
-		self.fillAction = QtGui.QAction(QtGui.QIcon('images/fill.png'), self.data.getText("tools", "fill"), self.tools)
+		self.fillAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "fill.png") ), self.data.getText("tools", "fill"), self.tools)
 		self.fillAction.setCheckable(True)
 		self.fillAction.toggled.connect(self.setFillTool)
 		l.append(self.fillAction)
 
-		self.fillAction = QtGui.QAction(QtGui.QIcon('images/gradient.png'), self.data.getText("tools", "gradient"), self.tools)
+		self.fillAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "gradient.png") ), self.data.getText("tools", "gradient"), self.tools)
 		self.fillAction.setCheckable(True)
 		self.fillAction.toggled.connect(self.setDegTool)
 		l.append(self.fillAction)
@@ -509,7 +512,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	def scaleImage(self, zoom):
 		
-		self.mainWidget.canvas.resize(zoom * self.mainWidget.canvas.pixmap().size())
+		self.mainWidget.canvas.resize(zoom * self.data.image.size())
 
 		self.adjustScrollBar(self.mainWidget.horizontalScrollBar(), zoom)
 		self.adjustScrollBar(self.mainWidget.verticalScrollBar(), zoom)

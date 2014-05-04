@@ -12,7 +12,7 @@ Autores:
 	Miguel Vera
 """
 
-import sys
+import sys, os
 
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
@@ -31,16 +31,25 @@ def readCSS(fname):
 if __name__ == '__main__':
 
 	app = QtGui.QApplication(sys.argv)
+	app.setWindowIcon(QtGui.QIcon("icon.gif"))
 	com = Communication()
 	data = Data(com)
-	mw = MainWindow(data, com)
 
 	customFnt = "Lato-Reg.ttf"
 	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 0:
 		print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
 	else:
-		fnt = QtGui.QFont("Lato", 9)
+		fnt = QtGui.QFont("Lato", 10)
 		app.setFont(fnt)
-	mw.setStyleSheet(readCSS("style.css"))
+
+	if os.path.isdir(os.path.join("themes", data.theme)):
+		css = os.path.join("themes", data.theme, "style.css")
+		if os.path.isfile(css):
+			mw = MainWindow(data, com)
+			mw.setStyleSheet(readCSS(css))
+	else:
+		print "Couldn't find theme " + data.theme + ", falling back to default-light."
+		data.theme = "default-light"
+		mw = MainWindow(data, com)
 
 	sys.exit(app.exec_())

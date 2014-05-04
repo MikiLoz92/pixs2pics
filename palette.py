@@ -67,7 +67,7 @@ class Color(QtGui.QFrame):
 		self.com = com
 
 		self.color = QtGui.QColor( random.randint(0,255), random.randint(0,255),random.randint(0,255) )
-		self.setFixedSize(16,16)
+		self.setFixedSize(12,12)
 		self.setPalette(QtGui.QPalette(self.color))
 		self.setAutoFillBackground(True)
 
@@ -103,22 +103,23 @@ class Palette (QtGui.QWidget):
 		self.parent = Parent
 		self.data = data
 		self.com = com
+		self.setObjectName("Palette")
 
 		palette = FlowLayout()
 		for i in range(random.randint(20,50)):
 			palette.addWidget(Color(self.data, self.com))
-		palette.setSpacing(0)
+		palette.setSpacing(2)
 		
 		hbox = QtGui.QHBoxLayout()
 		hbox.addWidget(CurrentColor(True, self.data, self.com))
 		hbox.addWidget(CurrentColor(False, self.data, self.com))
-		hbox.setSpacing(0)
+		hbox.setSpacing(2)
 		hbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
 
 		vbox = QtGui.QVBoxLayout()
 		vbox.addLayout(hbox)
 		vbox.addLayout(palette)
-		vbox.setSpacing(0)
+		vbox.setSpacing(2)
 		vbox.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
 
 		self.setLayout(vbox)

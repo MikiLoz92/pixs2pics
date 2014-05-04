@@ -135,6 +135,7 @@ class Data:
 		self.loadDefaultsLanguage()
 		self.loadDefaultsGrid()
 		self.loadDefaultsColor()
+		self.loadDefaultsTheme()
 
 	def loadDefaultsLanguage(self):
 
@@ -156,3 +157,7 @@ class Data:
 
 		self.primaryColor = QtGui.QColor(self.getIntDefault("color", "primary_color"))
 		self.secondaryColor = QtGui.QColor(self.getIntDefault("color", "secondary_color"))
+
+	def loadDefaultsTheme(self):
+
+		self.theme = self.getDefault("theme", "theme")

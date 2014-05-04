@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #coding: utf-8
 
+import os
+
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
@@ -153,6 +155,7 @@ class Preferences (QtGui.QDialog):
 		self.preferences.setCurrentRow(0)
 		self.preferences.currentItemChanged.connect(self.changeCurrentView)
 		self.preferences.setFixedWidth(self.preferences.sizeHintForColumn(0) + 24)
+		#self.view.setFixedWidth(200)
 
 		self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		self.buttonBox.accepted.connect(self.accept)
@@ -210,12 +213,32 @@ class Preferences (QtGui.QDialog):
 	def createUICustomizationView(self):
 
 		g = QtGui.QGroupBox("UI Customization")
-
+		w = QtGui.QWidget()
 		vbox = QtGui.QVBoxLayout()
-		vbox.addWidget(QtGui.QComboBox())
+		hbox = QtGui.QHBoxLayout()
+
+		self.theme = QtGui.QComboBox()
+
+		j = 0
+		dirs = [d for d in os.listdir("themes") if os.path.isdir(os.path.join("themes", d))]
+		for i in dirs:
+			self.theme.addItem(i)
+			if self.data.theme == i:
+				self.theme.setCurrentIndex(j)
+			j += 1
+		print dirs
+		self.theme.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+		#self.theme.setFixedWidth(self.theme.sizeHint().width())
+
+		hbox.addWidget(QtGui.QLabel("Theme:"))
+		hbox.addWidget(self.theme)
+		hbox.setAlignment(Qt.AlignLeft)
+		vbox.addLayout(hbox)
+
 		vbox.setStretch(1,1)
 		vbox.setAlignment(Qt.AlignTop)
 
+		w.setLayout(vbox)
 		g.setLayout(vbox)
 
 		return g
