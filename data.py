@@ -84,6 +84,7 @@ class Data:
 		if self.posHistory != len(self.history)-1:
 			self.history = self.history[:self.posHistory+1]
 		self.history.append(QtGui.QImage(self.image))
+		
 		self.posHistory += 1
 
 	def getText(self, sect, ident): # Get some text in the current language
