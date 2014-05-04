@@ -414,7 +414,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["flip_hor", "flip_ver", "rotate_cw", "rotate_ccw", "rotate_180", "resize", "resize_canvas"]
 		icons = ["", "", "", "", "", "resize-image.png", ""]
 		shortcuts = ['', '', '', '', '', 'Ctrl+R', '']
-		connects = [0,0,0,0,0,self.showResizeImageDialog,0]
+		connects = [self.flipHorizontally,self.flipVertically,self.rotate90CW,self.rotate90CCW,self.rotate180,self.showResizeImageDialog,0]
 
 		# Llista d'accions
 		l = []
@@ -539,6 +539,41 @@ class MainWindow(QtGui.QMainWindow):
 		scrollBar.setValue(int(zoom * scrollBar.value() + ((zoom - 1) * scrollBar.pageStep()/2)))
 		print zoom
 
+	def flipHorizontally(self):
+
+		self.data.image = self.data.image.mirrored(True, False)
+		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
+
+	def flipVertically(self):
+
+		self.data.image = self.data.image.mirrored(False, True)
+		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
+
+	def rotate90CW(self):
+
+		transform = QtGui.QTransform().rotate(90)
+		self.data.image = self.data.image.transformed(transform)
+		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
+		self.com.newImage.emit()
+
+	def rotate90CCW(self):
+
+		transform = QtGui.QTransform().rotate(270)
+		self.data.image = self.data.image.transformed(transform)
+		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
+		self.com.newImage.emit()
+
+	def rotate180(self):
+
+		transform = QtGui.QTransform().rotate(180)
+		self.data.image = self.data.image.transformed(transform)
+		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
+
 	def showResizeImageDialog(self):
 
 		d = ResizeImageDialog(self)
@@ -588,7 +623,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.data.currentTool = 6
 		self.com.updateTool.emit()
 
-	
 	def showImagePosition(self):
 
 		if self.imagePosLabel.isHidden():
