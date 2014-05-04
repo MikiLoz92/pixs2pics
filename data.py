@@ -24,15 +24,17 @@ class Data:
 	zoom = 1
 	defaultFileName = ""
 	colorPicker = False
-	DegState = 1
-	DegPoint = 0
 
 	ximage = 0
 	yimage = 0
 
-	color_deg_1 = QtCore.Qt.white
-	color_deg_2 = QtCore.Qt.black
-	print type(color_deg_2)
+	
+	DegState = 1
+	DegPoint = 0
+	color_deg_1 = QtGui.QColor(QtCore.Qt.white)
+	color_deg_2 = QtGui.QColor(QtCore.Qt.black)
+	DegAlpha = 255
+	save_color = 0
 
 	def __init__(self, com):
 
