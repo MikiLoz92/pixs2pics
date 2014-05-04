@@ -220,13 +220,13 @@ class Preferences (QtGui.QDialog):
 		self.theme = QtGui.QComboBox()
 
 		j = 0
-		dirs = [d for d in os.listdir("themes") if os.path.isdir(os.path.join("themes", d))]
-		for i in dirs:
+		self.themeDirs = [d for d in os.listdir("themes") if os.path.isdir(os.path.join("themes", d))]
+		for i in self.themeDirs:
 			self.theme.addItem(i)
 			if self.data.theme == i:
 				self.theme.setCurrentIndex(j)
 			j += 1
-		print dirs
+		print self.themeDirs
 		self.theme.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
 		#self.theme.setFixedWidth(self.theme.sizeHint().width())
 
@@ -285,6 +285,8 @@ class Preferences (QtGui.QDialog):
 		self.data.setDefault("grid", "matrix_grid_width", self.data.matrixGridWidth)
 		self.data.matrixGridHeight = self.matrixGridHeight.value()
 		self.data.setDefault("grid", "matrix_grid_height", self.data.matrixGridHeight)
+
+		self.data.setDefault("theme", "theme", self.themeDirs[self.theme.currentIndex()])
 
 		self.com.updateCanvas.emit()
 		super(Preferences, self).accept()

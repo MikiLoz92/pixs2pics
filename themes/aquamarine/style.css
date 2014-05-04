@@ -224,8 +224,6 @@ QListWidget::item:selected {
 	background-color: rgb(24,112,175);
 }
 
-
-
 QLabel#ImagePosLabel {
 	background-color: rgb(45,46,48);
 }

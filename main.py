@@ -47,6 +47,8 @@ if __name__ == '__main__':
 		if os.path.isfile(css):
 			mw = MainWindow(data, com)
 			mw.setStyleSheet(readCSS(css))
+		else:
+			mw = MainWindow(data, com)
 	else:
 		print "Couldn't find theme " + data.theme + ", falling back to default-light."
 		data.theme = "default-light"
