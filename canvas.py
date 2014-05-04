@@ -47,6 +47,7 @@ class Canvas(QtGui.QLabel):
 		self.setBackgroundRole(QtGui.QPalette.Base)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
+		self.setObjectName("Canvas")
 
 		self.com = com
 		self.com.zoomIn.connect(self.calcNewSelectionGeometry)
@@ -245,9 +246,14 @@ class Canvas(QtGui.QLabel):
 	def paintEvent(self, event):
 		
 		#super(Canvas, self).paintEvent(event)
+
+		painter = QtGui.QPainter(self)
+
+		# Transparency
+		if self.data.bgColor == QtGui.QColor(0,0,0,0):
+			painter.fillRect(self.rect(), QtGui.QBrush(QtGui.QImage("images/transparent.png")))
 		
 		# Image
-		painter = QtGui.QPainter(self)
 		painter.drawImage(self.rect(), self.data.image)
 
 		# Pixel Grid

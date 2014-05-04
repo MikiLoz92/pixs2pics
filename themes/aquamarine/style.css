@@ -212,7 +212,12 @@ QWidget#CanvasEdit {
 
 QScrollArea#MainWidget {
 	border: none;
-	background: url("images/transparent.png");
+	border-radius: 4px;
+	background-color: rgb(61,69,72);
+}
+
+QLabel#Canvas {
+	background-image: url("images/transparent.png");
 }
 
 QListWidget {

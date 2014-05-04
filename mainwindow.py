@@ -514,7 +514,7 @@ class MainWindow(QtGui.QMainWindow):
 	def zoomIn(self):
 
 		if self.data.zoom < 25:
-			self.data.zoom += 2
+			self.data.zoom += 1
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
@@ -522,7 +522,7 @@ class MainWindow(QtGui.QMainWindow):
 	def zoomOut(self):
 
 		if self.data.zoom > 1:
-			self.data.zoom -= 2
+			self.data.zoom -= 1
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
