@@ -25,6 +25,7 @@ class Preview (QtGui.QDockWidget):
 		self.label = QtGui.QLabel()
 		self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.label.setObjectName("Preview")
+		self.label.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
 		self.layout = QtGui.QHBoxLayout()
 		self.layout.addWidget(self.label)
 		self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
@@ -91,7 +92,10 @@ class ToolProperties (QtGui.QDockWidget):
 
 		w = QtGui.QWidget()
 		w.setObjectName("ToolProperties")
-		hbox = QtGui.QHBoxLayout()
+		w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+		vbox = QtGui.QVBoxLayout()
+
+		hbox1 = QtGui.QHBoxLayout()
 
 		pencilSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
 		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
@@ -103,12 +107,25 @@ class ToolProperties (QtGui.QDockWidget):
 		slider.setPageStep(1)
 		slider.valueChanged.connect(self.setPencilSize)
 
-		hbox.addWidget(pencilSizeLabel)
-		hbox.addWidget(slider)
-		hbox.addWidget(self.pencilSize)
-		hbox.setAlignment(QtCore.Qt.AlignTop)
+		hbox1.addWidget(pencilSizeLabel)
+		hbox1.addWidget(slider)
+		hbox1.addWidget(self.pencilSize)
 
-		w.setLayout(hbox)
+		hbox2 = QtGui.QHBoxLayout()
+		hbox2.addWidget(QtGui.QLabel("Alpha:"))
+		alpha = QtGui.QSpinBox()
+		alpha.setMinimum(0)
+		alpha.setMaximum(255)
+		alpha.setValue(255)
+		alpha.valueChanged.connect(self.setPencilAlpha)
+		alpha.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
+		hbox2.addWidget(alpha)
+
+		vbox.setAlignment(QtCore.Qt.AlignTop)
+
+		vbox.addLayout(hbox1)
+		vbox.addLayout(hbox2)
+		w.setLayout(vbox)
 
 		return w
 
@@ -116,6 +133,10 @@ class ToolProperties (QtGui.QDockWidget):
 
 		self.pencilSize.setText(str(size))
 		self.data.pencilSize = size
+
+	def setPencilAlpha(self, alpha):
+
+		self.data.pencilAlpha = alpha
 
 	def createGradientWidget(self):
 
@@ -211,7 +232,7 @@ class DegColor(Color):
 
 	def __init__(self, data, com, color, index, Parent = None):
 
-		super(DegColor,self).__init__(data, com, Parent)
+		super(DegColor,self).__init__(False, data, com, Parent)
 
 		self.color = color
 		self.index = index
@@ -242,7 +263,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.com.leaveCanvas.connect(self.hideImagePosition)
 
 		self.onClickPalette = False
-		self.resize(640,480)
+		self.resize(800,480)
 		self.setWindowTitle(self.data.getText("pix2pics", "title"))
 		self.statusBar = self.statusBar()
 		self.menuBar = self.createMenuBar()

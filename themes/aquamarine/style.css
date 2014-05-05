@@ -268,11 +268,32 @@ QSlider::handle:horizontal:pressed {
 }
 
 QLabel#PrimaryColor,  QLabel#SecondaryColor {
- 	border: none;
+ 	border: 2px solid white;
  	border-radius: 2px;
 }
 
 QFrame#Color {
  	border: none;
  	border-radius: 2px;
+}
+
+QComboBox {
+	background-color: rgb(49,148,217);
+	border: none;
+	border-radius: 2px;
+	padding: 4px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+QComboBox::down-arrow {
+	image: url("images/downarrow.png")
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox QAbstractItemView {
+	margin-left: -24px;
 }

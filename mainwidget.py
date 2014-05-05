@@ -40,7 +40,9 @@ class MainWidget(QtGui.QScrollArea):
 		g = self.frameGeometry()
 		w = g.width()
 		h = g.height()
-		self.canvas.move( (w-self.data.image.width()*self.data.zoom)/2, (h-self.data.image.height()*self.data.zoom)/2 );
-		self.canvas.update()
-		print self.frameGeometry()
+
+		if self.canvas.width() < w:
+			self.canvas.move( (w-self.data.image.width()*self.data.zoom)/2 , self.canvas.y() )
+		if self.canvas.height() < h:
+			self.canvas.move( self.canvas.x(), (h-self.data.image.height()*self.data.zoom)/2 )
 	"""

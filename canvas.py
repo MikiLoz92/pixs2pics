@@ -258,11 +258,14 @@ class Canvas(QtGui.QLabel):
 
 		# Pixel Grid
 		if self.data.grid and self.data.zoom > 3:
+			r = self.data.bgColor.red()
+			g = self.data.bgColor.green()
+			b = self.data.bgColor.blue()
+			gridColor = QtGui.QColor(255-r, 255-g, 255-b, 255)
+			pen = QtGui.QPen(gridColor)
 			if self.data.zoom < 9:
-				pen = QtGui.QPen(QtGui.QColor(0,0,0,64))
 				pen.setStyle(Qt.SolidLine)
 			else:
-				pen = QtGui.QPen(QtGui.QColor(0,0,0,128))
 				pen.setStyle(Qt.DotLine)
 			painter.setPen(pen)
 			w = self.data.image.width()

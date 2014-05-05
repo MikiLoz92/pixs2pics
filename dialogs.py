@@ -40,6 +40,9 @@ class NewFileDialog(QtGui.QDialog):
 		self.cButton = QtGui.QPushButton()
 		self.cButton.clicked.connect(self.getColor)
 		self.cButton.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+		self.color = QtGui.QColor(255,255,255)
+		self.cButton.setStyleSheet("background-color: " + self.color.name() +";")
+		self.cButton.setText(self.color.name())
 		colorLayout = QtGui.QHBoxLayout()
 		colorLayout.addWidget(self.r2)
 		colorLayout.addWidget(self.cButton)
@@ -66,15 +69,11 @@ class NewFileDialog(QtGui.QDialog):
 
 	def getColor(self):
 
-		self.color = QtGui.QColorDialog.getColor(Qt.green, self)
+		self.color = QtGui.QColorDialog.getColor()
 		if self.color.isValid(): 
 			self.r2.setChecked(True)
-			self.cButton.setStyleSheet("QPushButton {"
-										"background: " + self.color.name() +";"
-										"}")
+			self.cButton.setStyleSheet("background-color: " + self.color.name() +";")
 			self.cButton.setText(self.color.name())
-			self.cButton.setPalette(QtGui.QPalette(self.color))
-			self.cButton.setAutoFillBackground(True)
 
 	def accept(self):
 
