@@ -27,7 +27,7 @@ QStatusBar {
 
 QMenuBar {
 	background-color: rgb(45,46,48);
-	
+	padding: 0px;
 }
 
 QMenuBar::item {
@@ -46,6 +46,7 @@ QMenuBar::item:pressed {
 QMenu {
 	background-color: rgb(49,148,217);
 	color: white;
+	padding: 0px;
 }
 
 QMenu::item {
@@ -296,4 +297,9 @@ QComboBox::drop-down {
 
 QComboBox QAbstractItemView {
 	margin-left: -24px;
+}
+
+QToolBar {
+	background-color: rgb(45,46,48);
+	border: none;
 }
