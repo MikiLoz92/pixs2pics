@@ -103,11 +103,7 @@ class Canvas(QtGui.QLabel):
 					else:
 						if self.selection.image != None:
 							# Pintamos la imagen seleccionada en la imagen final
-							painter = QtGui.QPainter(self.data.image)
-							painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
-						# Crear una nueva selección
-						self.selection.hide()
-						self.selection = None
+							self.applySelection()
 						self.selection = RubberBand(QtCore.QPoint(x, y), self.data, self)
 			elif event.button() == Qt.RightButton:
 				pass
@@ -253,7 +249,7 @@ class Canvas(QtGui.QLabel):
 				painter.fillRect(self.selection.rect, self.data.bgColor)
 				print "Filling selection rect with bgColor"
 			else:
-				if self.selection.finished:
+				if self.selection != None and self.selection.finished:
 					print "Moved selection"
 				else:
 					print "No selection was made"
@@ -327,12 +323,22 @@ class Canvas(QtGui.QLabel):
 		#self.update()
 		self.lastPoint = QtCore.QPoint(endPoint)
 
+	def applySelection(self):
+
+		print "Applying selection"
+		painter = QtGui.QPainter(self.data.image)
+		painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
+		self.data.addHistoryStep()
+		self.selection.hide()
+		self.selection = None
+
 	def cancelSelection(self):
 
 		if self.selection != None:
 			print "Canceling selection"
 			painter = QtGui.QPainter(self.data.image)
 			painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
+			self.data.addHistoryStep()
 			self.selection.hide()
 			self.selection = None
 

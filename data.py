@@ -55,6 +55,11 @@ class Data:
 
 		self.defaultFileName = fileName
 		self.image = QtGui.QImage(fileName).convertToFormat(QtGui.QImage.Format_ARGB32_Premultiplied)
+		if self.image.hasAlphaChannel():
+			print "Image has alpha channel"
+			self.bgColor = QtGui.QColor(0,0,0,0)
+		else:
+			self.bgColor = QtGui.QColor(255,255,255)
 		self.zoom = 1
 		self.com.newImage.emit()
 
