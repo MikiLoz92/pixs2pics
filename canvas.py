@@ -346,6 +346,7 @@ class Canvas(QtGui.QLabel):
 		painter = QtGui.QPainter(self.data.image)
 		painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
 		self.data.addHistoryStep()
+		self.com.updateCanvas.emit()
 		self.selection.hide()
 		self.selection = None
 
@@ -356,6 +357,7 @@ class Canvas(QtGui.QLabel):
 			painter = QtGui.QPainter(self.data.image)
 			painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
 			self.data.addHistoryStep()
+			self.com.updateCanvas.emit()
 			self.selection.hide()
 			self.selection = None
 
