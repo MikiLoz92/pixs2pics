@@ -126,7 +126,7 @@ class Canvas(QtGui.QLabel):
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.pencilSize, QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize, QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
 				painter.drawPoint(x,y)
 				self.drawing = True
 
@@ -226,7 +226,7 @@ class Canvas(QtGui.QLabel):
 				print "Borrando"
 				endPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 				painter.drawLine(self.lastPoint, endPoint)
 				self.com.updateCanvas.emit()

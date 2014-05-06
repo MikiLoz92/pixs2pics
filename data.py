@@ -19,6 +19,7 @@ class Data:
 	color = QtCore.Qt.red
 	pencilSize = 1
 	pencilAlpha = 255
+	eraserSize = 2
 	brushSize = 3
 	brushStyle = 0
 	currentTool = 1

@@ -81,7 +81,7 @@ class ToolProperties (QtGui.QDockWidget):
 		l.append(QtGui.QWidget())
 		l.append(self.createPencilWidget())
 		l.append(QtGui.QWidget())
-		l.append(QtGui.QWidget())
+		l.append(self.createEraserWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
 		l.append(self.createGradientWidget())
@@ -105,6 +105,7 @@ class ToolProperties (QtGui.QDockWidget):
 		slider.setMaximum(9)
 		slider.setMinimum(1)
 		slider.setPageStep(1)
+		slider.setValue(self.data.pencilSize)
 		slider.valueChanged.connect(self.setPencilSize)
 
 		hbox1.addWidget(pencilSizeLabel)
@@ -137,6 +138,41 @@ class ToolProperties (QtGui.QDockWidget):
 	def setPencilAlpha(self, alpha):
 
 		self.data.pencilAlpha = alpha
+
+	def createEraserWidget(self):
+
+		w = QtGui.QWidget()
+		w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+		vbox = QtGui.QVBoxLayout()
+
+		hbox = QtGui.QHBoxLayout()
+
+		eraserSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
+		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+		slider.setValue(self.data.pencilSize)
+		self.eraserSize = QtGui.QLabel(str(self.data.eraserSize))
+
+		slider.setMaximum(9)
+		slider.setMinimum(1)
+		slider.setPageStep(1)
+		slider.setValue(self.data.eraserSize)
+		slider.valueChanged.connect(self.setEraserSize)
+
+		hbox.addWidget(eraserSizeLabel)
+		hbox.addWidget(slider)
+		hbox.addWidget(self.eraserSize)
+
+		vbox.setAlignment(QtCore.Qt.AlignTop)
+
+		vbox.addLayout(hbox)
+		w.setLayout(vbox)
+
+		return w
+
+	def setEraserSize(self, size):
+
+		self.eraserSize.setText(str(size))
+		self.data.eraserSize = size
 
 	def createGradientWidget(self):
 
