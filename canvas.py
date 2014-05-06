@@ -123,7 +123,12 @@ class Canvas(QtGui.QLabel):
 
 		# Goma
 		elif self.data.currentTool == 3:
-			print "Borrandooooo, me paso el día borrandoooo"
+			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
+				self.lastPoint = QtCore.QPoint(x,y)
+				painter = QtGui.QPainter(self.data.image)
+				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.pencilSize, QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+				painter.drawPoint(x,y)
+				self.drawing = True
 
 		# Pipeta de color
 		elif self.data.currentTool == 4:
@@ -211,6 +216,18 @@ class Canvas(QtGui.QLabel):
 				self.lastPoint = QtCore.QPoint(endPoint)
 			elif event.buttons() == Qt.RightButton:
 				painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.drawLine(self.lastPoint, endPoint)
+				self.com.updateCanvas.emit()
+				self.lastPoint = QtCore.QPoint(endPoint)
+
+		# Goma
+		elif self.data.currentTool == 3:
+			if event.buttons() == Qt.LeftButton or event.buttons() == Qt.RightButton:
+				print "Borrando"
+				endPoint = QtCore.QPoint(x,y)
+				painter = QtGui.QPainter(self.data.image)
+				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 				painter.drawLine(self.lastPoint, endPoint)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
