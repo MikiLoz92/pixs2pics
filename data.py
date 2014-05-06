@@ -54,14 +54,14 @@ class Data:
 	def loadImage(self, fileName):
 
 		self.defaultFileName = fileName
-		self.image = QtGui.QImage(fileName).convertToFormat(QtGui.QImage.Format_ARGB32)
+		self.image = QtGui.QImage(fileName).convertToFormat(QtGui.QImage.Format_ARGB32_Premultiplied)
 		self.zoom = 1
 		self.com.newImage.emit()
 
 	def newImage(self, w, h, bg):
 
 		self.defaultFileName = ""
-		self.image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
+		self.image = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32_Premultiplied)
 		self.image.fill(bg)
 		self.bgColor = bg
 		self.zoom = 1

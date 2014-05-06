@@ -26,12 +26,15 @@ class RubberBand(QtGui.QRubberBand):
 		self.origin = QtCore.QPoint(origin)
 		self.finished = False
 		self.moving = False
+		self.image = None
 		self.rect = QtCore.QRect()
 
 	def setGeometry(self, x, y, w, h): # Todos los argumentos son el imagen, no en el Canvas
 
 		self.rect = QtCore.QRect(x, y, w, h)
 		super(RubberBand, self).setGeometry( x * self.data.zoom - 1, y * self.data.zoom - 1, w * self.data.zoom + 2, h * self.data.zoom + 2 )
+
+		
 
 
 ## Vista/View
@@ -55,6 +58,7 @@ class Canvas(QtGui.QLabel):
 		self.com.zoomIn.connect(self.calcNewSelectionGeometry)
 		self.com.zoomOut.connect(self.calcNewSelectionGeometry)
 		self.com.updateCanvas.connect(self.update)
+		self.com.updateTool.connect(self.cancelSelection)
 		self.com.newImage.connect(self.resizeToNewImage)
 		self.parent = parent
 		self.data = data
@@ -97,6 +101,10 @@ class Canvas(QtGui.QLabel):
 						#self.selectionGrabPoint = pos
 						self.selectionGrabPoint = QtCore.QPoint(x - self.selection.rect.x(), y - self.selection.rect.y())
 					else:
+						if self.selection.image != None:
+							# Pintamos la imagen seleccionada en la imagen final
+							painter = QtGui.QPainter(self.data.image)
+							painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
 						# Crear una nueva selección
 						self.selection.hide()
 						self.selection = None
@@ -238,12 +246,19 @@ class Canvas(QtGui.QLabel):
 			
 			if self.selecting:
 				print "Selection made starting at (" + str(self.selection.origin.x()) + ", " + str(self.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				self.selection.finished = True
+				self.selection.image = self.data.image.copy(self.selection.rect)
+				painter = QtGui.QPainter(self.data.image)
+				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
+				painter.fillRect(self.selection.rect, self.data.bgColor)
+				print "Filling selection rect with bgColor"
 			else:
-				print "No selection was made"
-			#self.selection.hide()
+				if self.selection.finished:
+					print "Moved selection"
+				else:
+					print "No selection was made"
+					self.selection = None
 			self.selecting = False
-			#self.selection = None
-			self.selection.finished = True
 
 		# Lápiz
 		elif self.data.currentTool == 1 and self.drawing:
@@ -262,6 +277,11 @@ class Canvas(QtGui.QLabel):
 		
 		# Image
 		painter.drawImage(self.rect(), self.data.image)
+
+		# Selection
+		if not self.selecting and self.selection != None and self.selection.finished and self.selection.image != None:
+			rect = QtCore.QRect(self.selection.rect.topLeft()*self.data.zoom, self.selection.rect.size()*self.data.zoom)
+			painter.drawImage(rect, self.selection.image)
 
 		# Pixel Grid
 		if self.data.grid and self.data.zoom > 3:
@@ -307,8 +327,20 @@ class Canvas(QtGui.QLabel):
 		#self.update()
 		self.lastPoint = QtCore.QPoint(endPoint)
 
+	def cancelSelection(self):
+
+		if self.selection != None:
+			print "Canceling selection"
+			painter = QtGui.QPainter(self.data.image)
+			painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
+			self.selection.hide()
+			self.selection = None
+
 	def resizeToNewImage(self):
 
+		if self.selection != None:
+			self.selection.hide()
+			self.selection = None
 		self.resize(self.data.image.width(), self.data.image.height())
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.data.zoom = 1
