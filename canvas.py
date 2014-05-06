@@ -21,9 +21,11 @@ class RubberBand(QtGui.QRubberBand):
 		super(RubberBand, self).__init__(QtGui.QRubberBand.Rectangle, parent)
 
 		self.data = data
+		print origin
 
 		self.origin = QtCore.QPoint(origin)
 		self.finished = False
+		self.moving = False
 		self.rect = QtCore.QRect()
 
 	def setGeometry(self, x, y, w, h): # Todos los argumentos son el imagen, no en el Canvas
@@ -86,12 +88,19 @@ class Canvas(QtGui.QLabel):
 		if self.data.currentTool == 0:
 			if event.button() == Qt.LeftButton:
 				if not self.selection:
-					self.selOriginOnImage = QtCore.QPoint( x, y )
-					self.selOriginOnCanvas = QtCore.QPoint( x * self.data.zoom - 1, y * self.data.zoom - 1)
-					self.selection = RubberBand(self.selOriginOnImage, self.data, self)
+					# Crear una nueva selección
+					self.selection = RubberBand(QtCore.QPoint(x, y), self.data, self)
 				else:
-					if selection.rect.contains(QtCore.QPoint(x, y)):
-						print "Dentro!"
+					if self.selection.rect.contains(QtCore.QPoint(x, y)):
+						# Mover selección
+						self.selection.moving = True
+						#self.selectionGrabPoint = pos
+						self.selectionGrabPoint = QtCore.QPoint(x - self.selection.rect.x(), y - self.selection.rect.y())
+					else:
+						# Crear una nueva selección
+						self.selection.hide()
+						self.selection = None
+						self.selection = RubberBand(QtCore.QPoint(x, y), self.data, self)
 			elif event.button() == Qt.RightButton:
 				pass
 
@@ -181,8 +190,11 @@ class Canvas(QtGui.QLabel):
 		# Selección
 		if self.data.currentTool == 0:
 			if event.buttons() == Qt.LeftButton:
-				self.selecting = True
-				self.calcNewSelectionGeometry(event.pos().x(), event.pos().y())
+				if not self.selection.finished:
+					self.selecting = True
+					self.calcNewSelectionGeometry(event.pos().x(), event.pos().y())
+				if self.selection.moving:
+					self.moveSelection(event.pos().x(), event.pos().y())
 				
 		# Lápiz
 		elif self.data.currentTool == 1:
@@ -223,20 +235,15 @@ class Canvas(QtGui.QLabel):
 
 		# Selección
 		if self.data.currentTool == 0 and event.button() == QtCore.Qt.LeftButton:
-			"""
+			
 			if self.selecting:
-				print "Selection made starting at (" + str(self.selOriginOnImage.x()) + ", " + str(self.selOriginOnImage.y()) + ") and ending at (" + str(x) + ", " + str(y) + ")"
+				print "Selection made starting at (" + str(self.selection.origin.x()) + ", " + str(self.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
 			else:
 				print "No selection was made"
-			self.selection.hide()
+			#self.selection.hide()
 			self.selecting = False
-			self.selection = None
-			self.selOriginOnImage = None
-			self.selOriginOnCanvas = None
-			"""
-			#self.selection.finished = True
-			self.selection.hide()
-			self.selection = None	
+			#self.selection = None
+			self.selection.finished = True
 
 		# Lápiz
 		elif self.data.currentTool == 1 and self.drawing:
@@ -490,3 +497,14 @@ class Canvas(QtGui.QLabel):
 			self.selection.setGeometry( xorig, yorig, 1, 1 )
 
 		self.selection.show()
+
+	def moveSelection(self, xevent, yevent):
+
+		# En la imagen
+		x = xevent / self.data.zoom
+		y = yevent / self.data.zoom
+
+		xx = self.selectionGrabPoint.x()
+		yy = self.selectionGrabPoint.y()
+
+		self.selection.setGeometry(x - xx, y - yy, self.selection.rect.width(), self.selection.rect.height())

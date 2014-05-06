@@ -1,3 +1,5 @@
+/* All widgets */
+
 QWidget {
 	background-color: rgb(61,69,72);
 	background-color: rgb(45,46,48);
@@ -5,14 +7,9 @@ QWidget {
 	selection-background-color: rgb(24,112,175);
 }
 
-QScrollBar::handle {
-	background-color: rgb(49,148,217);
-	border: none;
-}
 
-QScrollBar::handle:pressed {
-	background-color: rgb(24,112,175);
-}
+
+/* MainWindow */
 
 QMainWindow::separator {
 	background-color: rgb(45,46,48);
@@ -20,14 +17,61 @@ QMainWindow::separator {
 	height: 6px;
 }
 
-QStatusBar {
+
+
+/* DockWidget */
+
+QDockWidget::title {
+	text-align: center;
 	background-color: rgb(45,46,48);
-	color: white;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
 }
+
+
+
+/* ToolBar */
+
+QToolBar {
+	background-color: rgb(45,46,48);
+	border: none;
+}
+
+
+
+/* ToolButton */
+
+QToolButton {
+	border: none;
+	border-radius: 2px;
+	margin: 2px;
+	padding: 2px;
+	background-color: rgb(45,46,48);
+}
+
+QToolButton:hover {
+	background-color: rgb(49,148,217);
+}
+
+QToolButton:pressed {
+	background-color: rgb(24,112,175);
+}
+
+QToolButton:selected {
+	background-color: red;
+}
+
+QToolButton:checked {
+	background-color: rgb(24,112,175);
+}
+
+
+
+/* MenuBar */
 
 QMenuBar {
 	background-color: rgb(45,46,48);
-	padding: 0px;
+	margin: 0px;
 }
 
 QMenuBar::item {
@@ -42,6 +86,10 @@ QMenuBar::item:selected {
 QMenuBar::item:pressed {
 	background-color: rgb(24,112,175);
 }
+
+
+
+/* Menu */
 
 QMenu {
 	background-color: rgb(49,148,217);
@@ -70,10 +118,40 @@ QMenu::item:checked {
 	background-color: rgb(24,112,175);
 }
 
+
+
+/* StatusBar */
+
+QStatusBar {
+	background-color: rgb(45,46,48);
+	color: white;
+}
+
+
+
+/* ScrollBars */
+
+QScrollBar::handle {
+	background-color: rgb(49,148,217);
+	border: none;
+}
+
+QScrollBar::handle:pressed {
+	background-color: rgb(24,112,175);
+}
+
+
+
+/* GroupBox */
+
 QGroupBox {
 	color: white;
 	font-weight: bold;
 }
+
+
+
+/* SpinBox */
 
 QSpinBox {
 	border: none;
@@ -86,9 +164,12 @@ QSpinBox {
 }
 
 QSpinBox::up-button {
+	subcontrol-origin: border;
+	subcontrol-position: top right;
 	background-color: rgb(49,148,217);
 	border: none;
 	border-top-right-radius: 2px;
+	height: 13%;
 }
 
 QSpinBox::up-button:hover {
@@ -96,9 +177,12 @@ QSpinBox::up-button:hover {
 }
 
 QSpinBox::down-button {
+	subcontrol-origin: border;
+	subcontrol-position: bottom right;
 	background-color: rgb(49,148,217);
 	border: none;
 	border-bottom-right-radius: 2px;
+	height: 13%;
 }
 
 QSpinBox::down-button:hover {
@@ -116,6 +200,82 @@ QSpinBox::down-arrow  {
     width: 8px;
     height: 8px;
 }
+
+
+
+/* ListWidget */
+
+QListWidget {
+	border: none;
+	border-radius: 2px;
+	background-color: rgb(49,148,217);
+}
+
+QListWidget::item {
+	background-color: rgb(49,148,217);
+	border-radius: 2px;
+}
+
+QListWidget::item:selected {
+	background-color: rgb(24,112,175);
+}
+
+
+
+/* Slider */
+
+QSlider::groove:horizontal {
+	border: none;
+	height: 2px;
+	background-color: rgb(61,69,72);
+	margin: 4px;
+}
+
+QSlider::handle:horizontal {
+	background-color: rgb(49,148,217);
+	border: none;
+	width: 16px;
+	border-radius: 8px;
+	margin-top: -7px;
+	margin-bottom: -7px;
+}
+
+QSlider::handle:horizontal:pressed {
+	background-color: rgb(24,112,175);
+}
+
+
+
+/* ComboBox */
+
+QComboBox {
+	background-color: rgb(49,148,217);
+	border: none;
+	border-radius: 2px;
+	padding: 4px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+QComboBox::down-arrow {
+	image: url("images/downarrow.png")
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox QAbstractItemView {
+	border: none;
+}
+
+QComboBox QAbstractItemView::icon {
+	margin-left: -24px;
+}
+
+
+
+/* RadioButton */
 
 QRadioButton::indicator {
 	width: 12px;
@@ -142,6 +302,10 @@ QRadioButton::indicator:checked:hover {
 	background-color: rgb(24,112,175);
 }
 
+
+
+/* PushButton */
+
 QPushButton {
 	border: none;
 	border-radius: 2px;
@@ -158,38 +322,18 @@ QPushButton:hover {
 	background: rgb(24,112,175);
 }
 
-QToolBar {
-	background-color: rgb(45,46,48);
-}
 
-QToolButton {
-	border: none;
-	border-radius: 2px;
-	margin: 2px;
-	padding: 2px;
-	background-color: rgb(45,46,48);
-}
 
-QToolButton:hover {
-	background-color: rgb(49,148,217);
-}
-
-QToolButton:pressed {
-	background-color: rgb(24,112,175);
-}
-
-QToolButton:selected {
-	background-color: red;
-}
-
-QToolButton:checked {
-	background-color: rgb(24,112,175);
-}
+/* TabWidget */
 
 QTabWidget::pane {
 	border-top: 2px solid;
 	border-top-color: rgb(24,112,175);
 }
+
+
+
+/* TabBar */
 
 QTabBar::tab {
 	background-color: rgb(49,148,217);
@@ -201,15 +345,26 @@ QTabBar::tab:selected {
 	background-color: rgb(24,112,175);
 }
 
+
+
+/* SizeGrip */
+
 QSizeGrip {
 	background-image: url(images/sizegrip.png);
 	width: 16px;
 	height: 16px;
 }
 
+
+/* #CanvasEdit */
+
 QWidget#CanvasEdit {
 	background-color: white;
 }
+
+
+
+/* #MainWidget */
 
 QScrollArea#MainWidget {
 	border: none;
@@ -217,89 +372,47 @@ QScrollArea#MainWidget {
 	background-color: rgb(61,69,72);
 }
 
+
+
+/* #Canvas */
+
 QLabel#Canvas {
 	background-image: url("images/transparent.png");
 }
 
-QListWidget {
-	border: none;
-	border-radius: 2px;
-	background-color: rgb(49,148,217);
-}
 
-QListWidget::item {
-	background-color: rgb(49,148,217);
-	border-radius: 2px;
-}
 
-QListWidget::item:selected {
-	background-color: rgb(24,112,175);
-}
+/* #ImagePosLabel */
 
 QLabel#ImagePosLabel {
 	background-color: rgb(45,46,48);
 }
 
-QDockWidget::title {
-	background-color: rgb(45,46,48);
-}
+
+
+/* #Palette, #ToolProperties & #Preview */
 
 QWidget#Palette, QWidget#ToolProperties, QWidget#Preview  {
 	background-color: rgb(45,46,48);
 }
 
-QSlider::groove:horizontal {
-	border: none;
-	height: 2px;
-	background-color: rgb(61,69,72);
-	margin: 4px;
-}
 
-QSlider::handle:horizontal {
-	background-color: rgb(49,148,217);
-	border: none;
-	width: 16px;
-	border-radius: 8px;
-	margin-top: -7px;
-	margin-bottom: -7px;
-}
 
-QSlider::handle:horizontal:pressed {
-	background-color: rgb(24,112,175);
-}
+/* #PrimaryColor & #SecondaryColor */
 
 QLabel#PrimaryColor,  QLabel#SecondaryColor {
  	border: 2px solid white;
  	border-radius: 2px;
 }
 
+
+
+/* #Color */
+
 QFrame#Color {
  	border: none;
  	border-radius: 2px;
 }
 
-QComboBox {
-	background-color: rgb(49,148,217);
-	border: none;
-	border-radius: 2px;
-	padding: 4px;
-	margin-top: 3px;
-	margin-bottom: 3px;
-}
 
-QComboBox::down-arrow {
-	image: url("images/downarrow.png")
-}
 
-QComboBox::drop-down {
-	border: none;
-}
-
-QComboBox QAbstractItemView {
-	margin-left: -24px;
-}
-
-QToolBar {
-	background-color: rgb(45,46,48);
-	border: none;
-}
