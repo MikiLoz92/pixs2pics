@@ -52,12 +52,14 @@ class Canvas(QtGui.QLabel):
 		self.setBackgroundRole(QtGui.QPalette.Base)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setMouseTracking(True)
+		self.setAcceptDrops(True)
 		self.setObjectName("Canvas")
 
 		self.com = com
 		self.com.zoomIn.connect(self.calcNewSelectionGeometry)
 		self.com.zoomOut.connect(self.calcNewSelectionGeometry)
 		self.com.updateCanvas.connect(self.update)
+		self.com.resizeCanvas.connect(self.resize)
 		self.com.updateTool.connect(self.cancelSelection)
 		self.com.newImage.connect(self.resizeToNewImage)
 		self.parent = parent
@@ -81,6 +83,23 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
 		self.com.leaveCanvas.emit()
+
+	def dragEnterEvent(self, event):
+
+		event.acceptProposedAction()
+		print event.mimeData()
+
+	def dragMoveEvent(self, event):
+
+		event.acceptProposedAction()
+
+	def dropEvent(self, event):
+		mimeData = event.mimeData()
+		if mimeData.hasImage():
+			self.data.image = QtGui.QImage(mimeData.imageData())
+			self.com.updateCanvas.emit()
+			self.com.resizeCanvas.emit()
+		event.acceptProposedAction()
 
 	def mousePressEvent(self, event):
 
@@ -301,7 +320,7 @@ class Canvas(QtGui.QLabel):
 			r = self.data.bgColor.red()
 			g = self.data.bgColor.green()
 			b = self.data.bgColor.blue()
-			gridColor = QtGui.QColor(255-r, 255-g, 255-b, 255)
+			gridColor = QtGui.QColor(255-r, 255-g, 255-b, 128)
 			pen = QtGui.QPen(gridColor)
 			if self.data.zoom < 9:
 				pen.setStyle(Qt.SolidLine)
@@ -327,6 +346,11 @@ class Canvas(QtGui.QLabel):
 			for i in range(h)[1:]:
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
+
+	def resize(self):
+
+		print "Resizing Canvas"
+		super(Canvas, self).resize(QtCore.QSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom))
 		
 	def drawLineTo(self, endPoint):
 

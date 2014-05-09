@@ -586,7 +586,8 @@ class MainWindow(QtGui.QMainWindow):
 
 	def scaleImage(self, zoom):
 		
-		self.mainWidget.canvas.resize(zoom * self.data.image.size())
+		#self.mainWidget.canvas.resize(zoom * self.data.image.size())
+		self.com.resizeCanvas.emit()
 
 		self.adjustScrollBar(self.mainWidget.horizontalScrollBar(), zoom)
 		self.adjustScrollBar(self.mainWidget.verticalScrollBar(), zoom)

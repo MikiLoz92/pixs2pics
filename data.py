@@ -74,6 +74,8 @@ class Data:
 		self.history = [QtGui.QImage(self.image)]
 		self.posHistory = 0
 		self.com.newImage.emit()
+		self.com.updateCanvas.emit()
+		self.com.resizeCanvas.emit()
 
 	def changePrimaryColor(self, c):
 
