@@ -96,6 +96,12 @@ class Data:
 		
 		self.posHistory += 1
 
+	def undo(self): # TODO
+		pass
+
+	def redo(self): # TODO
+		pass
+
 	def getText(self, sect, ident): # Get some text in the current language
 
 		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8")

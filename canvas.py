@@ -130,22 +130,33 @@ class Canvas(QtGui.QLabel):
 		# Lápiz
 		elif self.data.currentTool == 1:
 			self.lastPoint = QtCore.QPoint(x,y)
-			painter = QtGui.QPainter(self.data.image)
 			if event.button() == Qt.LeftButton:
-				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
-				painter.drawPoint(x,y)
-				self.drawing = True
+				if self.drawing:
+					print "drawing, biatch"
+					self.drawing = False
+					self.data.image = QtGui.QImage(self.data.history[-1])
+				else:
+					painter = QtGui.QPainter(self.data.image)
+					painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+					painter.drawPoint(x,y)
+					self.drawing = True
 			elif event.button() == Qt.RightButton:
-				painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
-				painter.drawPoint(x,y)
-				self.drawing = True
+				if self.drawing:
+					print "drawing, biatch"
+					self.drawing = False
+					self.data.image = QtGui.QImage(self.data.history[-1])
+				else:
+					painter = QtGui.QPainter(self.data.image)
+					painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+					painter.drawPoint(x,y)
+					self.drawing = True
 
 		# Goma
 		elif self.data.currentTool == 3:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
 				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize, QtCore.Qt.SolidLine, QtCore.Qt.SquareCap, QtCore.Qt.MiterJoin))
+				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
 				painter.drawPoint(x,y)
 				self.drawing = True
 
@@ -211,6 +222,7 @@ class Canvas(QtGui.QLabel):
 
 	def mouseMoveEvent(self, event):
 
+		print self.drawing
 		pos = event.pos()
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
@@ -228,12 +240,12 @@ class Canvas(QtGui.QLabel):
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
 			painter = QtGui.QPainter(self.data.image)
-			if event.buttons() == Qt.LeftButton:
+			if event.buttons() == Qt.LeftButton and self.drawing:
 				painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 				painter.drawLine(self.lastPoint, endPoint)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
-			elif event.buttons() == Qt.RightButton:
+			elif event.buttons() == Qt.RightButton and self.drawing:
 				painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 				painter.drawLine(self.lastPoint, endPoint)
 				self.com.updateCanvas.emit()
@@ -296,6 +308,7 @@ class Canvas(QtGui.QLabel):
 		elif self.data.currentTool == 1 and self.drawing:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.data.addHistoryStep()
+				self.drawing = False
 	
 	def paintEvent(self, event):
 		
