@@ -134,7 +134,7 @@ class Canvas(QtGui.QLabel):
 				if self.drawing:
 					print "drawing, biatch"
 					self.drawing = False
-					self.data.image = QtGui.QImage(self.data.history[-1])
+					self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 				else:
 					painter = QtGui.QPainter(self.data.image)
 					painter.setPen(QtGui.QPen(self.data.primaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
@@ -144,7 +144,7 @@ class Canvas(QtGui.QLabel):
 				if self.drawing:
 					print "drawing, biatch"
 					self.drawing = False
-					self.data.image = QtGui.QImage(self.data.history[-1])
+					self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 				else:
 					painter = QtGui.QPainter(self.data.image)
 					painter.setPen(QtGui.QPen(self.data.secondaryColor, self.data.pencilSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
