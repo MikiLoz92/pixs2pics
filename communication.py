@@ -10,14 +10,24 @@ class Communication(QtCore.QObject):
 	"""
 
 	newImage = QtCore.pyqtSignal()
+
 	updateCanvas = QtCore.pyqtSignal()
 	resizeCanvas = QtCore.pyqtSignal()
+
+	copyImage = QtCore.pyqtSignal()
+	cutImage = QtCore.pyqtSignal()
+	pasteImage = QtCore.pyqtSignal()
+	clearImage  = QtCore.pyqtSignal()
+
 	updateColor = QtCore.pyqtSignal()
 	updateColorDeg = QtCore.pyqtSignal()
+
 	updateTool = QtCore.pyqtSignal()
-	zoomIn = QtCore.pyqtSignal()
-	zoomOut = QtCore.pyqtSignal()
+
+	zoom = QtCore.pyqtSignal()
+
 	colorPickerOn = QtCore.pyqtSignal()
 	colorPickerOff = QtCore.pyqtSignal()
+
 	enterCanvas = QtCore.pyqtSignal()
 	leaveCanvas = QtCore.pyqtSignal()

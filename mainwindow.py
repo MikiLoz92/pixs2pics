@@ -112,6 +112,7 @@ class ToolProperties (QtGui.QDockWidget):
 		hbox1.addWidget(slider)
 		hbox1.addWidget(self.pencilSize)
 
+		"""
 		hbox2 = QtGui.QHBoxLayout()
 		hbox2.addWidget(QtGui.QLabel("Alpha:"))
 		alpha = QtGui.QSpinBox()
@@ -121,6 +122,12 @@ class ToolProperties (QtGui.QDockWidget):
 		alpha.valueChanged.connect(self.setPencilAlpha)
 		alpha.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
 		hbox2.addWidget(alpha)
+		"""
+		hbox2 = QtGui.QHBoxLayout()
+		eraser = QtGui.QCheckBox("Use eraser instead\n of secondary color", self)
+		eraser.setChecked(self.data.secondaryColorEraser)
+		eraser.toggled.connect(self.toggleSecondaryColorEraser)
+		hbox2.addWidget(eraser)
 
 		vbox.setAlignment(QtCore.Qt.AlignTop)
 
@@ -138,6 +145,10 @@ class ToolProperties (QtGui.QDockWidget):
 	def setPencilAlpha(self, alpha):
 
 		self.data.pencilAlpha = alpha
+
+	def toggleSecondaryColorEraser(self):
+
+		self.data.secondaryColorEraser = not self.data.secondaryColorEraser
 
 	def createEraserWidget(self):
 
@@ -417,7 +428,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
 		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
 		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		connects = [self.undo,self.redo,0,0,0,0, self.showPreferences]
+		connects = [self.undo, self.redo, self.cut, self.copy, self.paste, self.clear, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -575,6 +586,7 @@ class MainWindow(QtGui.QMainWindow):
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
+			self.com.zoom.emit()
 
 	def zoomOut(self):
 
@@ -583,6 +595,7 @@ class MainWindow(QtGui.QMainWindow):
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
 			self.mainWidget.canvas.update()
+			self.com.zoom.emit()
 
 	def scaleImage(self, zoom):
 		
@@ -753,11 +766,32 @@ class MainWindow(QtGui.QMainWindow):
 			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			self.com.updateCanvas.emit()
 
+	def cut(self):
+
+		self.com.cutImage.emit()
+
+	def copy(self):
+
+		self.com.copyImage.emit()
+
+	def paste(self):
+
+		clipboard = QtGui.QApplication.clipboard()
+		if not clipboard.image().isNull():
+			self.selectionAction.setChecked(True)
+			self.com.pasteImage.emit()
+			self.com.updateCanvas.emit()
+
+	def clear(self):
+
+		self.com.clearImage.emit()
+
 	def setPixelGrid(self):
 
 		self.data.grid = not self.data.grid
 		self.com.updateCanvas.emit()
 		self.data.setDefault("grid", "grid", self.data.grid)
+
 	def setMatrixGrid(self):
 
 		self.data.matrixGrid = not self.data.matrixGrid

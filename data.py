@@ -19,6 +19,7 @@ class Data:
 	color = QtCore.Qt.red
 	pencilSize = 1
 	pencilAlpha = 255
+	secondaryColorEraser = False
 	eraserSize = 2
 	brushSize = 3
 	brushStyle = 0
@@ -30,7 +31,6 @@ class Data:
 	ximage = 0
 	yimage = 0
 
-	
 	DegState = 1
 	DegPoint = 0
 	color_deg_1 = QtGui.QColor(QtCore.Qt.white)

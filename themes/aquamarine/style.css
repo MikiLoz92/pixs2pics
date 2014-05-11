@@ -304,6 +304,35 @@ QRadioButton::indicator:checked:hover {
 
 
 
+/* CheckBox */
+
+QCheckBox::indicator {
+	width: 12px;
+	height: 12px;
+	border-radius: 2px;
+	background-color: rgb(49,148,217);
+	margin: 5px 0px;
+}
+
+QCheckBox::indicator:unchecked {
+	background-color: rgb(49,148,217);
+}
+
+QCheckBox::indicator:unchecked:hover {
+	background-color: rgb(24,112,175);
+}
+
+QCheckBox::indicator:checked {
+	background-color: rgb(24,112,175);
+	background-image: url("images/tick.png")
+}
+
+QCheckBox::indicator:checked:hover {
+	background-color: rgb(24,112,175);
+}
+
+
+
 /* PushButton */
 
 QPushButton {
