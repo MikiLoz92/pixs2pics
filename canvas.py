@@ -125,6 +125,7 @@ class Canvas(QtGui.QLabel):
 		pos = event.pos()
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
+		print "Current tool:", self.data.currentTool
 
 		# Selección
 		if self.data.currentTool == 0:
@@ -153,12 +154,13 @@ class Canvas(QtGui.QLabel):
 				self.drawing = False
 				self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			elif event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
+				print "Painting a point"
 				color = self.data.primaryColor if event.button() == Qt.LeftButton else self.data.secondaryColor
 				size = self.data.pencilSize
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
 					color = self.data.bgColor
 					size = self.data.eraserSize
-				self.data.image.setPixel(x, y, color.rgb())
+				self.data.image.setPixel(x, y, color.rgba())
 				self.com.updateCanvas.emit()
 				self.drawing = True
 
@@ -166,9 +168,7 @@ class Canvas(QtGui.QLabel):
 		elif self.data.currentTool == 3:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
-				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
-				painter.drawPoint(x,y)
+				self.data.image.setPixel(x, y, self.data.bgColor.rgba())
 				self.drawing = True
 
 		# Pipeta de color
@@ -273,10 +273,7 @@ class Canvas(QtGui.QLabel):
 			if event.buttons() == Qt.LeftButton or event.buttons() == Qt.RightButton:
 				print "Borrando"
 				endPoint = QtCore.QPoint(x,y)
-				painter = QtGui.QPainter(self.data.image)
-				painter.setPen(QtGui.QPen(self.data.bgColor, self.data.eraserSize,	Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
-				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
-				painter.drawLine(self.lastPoint, endPoint)
+				self.drawLineTo(QtCore.QPoint(x,y), self.data.bgColor)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
 
@@ -323,6 +320,12 @@ class Canvas(QtGui.QLabel):
 
 		# Lápiz
 		elif self.data.currentTool == 1 and self.drawing:
+			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
+				self.data.addHistoryStep()
+				self.drawing = False
+
+		# Goma
+		elif self.data.currentTool == 3:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.data.addHistoryStep()
 				self.drawing = False
@@ -416,15 +419,15 @@ class Canvas(QtGui.QLabel):
 		d = (2 * dy) - dx
 
 		for i in range(0,dx):
-		    if steep: self.data.image.setPixel(y, x, color.rgb())
-		    else: self.data.image.setPixel(x, y, color.rgb())
+		    if steep: self.data.image.setPixel(y, x, color.rgba())
+		    else: self.data.image.setPixel(x, y, color.rgba())
 		    while d >= 0:
 		        y = y + sy
 		        d = d - (2 * dx)
 		    x = x + sx
 		    d = d + (2 * dy)
 
-		self.data.image.setPixel(endPoint, color.rgb())
+		self.data.image.setPixel(endPoint, color.rgba())
 
 	def applySelection(self):
 		if self.data.selection != None:
