@@ -797,6 +797,7 @@ class MainWindow(QtGui.QMainWindow):
 		if event.key() == Qt.Key_Control:
 			self.onClickPalette = True
 			QtCore.QCoreApplication.instance().setOverrideCursor(self.data.colorPickerCur)
+			self.com.onClickPalette.emit()
 			self.grabMouse()
 			self.grabKeyboard()
 

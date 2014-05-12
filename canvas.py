@@ -68,6 +68,7 @@ class Canvas(QtGui.QLabel):
 		self.com.resizeCanvas.connect(self.resize)
 		self.com.updateTool.connect(self.applySelection)
 		self.com.newImage.connect(self.resizeToNewImage)
+		self.com.onClickPalette.connect(self.hideToolHint)
 
 		self.com.cutImage.connect(self.cutImage)
 		self.com.copyImage.connect(self.copyImage)
@@ -82,25 +83,24 @@ class Canvas(QtGui.QLabel):
 		self.drawing = False
 		self.selecting = False
 		self.data.selection = None
+		self.toolHint = None
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
+		print "Entering Canvas"
 		super(Canvas, self).enterEvent(event)
 		if not self.data.colorPicker:
 			self.setCursor(self.data.pencilCur)
 		self.com.enterCanvas.emit()
-		if self.data.currentTool == 1:
-			self.toolHint = ToolHint(QtCore.QPoint(0,0), self.data, self)
-			self.toolHint.show()
+		
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
 
+		print "Leaving Canvas"
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
 		self.com.leaveCanvas.emit()
-		if self.toolHint != None:
-			self.toolHint.hide()
-			self.toolHint = None
+		self.hideToolHint()
 
 	def dragEnterEvent(self, event):
 
@@ -246,11 +246,16 @@ class Canvas(QtGui.QLabel):
 					self.resizeSelection(event.pos().x(), event.pos().y())
 				if self.data.selection.moving:
 					self.moveSelection(event.pos().x(), event.pos().y())
-		
+
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
-			self.toolHint.setGeometry(x, y)
+			if self.toolHint != None:
+				self.toolHint.setGeometry(x, y)
+			else:
+				self.toolHint = ToolHint(QtCore.QPoint(x,y), self.data, self)
+				self.toolHint.setGeometry(x, y)
+				self.toolHint.show()
 			if event.buttons() == Qt.LeftButton and self.drawing:
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.primaryColor)
 				self.com.updateCanvas.emit()
@@ -371,6 +376,12 @@ class Canvas(QtGui.QLabel):
 			for i in range(h)[1:]:
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
+
+	def hideToolHint(self):
+
+		if self.toolHint != None:
+			self.toolHint.hide()
+			self.toolHint = None
 
 	def zoom(self): # Cosas que hacer cuando se aplica un zoom
 

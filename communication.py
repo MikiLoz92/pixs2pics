@@ -22,6 +22,8 @@ class Communication(QtCore.QObject):
 	updateColor = QtCore.pyqtSignal()
 	updateColorDeg = QtCore.pyqtSignal()
 
+	onClickPalette = QtCore.pyqtSignal()
+
 	updateTool = QtCore.pyqtSignal()
 
 	zoom = QtCore.pyqtSignal()
