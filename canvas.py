@@ -248,6 +248,7 @@ class Canvas(QtGui.QLabel):
 				if self.data.selection.moving:
 					self.moveSelection(event.pos().x(), event.pos().y())
 
+			"""
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x, y)
@@ -258,7 +259,19 @@ class Canvas(QtGui.QLabel):
 				#self.drawLineTo((self.lastPoint.x(), self.lastPoint.y()), (x, y), color)
 				self.lastPoint = QtCore.QPoint(endPoint)
 				self.com.updateCanvas.emit()
+			"""
 
+		# Lápiz
+		elif self.data.currentTool == 1:
+			endPoint = QtCore.QPoint(x,y)
+			if event.buttons() == Qt.LeftButton and self.drawing:
+				self.drawLineTo(QtCore.QPoint(x,y), self.data.primaryColor)
+				self.com.updateCanvas.emit()
+				self.lastPoint = QtCore.QPoint(endPoint)
+			elif event.buttons() == Qt.RightButton and self.drawing:
+				self.drawLineTo(QtCore.QPoint(x,y), self.data.secondaryColor)
+				self.com.updateCanvas.emit()
+				self.lastPoint = QtCore.QPoint(endPoint)
 
 		# Goma
 		elif self.data.currentTool == 3:
