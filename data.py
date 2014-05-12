@@ -22,7 +22,7 @@ class Data:
 	secondaryColorEraser = False
 	eraserSize = 2
 	brushSize = 3
-	brushStyle = 0
+	selection = None
 	currentTool = 1
 	zoom = 1
 	defaultFileName = ""
@@ -96,11 +96,75 @@ class Data:
 		
 		self.posHistory += 1
 
+	def resizeSelection(self, xevent, yevent):
+
+		# En la imagen
+		x = xevent / self.data.zoom
+		y = yevent / self.data.zoom
+
+		if x >= self.selection.origin.x() and y >= self.selection.origin.y():
+			self.selection.setGeometry( self.selection.origin.x(), self.selection.origin.y(), x - self.selection.origin.x() + 1, y - self.selection.origin.y() + 1 )
+		elif x < self.selection.origin.x() and y >= self.selection.origin.y():
+			self.selection.setGeometry( x, self.selection.origin.y(), self.selection.origin.x() - x + 1, y - self.selection.origin.y() + 1 )
+		elif x < self.selection.origin.x() and y < self.selection.origin.y():
+			self.selection.setGeometry( x, y, self.selection.origin.x() - x + 1, self.selection.origin.y() - y + 1 )
+		elif x >= self.selection.origin.x() and y < self.selection.origin.y():
+			self.selection.setGeometry( self.selection.origin.x(), y, x - self.selection.origin.x() + 1, self.selection.origin.y() - y + 1 )
+		else:
+			self.selection.setGeometry( xorig, yorig, 1, 1 )
+
+		self.selection.show()
+
 	def undo(self): # TODO
 		pass
 
 	def redo(self): # TODO
 		pass
+
+	def flipHorizontally(self):
+
+		if self.selection != None:
+			self.selection.image = self.selection.image.mirrored(True, False)
+		else:
+			self.image = self.image.mirrored(True, False)
+			self.addHistoryStep()
+
+	def flipVertically(self):
+
+		if self.selection != None:
+			self.selection.image = self.selection.image.mirrored(False, True)
+		else:
+			self.image = self.image.mirrored(False, True)
+			self.addHistoryStep()
+
+	def rotate90CW(self):
+
+		transform = QtGui.QTransform().rotate(90)
+		if self.selection != None:
+			self.selection.image = self.selection.image.transformed(transform)
+			# Redimensionar la selección
+			self.selection.setGeometry(self.selection.rect.x(), self.selection.rect.y(), self.selection.image.width(), self.selection.image.height())
+		else:
+			self.image = self.image.transformed(transform)
+			self.addHistoryStep()
+
+	def rotate90CCW(self):
+
+		transform = QtGui.QTransform().rotate(270)
+		if self.selection != None:
+			self.selection.image = self.selection.image.transformed(transform)
+		else:
+			self.image = self.image.transformed(transform)
+			self.addHistoryStep()
+
+	def rotate180(self):
+
+		transform = QtGui.QTransform().rotate(180)
+		if self.selection != None:
+			self.selection.image = self.selection.image.transformed(transform)
+		else:
+			self.image = self.image.transformed(transform)
+			self.addHistoryStep()
 
 	def getText(self, sect, ident): # Get some text in the current language
 

@@ -612,37 +612,29 @@ class MainWindow(QtGui.QMainWindow):
 
 	def flipHorizontally(self):
 
-		self.data.image = self.data.image.mirrored(True, False)
-		self.data.addHistoryStep()
+		self.data.flipHorizontally()
 		self.com.updateCanvas.emit()
 
 	def flipVertically(self):
 
-		self.data.image = self.data.image.mirrored(False, True)
-		self.data.addHistoryStep()
+		self.data.flipVertically()
 		self.com.updateCanvas.emit()
 
 	def rotate90CW(self):
 
-		transform = QtGui.QTransform().rotate(90)
-		self.data.image = self.data.image.transformed(transform)
-		self.data.addHistoryStep()
+		self.data.rotate90CW()
 		self.com.updateCanvas.emit()
 		self.com.newImage.emit()
 
 	def rotate90CCW(self):
 
-		transform = QtGui.QTransform().rotate(270)
-		self.data.image = self.data.image.transformed(transform)
-		self.data.addHistoryStep()
+		self.data.rotate90CCW()
 		self.com.updateCanvas.emit()
 		self.com.newImage.emit()
 
 	def rotate180(self):
 
-		transform = QtGui.QTransform().rotate(180)
-		self.data.image = self.data.image.transformed(transform)
-		self.data.addHistoryStep()
+		self.data.rotate180()
 		self.com.updateCanvas.emit()
 
 	def showResizeImageDialog(self):

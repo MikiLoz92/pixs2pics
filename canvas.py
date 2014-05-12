@@ -6,19 +6,12 @@ import sys
 from PyQt4 import QtGui, QtCore, QtOpenGL
 from PyQt4.QtCore import Qt
 
-try:
-    from OpenGL import GL
 
-except ImportError:
-    print "Error: pyOpenGL must be installed if you want to use OpenGL acceleration."
-    sys.exit(1)
-
-
-class RubberBand(QtGui.QRubberBand):
+class Selection(QtGui.QRubberBand):
 
 	def __init__(self, origin, data, parent=None):
 
-		super(RubberBand, self).__init__(QtGui.QRubberBand.Rectangle, parent)
+		super(Selection, self).__init__(QtGui.QRubberBand.Rectangle, parent)
 
 		self.data = data
 		print origin
@@ -32,7 +25,7 @@ class RubberBand(QtGui.QRubberBand):
 	def setGeometry(self, x, y, w, h): # Todos los argumentos son el imagen, no en el Canvas
 
 		self.rect = QtCore.QRect(x, y, w, h)
-		super(RubberBand, self).setGeometry( x * self.data.zoom - 1, y * self.data.zoom - 1, w * self.data.zoom + 2, h * self.data.zoom + 2 )
+		super(Selection, self).setGeometry( x * self.data.zoom - 1, y * self.data.zoom - 1, w * self.data.zoom + 2, h * self.data.zoom + 2 )
 
 
 class ToolHint(QtGui.QRubberBand):
@@ -52,7 +45,6 @@ class ToolHint(QtGui.QRubberBand):
 		super(ToolHint, self).setGeometry( x * self.data.zoom, y * self.data.zoom, 1 * self.data.zoom + 1, 1 * self.data.zoom + 1 )
 
 
-## Vista/View
 class Canvas(QtGui.QLabel):
 	"""
 	La clase Canvas representa el lienzo donde pintaremos.
@@ -71,10 +63,10 @@ class Canvas(QtGui.QLabel):
 		self.setObjectName("Canvas")
 
 		self.com = com
-		self.com.zoom.connect(self.calcNewSelectionGeometry)
+		self.com.zoom.connect(self.zoom)
 		self.com.updateCanvas.connect(self.update)
 		self.com.resizeCanvas.connect(self.resize)
-		self.com.updateTool.connect(self.cancelSelection)
+		self.com.updateTool.connect(self.applySelection)
 		self.com.newImage.connect(self.resizeToNewImage)
 
 		self.com.cutImage.connect(self.cutImage)
@@ -89,7 +81,7 @@ class Canvas(QtGui.QLabel):
 
 		self.drawing = False
 		self.selecting = False
-		self.selection = None
+		self.data.selection = None
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
@@ -106,8 +98,9 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
 		self.com.leaveCanvas.emit()
-		self.toolHint.hide()
-		self.toolHint = None
+		if self.toolHint != None:
+			self.toolHint.hide()
+			self.toolHint = None
 
 	def dragEnterEvent(self, event):
 
@@ -136,20 +129,20 @@ class Canvas(QtGui.QLabel):
 		# Selección
 		if self.data.currentTool == 0:
 			if event.button() == Qt.LeftButton:
-				if not self.selection:
+				if not self.data.selection:
 					# Crear una nueva selección
-					self.selection = RubberBand(QtCore.QPoint(x, y), self.data, self)
+					self.data.selection = Selection(QtCore.QPoint(x, y), self.data, self)
 				else:
-					if self.selection.rect.contains(QtCore.QPoint(x, y)):
+					if self.data.selection.rect.contains(QtCore.QPoint(x, y)):
 						# Mover selección
-						self.selection.moving = True
-						#self.selectionGrabPoint = pos
-						self.selectionGrabPoint = QtCore.QPoint(x - self.selection.rect.x(), y - self.selection.rect.y())
+						self.data.selection.moving = True
+						#self.data.selectionGrabPoint = pos
+						self.data.selectionGrabPoint = QtCore.QPoint(x - self.data.selection.rect.x(), y - self.data.selection.rect.y())
 					else:
-						if self.selection.image != None:
+						if self.data.selection.image != None:
 							# Pintamos la imagen seleccionada en la imagen final
 							self.applySelection()
-						self.selection = RubberBand(QtCore.QPoint(x, y), self.data, self)
+						self.data.selection = Selection(QtCore.QPoint(x, y), self.data, self)
 			elif event.button() == Qt.RightButton:
 				pass
 
@@ -160,15 +153,13 @@ class Canvas(QtGui.QLabel):
 				self.drawing = False
 				self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			elif event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
-				painter = QtGui.QPainter(self.data.image)
 				color = self.data.primaryColor if event.button() == Qt.LeftButton else self.data.secondaryColor
 				size = self.data.pencilSize
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
 					painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 					color = self.data.bgColor
 					size = self.data.eraserSize
-				painter.setPen(QtGui.QPen(color , size, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
-				painter.drawPoint(x,y)
+				self.data.image.setPixel(x, y, color.rgb())
 				self.com.updateCanvas.emit()
 				self.drawing = True
 
@@ -251,10 +242,10 @@ class Canvas(QtGui.QLabel):
 		# Selección
 		if self.data.currentTool == 0:
 			if event.buttons() == Qt.LeftButton:
-				if not self.selection.finished:
+				if not self.data.selection.finished:
 					self.selecting = True
 					self.resizeSelection(event.pos().x(), event.pos().y())
-				if self.selection.moving:
+				if self.data.selection.moving:
 					self.moveSelection(event.pos().x(), event.pos().y())
 
 		# Lápiz
@@ -307,19 +298,19 @@ class Canvas(QtGui.QLabel):
 		if self.data.currentTool == 0 and event.button() == QtCore.Qt.LeftButton:
 			
 			if self.selecting:
-				print "Selection made starting at (" + str(self.selection.origin.x()) + ", " + str(self.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
-				self.selection.finished = True
-				self.selection.image = self.data.image.copy(self.selection.rect)
+				print "Selection made starting at (" + str(self.data.selection.origin.x()) + ", " + str(self.data.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				self.data.selection.finished = True
+				self.data.selection.image = self.data.image.copy(self.data.selection.rect)
 				painter = QtGui.QPainter(self.data.image)
 				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
-				painter.fillRect(self.selection.rect, self.data.bgColor)
+				painter.fillRect(self.data.selection.rect, self.data.bgColor)
 				print "Filling selection rect with bgColor"
 			else:
-				if self.selection != None and self.selection.finished:
+				if self.data.selection != None and self.data.selection.finished:
 					print "Moved selection"
 				else:
 					print "No selection was made"
-					self.selection = None
+					self.data.selection = None
 			self.selecting = False
 
 		# Lápiz
@@ -342,9 +333,9 @@ class Canvas(QtGui.QLabel):
 		painter.drawImage(self.rect(), self.data.image)
 
 		# Selection
-		if not self.selecting and self.selection != None and self.selection.finished and self.selection.image != None:
-			rect = QtCore.QRect(self.selection.rect.topLeft()*self.data.zoom, self.selection.rect.size()*self.data.zoom)
-			painter.drawImage(rect, self.selection.image)
+		if not self.selecting and self.data.selection != None and self.data.selection.finished and self.data.selection.image != None:
+			rect = QtCore.QRect(self.data.selection.rect.topLeft()*self.data.zoom, self.data.selection.rect.size()*self.data.zoom)
+			painter.drawImage(rect, self.data.selection.image)
 
 		# Pixel Grid
 		if self.data.grid and self.data.zoom > 3:
@@ -377,6 +368,11 @@ class Canvas(QtGui.QLabel):
 			for i in range(h)[1:]:
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
+
+	def zoom(self): # Cosas que hacer cuando se aplica un zoom
+
+		if self.data.selection != None: # Calcular la nueva geometría de la selección, en caso que haya
+			self.calcNewSelectionGeometry()
 
 	def resize(self):
 
@@ -417,33 +413,33 @@ class Canvas(QtGui.QLabel):
 		self.data.image.setPixel(endPoint, color.rgb())
 
 	def applySelection(self):
-
-		print "Applying selection"
-		painter = QtGui.QPainter(self.data.image)
-		painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
-		self.data.addHistoryStep()
-		self.com.updateCanvas.emit()
-		self.selection.hide()
-		self.selection = None
+		if self.data.selection != None:
+			print "Applying selection"
+			painter = QtGui.QPainter(self.data.image)
+			painter.drawImage(self.data.selection.rect.topLeft(), self.data.selection.image)
+			self.data.addHistoryStep()
+			self.com.updateCanvas.emit()
+			self.data.selection.hide()
+			self.data.selection = None
 
 	def cancelSelection(self):
 
-		if self.selection != None:
+		if self.data.selection != None:
 			print "Canceling selection"
 			painter = QtGui.QPainter(self.data.image)
-			painter.drawImage(self.selection.rect.topLeft(), self.selection.image)
+			painter.drawImage(self.data.selection.rect.topLeft(), self.data.selection.image)
 			self.data.addHistoryStep()
 			self.com.updateCanvas.emit()
-			self.selection.hide()
-			self.selection = None
+			self.data.selection.hide()
+			self.data.selection = None
 
 	def cutImage(self):
 
 		clipboard = QtGui.QApplication.clipboard()
-		if self.selection != None: # Copiar selección
-			clipboard.setImage(self.selection.image)
-			self.selection.hide()
-			self.selection = None
+		if self.data.selection != None: # Copiar selección
+			clipboard.setImage(self.data.selection.image)
+			self.data.selection.hide()
+			self.data.selection = None
 			self.com.updateCanvas.emit()
 		else: # Copiar imagen entera
 			clipboard.setImage(self.data.image)
@@ -451,8 +447,8 @@ class Canvas(QtGui.QLabel):
 	def copyImage(self):
 
 		clipboard = QtGui.QApplication.clipboard()
-		if self.selection != None: # Copiar selección
-			clipboard.setImage(self.selection.image)
+		if self.data.selection != None: # Copiar selección
+			clipboard.setImage(self.data.selection.image)
 		else: # Copiar imagen entera
 			clipboard.setImage(self.data.image)
 
@@ -460,27 +456,27 @@ class Canvas(QtGui.QLabel):
 
 		image = QtGui.QApplication.clipboard().image()
 		self.data.currentTool = 0
-		if self.selection != None:
+		if self.data.selection != None:
 			self.applySelection()
-		self.selection = RubberBand(QtCore.QPoint(0,0), self.data, self)
-		self.selection.setGeometry(0, 0, image.width(), image.height())
-		self.selection.show()
-		self.selection.finished = True
-		self.selection.image = image
+		self.data.selection = Selection(QtCore.QPoint(0,0), self.data, self)
+		self.data.selection.setGeometry(0, 0, image.width(), image.height())
+		self.data.selection.show()
+		self.data.selection.finished = True
+		self.data.selection.image = image
 
 	def clearImage(self):
 
-		if self.selection != None:
+		if self.data.selection != None:
 			print "Clear"
-			self.selection.hide()
-			self.selection = None
+			self.data.selection.hide()
+			self.data.selection = None
 			self.com.updateCanvas.emit()
 
 	def resizeToNewImage(self):
 
-		if self.selection != None:
-			self.selection.hide()
-			self.selection = None
+		if self.data.selection != None:
+			self.data.selection.hide()
+			self.data.selection = None
 		self.resize(self.data.image.width(), self.data.image.height())
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.data.zoom = 1
@@ -658,24 +654,23 @@ class Canvas(QtGui.QLabel):
 		x = xevent / self.data.zoom
 		y = yevent / self.data.zoom
 
-		if x >= self.selection.origin.x() and y >= self.selection.origin.y():
-			self.selection.setGeometry( self.selection.origin.x(), self.selection.origin.y(), x - self.selection.origin.x() + 1, y - self.selection.origin.y() + 1 )
-		elif x < self.selection.origin.x() and y >= self.selection.origin.y():
-			self.selection.setGeometry( x, self.selection.origin.y(), self.selection.origin.x() - x + 1, y - self.selection.origin.y() + 1 )
-		elif x < self.selection.origin.x() and y < self.selection.origin.y():
-			self.selection.setGeometry( x, y, self.selection.origin.x() - x + 1, self.selection.origin.y() - y + 1 )
-		elif x >= self.selection.origin.x() and y < self.selection.origin.y():
-			self.selection.setGeometry( self.selection.origin.x(), y, x - self.selection.origin.x() + 1, self.selection.origin.y() - y + 1 )
+		if x >= self.data.selection.origin.x() and y >= self.data.selection.origin.y():
+			self.data.selection.setGeometry( self.data.selection.origin.x(), self.data.selection.origin.y(), x - self.data.selection.origin.x() + 1, y - self.data.selection.origin.y() + 1 )
+		elif x < self.data.selection.origin.x() and y >= self.data.selection.origin.y():
+			self.data.selection.setGeometry( x, self.data.selection.origin.y(), self.data.selection.origin.x() - x + 1, y - self.data.selection.origin.y() + 1 )
+		elif x < self.data.selection.origin.x() and y < self.data.selection.origin.y():
+			self.data.selection.setGeometry( x, y, self.data.selection.origin.x() - x + 1, self.data.selection.origin.y() - y + 1 )
+		elif x >= self.data.selection.origin.x() and y < self.data.selection.origin.y():
+			self.data.selection.setGeometry( self.data.selection.origin.x(), y, x - self.data.selection.origin.x() + 1, self.data.selection.origin.y() - y + 1 )
 		else:
-			self.selection.setGeometry( xorig, yorig, 1, 1 )
+			self.data.selection.setGeometry( xorig, yorig, 1, 1 )
 
-		self.selection.show()
+		self.data.selection.show()
 
 	def calcNewSelectionGeometry(self):
 
-		if self.selection != None and self.selection.finished:
-			print "zoomasf"
-			self.selection.setGeometry(self.selection.rect.x(), self.selection.rect.y(), self.selection.rect.width(), self.selection.rect.height())
+		if self.data.selection != None and self.data.selection.finished:
+			self.data.selection.setGeometry(self.data.selection.rect.x(), self.data.selection.rect.y(), self.data.selection.rect.width(), self.data.selection.rect.height())
 
 	def moveSelection(self, xevent, yevent):
 
@@ -683,7 +678,7 @@ class Canvas(QtGui.QLabel):
 		x = xevent / self.data.zoom
 		y = yevent / self.data.zoom
 
-		xx = self.selectionGrabPoint.x()
-		yy = self.selectionGrabPoint.y()
+		xx = self.data.selectionGrabPoint.x()
+		yy = self.data.selectionGrabPoint.y()
 
-		self.selection.setGeometry(x - xx, y - yy, self.selection.rect.width(), self.selection.rect.height())
+		self.data.selection.setGeometry(x - xx, y - yy, self.data.selection.rect.width(), self.data.selection.rect.height())
