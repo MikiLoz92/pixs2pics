@@ -156,7 +156,6 @@ class Canvas(QtGui.QLabel):
 				color = self.data.primaryColor if event.button() == Qt.LeftButton else self.data.secondaryColor
 				size = self.data.pencilSize
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
-					painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 					color = self.data.bgColor
 					size = self.data.eraserSize
 				self.data.image.setPixel(x, y, color.rgb())
@@ -247,29 +246,20 @@ class Canvas(QtGui.QLabel):
 					self.resizeSelection(event.pos().x(), event.pos().y())
 				if self.data.selection.moving:
 					self.moveSelection(event.pos().x(), event.pos().y())
-
-			"""
-		# Lápiz
-		elif self.data.currentTool == 1:
-			endPoint = QtCore.QPoint(x, y)
-			self.toolHint.setGeometry(x, y)
-			if event.buttons() == Qt.LeftButton or event.buttons() == Qt.RightButton:
-				color = self.data.primaryColor if event.buttons() == Qt.LeftButton else self.data.secondaryColor
-				self.drawLineTo(QtCore.QPoint(x,y), color)
-				#self.drawLineTo((self.lastPoint.x(), self.lastPoint.y()), (x, y), color)
-				self.lastPoint = QtCore.QPoint(endPoint)
-				self.com.updateCanvas.emit()
-			"""
-
+		
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
+			self.toolHint.setGeometry(x, y)
 			if event.buttons() == Qt.LeftButton and self.drawing:
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.primaryColor)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
 			elif event.buttons() == Qt.RightButton and self.drawing:
-				self.drawLineTo(QtCore.QPoint(x,y), self.data.secondaryColor)
+				color = self.data.secondaryColor
+				if self.data.secondaryColorEraser:
+					color = self.data.bgColor
+				self.drawLineTo(QtCore.QPoint(x,y), color)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
 
