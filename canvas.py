@@ -443,17 +443,6 @@ class Canvas(QtGui.QLabel):
 			self.data.selection.hide()
 			self.data.selection = None
 
-	def cancelSelection(self):
-
-		if self.data.selection != None:
-			print "Canceling selection"
-			painter = QtGui.QPainter(self.data.image)
-			painter.drawImage(self.data.selection.rect.topLeft(), self.data.selection.image)
-			self.data.addHistoryStep()
-			self.com.updateCanvas.emit()
-			self.data.selection.hide()
-			self.data.selection = None
-
 	def cutImage(self):
 
 		clipboard = QtGui.QApplication.clipboard()

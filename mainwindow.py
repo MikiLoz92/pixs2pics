@@ -80,11 +80,11 @@ class ToolProperties (QtGui.QDockWidget):
 
 		l.append(QtGui.QWidget())
 		l.append(self.createPencilWidget())
-		l.append(QtGui.QWidget())
 		l.append(self.createEraserWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
 		l.append(self.createGradientWidget())
+		l.append(QtGui.QWidget())
 
 		return l
 
