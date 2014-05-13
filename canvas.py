@@ -90,7 +90,10 @@ class Canvas(QtGui.QLabel):
 		print "Entering Canvas"
 		super(Canvas, self).enterEvent(event)
 		if not self.data.colorPicker:
-			self.setCursor(self.data.pencilCur)
+			cursors = [0, self.data.pencilCur, 0, self.data.colorPickerCur, 0, 0, 0]
+			for i in range(7):
+				if self.data.currentTool == i and cursors[i] != 0:
+					self.setCursor(cursors[i])
 		self.com.enterCanvas.emit()
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
@@ -166,14 +169,14 @@ class Canvas(QtGui.QLabel):
 				self.drawing = True
 
 		# Goma
-		elif self.data.currentTool == 3:
+		elif self.data.currentTool == 2:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
 				self.data.image.setPixel(x, y, self.data.bgColor.rgba())
 				self.drawing = True
 
 		# Pipeta de color
-		elif self.data.currentTool == 4:
+		elif self.data.currentTool == 3:
 			if event.button() == Qt.LeftButton:
 				self.data.changePrimaryColor( QtGui.QColor(self.data.image.pixel(QtCore.QPoint(x,y))) )
 			elif event.button() == Qt.RightButton:
@@ -181,7 +184,7 @@ class Canvas(QtGui.QLabel):
 			self.com.updateColor.emit()
 
 		# Cubo
-		elif self.data.currentTool == 5:
+		elif self.data.currentTool == 4:
 			if event.button() == Qt.LeftButton:
 				self.fillImage( (x, y), self.data.primaryColor, self.data.image.pixel(x,y), self.data.image )
 			elif event.button() == Qt.RightButton:
@@ -190,7 +193,7 @@ class Canvas(QtGui.QLabel):
 			self.com.updateCanvas.emit()
 
 		# Degradado
-		elif self.data.currentTool == 6:
+		elif self.data.currentTool == 5:
 
 			if event.button() == Qt.LeftButton:
 
@@ -270,7 +273,7 @@ class Canvas(QtGui.QLabel):
 				self.lastPoint = QtCore.QPoint(endPoint)
 
 		# Goma
-		elif self.data.currentTool == 3:
+		elif self.data.currentTool == 2:
 			if event.buttons() == Qt.LeftButton or event.buttons() == Qt.RightButton:
 				print "Borrando"
 				endPoint = QtCore.QPoint(x,y)
@@ -326,7 +329,7 @@ class Canvas(QtGui.QLabel):
 				self.drawing = False
 
 		# Goma
-		elif self.data.currentTool == 3:
+		elif self.data.currentTool == 2:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.data.addHistoryStep()
 				self.drawing = False
@@ -498,7 +501,7 @@ class Canvas(QtGui.QLabel):
 		#self.resize(self.data.image.width(), self.data.image.height())
 		self.resize()
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
-		self.data.zoom = 1
+		#self.data.zoom = 1
 		self.com.updateCanvas.emit()
 
 	def fillImage(self, begin, paint, current, imagen):

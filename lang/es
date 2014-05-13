@@ -134,7 +134,7 @@ exchange = Intercambiar colores
 
 [dock_widgets]
 palette = Paleta
-tool_properties = Propiedades de la herramienta
+tool_properties = Opciones de herramienta
 preview = Miniatura
 
 # -----------------------

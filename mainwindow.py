@@ -338,8 +338,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		tools = ["selection", "pencil", "brush", "eraser", "colorpicker", "fill", "gradient", "exchange"]
-		connects = [self.setSelectionTool, self.setPencilTool, self.setBrushTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setDegTool, 0]
+		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient", "exchange"]
+		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
 
 		for i in range(len(tools)):
 			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]), self.tools)
@@ -357,6 +357,8 @@ class MainWindow(QtGui.QMainWindow):
 		a.triggered.connect(self.zoomOut)
 		l.append(a)
 
+		l[self.data.currentTool].setChecked(True)
+
 		return l
 
 	def createToolBar(self):
@@ -367,7 +369,7 @@ class MainWindow(QtGui.QMainWindow):
 		j = 0
 		for i in l:
 			toolBar.addAction(i)
-			if j == 7:
+			if j == 6:
 				toolBar.addSeparator()
 			j += 1
 
@@ -602,13 +604,15 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.data.rotate90CW()
 		self.com.updateCanvas.emit()
-		self.com.newImage.emit()
-
+		if not self.data.selection:
+			self.com.newImage.emit()
+		
 	def rotate90CCW(self):
 
 		self.data.rotate90CCW()
 		self.com.updateCanvas.emit()
-		self.com.newImage.emit()
+		if not self.data.selection:
+			self.com.newImage.emit()
 
 	def rotate180(self):
 
@@ -639,27 +643,27 @@ class MainWindow(QtGui.QMainWindow):
 		self.data.currentTool = 1
 		self.com.updateTool.emit()
 
-	def setBrushTool(self):
+	def setEraserTool(self):
 
 		self.data.currentTool = 2
 		self.com.updateTool.emit()
 
-	def setEraserTool(self):
+	def setColorPickerTool(self):
 
 		self.data.currentTool = 3
 		self.com.updateTool.emit()
 
-	def setColorPickerTool(self):
+	def setFillTool(self):
 
 		self.data.currentTool = 4
 		self.com.updateTool.emit()
 
-	def setFillTool(self):
+	def setGradientTool(self):
 
 		self.data.currentTool = 5
 		self.com.updateTool.emit()
 
-	def setDegTool(self):
+	def setExchangeTool(self):
 
 		self.data.currentTool = 6
 		self.com.updateTool.emit()

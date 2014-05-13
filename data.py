@@ -142,7 +142,6 @@ class Data:
 		transform = QtGui.QTransform().rotate(90)
 		if self.selection != None:
 			self.selection.image = self.selection.image.transformed(transform)
-			# Redimensionar la selección
 			self.selection.setGeometry(self.selection.rect.x(), self.selection.rect.y(), self.selection.image.width(), self.selection.image.height())
 		else:
 			self.image = self.image.transformed(transform)
@@ -153,6 +152,7 @@ class Data:
 		transform = QtGui.QTransform().rotate(270)
 		if self.selection != None:
 			self.selection.image = self.selection.image.transformed(transform)
+			self.selection.setGeometry(self.selection.rect.x(), self.selection.rect.y(), self.selection.image.width(), self.selection.image.height())
 		else:
 			self.image = self.image.transformed(transform)
 			self.addHistoryStep()
