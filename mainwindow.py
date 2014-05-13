@@ -337,51 +337,24 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		self.selectionAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "selection.png") ), self.data.getText("tools", "selection"), self.tools)
-		self.selectionAction.setCheckable(True)
-		self.selectionAction.toggled.connect(self.setSelectionTool)
-		l.append(self.selectionAction)
+		tools = ["selection", "pencil", "brush", "eraser", "colorpicker", "fill", "gradient", "exchange"]
+		connects = [self.setSelectionTool, self.setPencilTool, self.setBrushTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setDegTool, 0]
 
-		self.pencilAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "pencil.png") ), self.data.getText("tools", "pencil"), self.tools)
-		self.pencilAction.setCheckable(True)
-		self.pencilAction.toggled.connect(self.setPencilTool)
-		self.pencilAction.toggle()
-		l.append(self.pencilAction)
+		for i in range(len(tools)):
+			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]), self.tools)
+			a.setCheckable(True)
+			if connects[i] != 0: a.toggled.connect(connects[i])
+			l.append(a)
 
-		self.brushAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "brush.png") ), self.data.getText("tools", "brush"), self.tools)
-		self.brushAction.setCheckable(True)
-		self.brushAction.toggled.connect(self.setBrushTool)
-		l.append(self.brushAction)
+		a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomin.png") ), self.data.getText("tools", "zoomin"), self.tools)
+		a.setShortcut("Ctrl++")
+		a.triggered.connect(self.zoomIn)
+		l.append(a)
 
-		self.eraserAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "eraser.png") ), self.data.getText("tools", "eraser"), self.tools)
-		self.eraserAction.setCheckable(True)
-		self.eraserAction.toggled.connect(self.setEraserTool)
-		l.append(self.eraserAction)
-
-		self.colorPickerAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "dropper.png") ), self.data.getText("tools", "colorpicker"), self.tools)
-		self.colorPickerAction.setCheckable(True)
-		self.colorPickerAction.toggled.connect(self.setColorPickerTool)
-		l.append(self.colorPickerAction)
-
-		self.zoomInAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomin.png") ), self.data.getText("tools", "zoomin"), self.tools)
-		self.zoomInAction.setShortcut("+")
-		self.zoomInAction.triggered.connect(self.zoomIn)
-		l.append(self.zoomInAction)
-
-		self.zoomOutAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomout.png") ), self.data.getText("tools", "zoomout"), self.tools)
-		self.zoomOutAction.setShortcut("-")
-		self.zoomOutAction.triggered.connect(self.zoomOut)
-		l.append(self.zoomOutAction)
-
-		self.fillAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "fill.png") ), self.data.getText("tools", "fill"), self.tools)
-		self.fillAction.setCheckable(True)
-		self.fillAction.toggled.connect(self.setFillTool)
-		l.append(self.fillAction)
-
-		self.fillAction = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "gradient.png") ), self.data.getText("tools", "gradient"), self.tools)
-		self.fillAction.setCheckable(True)
-		self.fillAction.toggled.connect(self.setDegTool)
-		l.append(self.fillAction)
+		a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, "zoomout.png") ), self.data.getText("tools", "zoomout"), self.tools)
+		a.setShortcut("Ctrl+-")
+		a.triggered.connect(self.zoomOut)
+		l.append(a)
 
 		return l
 
@@ -390,8 +363,12 @@ class MainWindow(QtGui.QMainWindow):
 		toolBar = QtGui.QToolBar()
 		l = self.createToolBarActions()
 
+		j = 0
 		for i in l:
 			toolBar.addAction(i)
+			if j == 7:
+				toolBar.addSeparator()
+			j += 1
 
 		toolBar.setMovable(False)
 		toolBar.setOrientation(Qt.Vertical)
@@ -770,7 +747,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		clipboard = QtGui.QApplication.clipboard()
 		if not clipboard.image().isNull():
-			self.selectionAction.setChecked(True)
+			print self.tools.actions()[0].setChecked(True)
 			self.com.pasteImage.emit()
 			self.com.updateCanvas.emit()
 

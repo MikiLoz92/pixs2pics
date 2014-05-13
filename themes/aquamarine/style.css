@@ -37,6 +37,13 @@ QToolBar {
 	border: none;
 }
 
+QToolBar::separator {
+	background-color: rgb(61,69,72);
+	width: 1px; /* when vertical */
+	height: 1px; /* when horizontal */
+	margin: 2px 4px;
+}
+
 
 
 /* ToolButton */

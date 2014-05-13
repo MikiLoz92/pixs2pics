@@ -127,6 +127,7 @@ zoomin = Zoom In
 zoomout = Zoom Out
 fill = Fill
 gradient = Gradient
+exchange = Exchange colors
 
 # --------------------
 # --- DOCK WIDGETS ---

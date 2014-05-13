@@ -126,6 +126,7 @@ zoomin = Zoom hacia dentro
 zoomout = Zoom hacia fuera
 fill = Cubeta
 gradient = Degradado
+exchange = Intercambiar colores
 
 # --------------------
 # --- DOCK WIDGETS ---
