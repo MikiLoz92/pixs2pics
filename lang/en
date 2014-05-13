@@ -144,6 +144,7 @@ preview = Preview
 
 [tool_properties_pencil]
 size = Size:
+eraser = Use eraser instead\nof secondary color
 
 [status]
 ready = Ready

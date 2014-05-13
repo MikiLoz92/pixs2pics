@@ -168,7 +168,7 @@ class Data:
 
 	def getText(self, sect, ident): # Get some text in the current language
 
-		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8")
+		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8").replace("\\n", "\n")
 
 	def getTextInLang(self, lang, sect, ident): # Get some text in a specific language
 

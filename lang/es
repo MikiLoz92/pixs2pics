@@ -65,13 +65,13 @@ resize = Modificar tamaño
 resize_canvas = Tamaño del lienzo...
 
 [menu_transform_status_tips]
-flip_hor = Flip horizontally the image or a part of it
-flip_ver = Flip vertically the image or a part of it
-rotate_cw = Rotate 90º clockwise the image or a part of it
-rotate_ccw = Rotate 90º counterclockwise the image or a part of it
-rotate_180 = Rotate 180º the image or a part of it
-resize = Resize the image or a part of it
-resize_canvas = Resize the canvas
+flip_hor = Voltear horizontalmente la imagen o una parte de ella
+flip_ver = Voltear verticalmente la imagen o una parte de ella
+rotate_cw = Rotar 90º en sentido horario la imagen o una parte de ella
+rotate_ccw = Rotar 90º en sentido antihorario la imagen o una parte de ella
+rotate_180 = Rotar 180º la imagen o una parte de ella
+resize = Modificar el tamaño de la imagen o de una parte de ella
+resize_canvas = Modificar el tamaño del lienzo
 
 [menu_help_labels]
 contents = &Ayuda
@@ -143,6 +143,7 @@ preview = Miniatura
 
 [tool_properties_pencil]
 size = Tamaño:
+eraser = Usar goma en vez\nde color secundario
 
 [status]
 ready = Listo

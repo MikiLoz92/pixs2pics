@@ -363,9 +363,9 @@ class Canvas(QtGui.QLabel):
 			w = self.data.image.width()
 			h = self.data.image.height()
 			for i in range(w)[1:]:
-				painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
+				painter.drawLine(i*self.data.zoom-1, 0, i*self.data.zoom-1, h*self.data.zoom)
 			for i in range(h)[1:]:
-				painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
+				painter.drawLine(0, i*self.data.zoom-1, w*self.data.zoom, i*self.data.zoom-1)
 
 		# Matrix Grid
 		if self.data.matrixGrid and self.data.zoom >= 3:
@@ -494,7 +494,8 @@ class Canvas(QtGui.QLabel):
 		if self.data.selection != None:
 			self.data.selection.hide()
 			self.data.selection = None
-		self.resize(self.data.image.width(), self.data.image.height())
+		#self.resize(self.data.image.width(), self.data.image.height())
+		self.resize()
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 		self.data.zoom = 1
 		self.com.updateCanvas.emit()

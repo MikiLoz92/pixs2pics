@@ -124,7 +124,8 @@ class ToolProperties (QtGui.QDockWidget):
 		hbox2.addWidget(alpha)
 		"""
 		hbox2 = QtGui.QHBoxLayout()
-		eraser = QtGui.QCheckBox("Use eraser instead\n of secondary color", self)
+		print self.data.getText("tool_properties_pencil", "eraser")
+		eraser = QtGui.QCheckBox(self.data.getText("tool_properties_pencil", "eraser"), self)
 		eraser.setChecked(self.data.secondaryColorEraser)
 		eraser.toggled.connect(self.toggleSecondaryColorEraser)
 		hbox2.addWidget(eraser)
