@@ -164,7 +164,7 @@ class Canvas(QtGui.QLabel):
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
 					color = self.data.bgColor
 					size = self.data.eraserSize
-				self.data.image.setPixel(x, y, color.rgba())
+				self.data.paintPoint(x, y, color.rgba())
 				self.com.updateCanvas.emit()
 				self.drawing = True
 
@@ -172,7 +172,7 @@ class Canvas(QtGui.QLabel):
 		elif self.data.currentTool == 2:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
-				self.data.image.setPixel(x, y, self.data.bgColor.rgba())
+				self.data.paintPoint(x, y, self.data.bgColor.rgba())
 				self.drawing = True
 
 		# Pipeta de color
@@ -237,7 +237,6 @@ class Canvas(QtGui.QLabel):
 
 	def mouseMoveEvent(self, event):
 
-		print self.drawing
 		pos = event.pos()
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
@@ -423,15 +422,15 @@ class Canvas(QtGui.QLabel):
 		d = (2 * dy) - dx
 
 		for i in range(0,dx):
-		    if steep: self.data.image.setPixel(y, x, color.rgba())
-		    else: self.data.image.setPixel(x, y, color.rgba())
+		    if steep: self.data.paintPoint(y, x, color.rgba())
+		    else: self.data.paintPoint(x, y, color.rgba())
 		    while d >= 0:
 		        y = y + sy
 		        d = d - (2 * dx)
 		    x = x + sx
 		    d = d + (2 * dy)
 
-		self.data.image.setPixel(endPoint, color.rgba())
+		self.data.paintPoint(endPoint.x(), endPoint.y(), color.rgba())
 
 	def applySelection(self):
 		if self.data.selection != None:

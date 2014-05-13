@@ -52,6 +52,11 @@ class Data:
 		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
 		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/dropperCur.png"), 0, 23)
 
+		# Creamos las puntas del lápiz
+		self.tips = []
+		for i in range(9):
+			self.tips.append(self.getCircle(i))
+
 	def loadImage(self, fileName):
 
 		self.defaultFileName = fileName
@@ -76,6 +81,84 @@ class Data:
 		self.com.newImage.emit()
 		self.com.updateCanvas.emit()
 		self.com.resizeCanvas.emit()
+
+	def paintPoint(self, x, y, color):
+
+		"""
+		# Cuadrado
+		erasing = (self.currentTool == 2)
+		if erasing:
+			size = self.eraserSize
+		else:
+			size = self.pencilSize
+		if size%2 == 0: size += 1
+
+		ran = range(-(size-(size/2+1)), size/2+1)
+
+		for i in ran:
+			for j in ran:
+				self.image.setPixel(x+i, y+j, color)
+		"""
+
+		# Circular
+		erasing = (self.currentTool == 2)
+		if erasing:
+			m = self.tips[self.eraserSize-1]
+			radius = self.eraserSize - 1
+		else:
+			m = self.tips[self.pencilSize-1]
+			radius = self.pencilSize - 1
+
+		for i in range(len(m)):
+			for j in range(len(m[i])):
+				xx = x+radius-i
+				yy = y+radius-j
+				if m[i][j] and xx >= 0 and xx < self.image.width() and yy >= 0 and yy < self.image.height():
+					self.image.setPixel(xx, yy, color)
+
+	def printMatrix(self, m):
+		for row in m:
+			print " ".join([str(x) for x in row])
+
+	def getCircle(self, radius):
+		x0 = radius
+		y0 = radius
+		f = 1 - radius
+		ddf_x = 1
+		ddf_y = -2 * radius
+		x = 0
+		y = radius
+		l = []
+		for i in range(2*radius+1):
+			l.append([0]*(2*radius+1))
+		l[y0+radius][x0] = True
+		l[y0-radius][x0] = True
+		l[y0][x0+radius] = True
+		l[y0][x0-radius] = True
+		while x < y:
+			if f >= 0: 
+				y -= 1
+				ddf_y += 2
+				f += ddf_y
+			x += 1
+			ddf_x += 2
+			f += ddf_x
+			for i in range(x0-x,x0+x+1):
+				print i
+				l[y0+y][i] = True
+			for i in range(x0-x,x0+x+1):		
+				print i
+				l[y0-y][i] = True
+			for i in range(x0-y,x0+y+1):
+				print i
+				l[y0+x][i] = True
+			for i in range(x0-y,x0+y+1):
+				print i
+				l[y0-x][i] = True
+			for i in range(x0-radius, x0+radius+1):
+				l[y0][i] = True
+		return l
+	
 
 	def changePrimaryColor(self, c):
 
