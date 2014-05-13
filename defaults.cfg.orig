@@ -1,0 +1,21 @@
+[language]
+lang = es
+
+[grid]
+grid = True
+matrix_grid = False
+matrix_grid_width = 16
+matrix_grid_height = 16
+
+[color]
+<<<<<<< HEAD
+primary_color = 4283644060
+secondary_color = 4293302530
+=======
+primary_color = 4287003126
+secondary_color = 4294923520
+>>>>>>> 56e41c5263ccc4ab9a41d4e006410cc432112c0f
+
+[theme]
+theme = aquamarine
+
