@@ -92,7 +92,6 @@ class Canvas(QtGui.QLabel):
 		if not self.data.colorPicker:
 			self.setCursor(self.data.pencilCur)
 		self.com.enterCanvas.emit()
-		
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
 
@@ -102,6 +101,7 @@ class Canvas(QtGui.QLabel):
 		self.com.leaveCanvas.emit()
 		self.hideToolHint()
 
+	"""
 	def dragEnterEvent(self, event):
 
 		event.acceptProposedAction()
@@ -119,6 +119,7 @@ class Canvas(QtGui.QLabel):
 			self.com.updateCanvas.emit()
 			self.com.resizeCanvas.emit()
 		event.acceptProposedAction()
+	"""
 
 	def mousePressEvent(self, event):
 
