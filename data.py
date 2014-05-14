@@ -48,6 +48,10 @@ class Data:
 		# Creamos la QImage
 		self.newImage(32,32,QtGui.QColor(255,255,255))
 
+		# Draw elipse
+		painter = QtGui.QPainter(self.image)
+		painter.drawEllipse(QtCore.QRect(0,0,6,6))
+
 		# Creamos los cursores
 		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
 		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/dropperCur.png"), 0, 23)
@@ -56,6 +60,9 @@ class Data:
 		self.tips = []
 		for i in range(9):
 			self.tips.append(self.getCircle(i))
+
+		# Generar Bitmaps
+		self.bitmaps = self.createBitmaps()
 
 	def loadImage(self, fileName):
 
@@ -97,9 +104,9 @@ class Data:
 
 		for i in ran:
 			for j in ran:
-				self.image.setPixel(x+i, y+j, color)
+				self.image.setPixel(x+i, y+j, color.rgba())
 		"""
-
+		"""
 		# Circular
 		erasing = (self.currentTool == 2)
 		if erasing:
@@ -114,7 +121,52 @@ class Data:
 				xx = x+radius-i
 				yy = y+radius-j
 				if m[i][j] and xx >= 0 and xx < self.image.width() and yy >= 0 and yy < self.image.height():
-					self.image.setPixel(xx, yy, color)
+					self.image.setPixel(xx, yy, color.rgba())
+		"""
+		
+		# Qt Ellipses
+		erasing = (self.currentTool == 2)
+		if erasing: size = (self.eraserSize-1)*2
+		else: size = (self.pencilSize-1)*2
+		if size > 0:
+			painter = QtGui.QPainter(self.image)
+			painter.setPen(color);
+			painter.setBrush(color);
+			path = QtGui.QPainterPath()
+			path.addEllipse(QtCore.QRectF(x-size/2,y-size/2,size,size))
+			painter.drawPath(path)
+		else:
+			self.image.setPixel(x, y, color.rgba())
+
+
+	def createBitmaps(self):
+
+		l = []
+		l2 = []
+		for i in range(9):
+			size = i*2
+			bitmap = QtGui.QBitmap(size+1, size+1)
+			bitmap.clear()
+			painter = QtGui.QPainter(bitmap)
+			if i == 0: painter.drawPoint(0,0)
+			else:
+				path = QtGui.QPainterPath()
+				path.addEllipse(QtCore.QRectF(0,0,size,size))
+				painter.setBrush(QtGui.QColor(0,0,0))
+				painter.setPen(QtGui.QColor(0,0,0));
+				painter.drawPath(path)
+			l.append(bitmap)
+			im = bitmap.toImage()
+			bmp = []
+			for j in range(size+1):
+				bmp.append([])
+				for k in range(size+1):
+					if im.pixel(j, k) == QtGui.QColor(0,0,0).rgb():
+						bmp[j].append(True)
+					else:
+						bmp[j].append(False)
+			l2.append(bmp)
+		return l2
 
 	def printMatrix(self, m):
 		for row in m:

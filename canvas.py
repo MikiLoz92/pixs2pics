@@ -27,7 +27,7 @@ class Selection(QtGui.QRubberBand):
 		self.rect = QtCore.QRect(x, y, w, h)
 		super(Selection, self).setGeometry( x * self.data.zoom - 1, y * self.data.zoom - 1, w * self.data.zoom + 2, h * self.data.zoom + 2 )
 
-
+"""
 class ToolHint(QtGui.QRubberBand):
 
 	def __init__(self, origin, data, parent=None):
@@ -43,6 +43,7 @@ class ToolHint(QtGui.QRubberBand):
 
 		self.rect = QtCore.QRect(x, y, 1, 1)
 		super(ToolHint, self).setGeometry( x * self.data.zoom, y * self.data.zoom, 1 * self.data.zoom + 1, 1 * self.data.zoom + 1 )
+"""		
 
 
 class Canvas(QtGui.QLabel):
@@ -68,7 +69,7 @@ class Canvas(QtGui.QLabel):
 		self.com.resizeCanvas.connect(self.resize)
 		self.com.updateTool.connect(self.applySelection)
 		self.com.newImage.connect(self.resizeToNewImage)
-		self.com.onClickPalette.connect(self.hideToolHint)
+		#self.com.onClickPalette.connect(self.hideToolHint)
 
 		self.com.cutImage.connect(self.cutImage)
 		self.com.copyImage.connect(self.copyImage)
@@ -83,7 +84,7 @@ class Canvas(QtGui.QLabel):
 		self.drawing = False
 		self.selecting = False
 		self.data.selection = None
-		self.toolHint = None
+		#self.toolHint = None
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
@@ -102,7 +103,7 @@ class Canvas(QtGui.QLabel):
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
 		self.com.leaveCanvas.emit()
-		self.hideToolHint()
+		#self.hideToolHint()
 
 	"""
 	def dragEnterEvent(self, event):
@@ -164,7 +165,7 @@ class Canvas(QtGui.QLabel):
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
 					color = self.data.bgColor
 					size = self.data.eraserSize
-				self.data.paintPoint(x, y, color.rgba())
+				self.data.paintPoint(x, y, color)
 				self.com.updateCanvas.emit()
 				self.drawing = True
 
@@ -172,7 +173,7 @@ class Canvas(QtGui.QLabel):
 		elif self.data.currentTool == 2:
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
-				self.data.paintPoint(x, y, self.data.bgColor.rgba())
+				self.data.paintPoint(x, y, self.data.bgColor)
 				self.drawing = True
 
 		# Pipeta de color
@@ -240,6 +241,8 @@ class Canvas(QtGui.QLabel):
 		pos = event.pos()
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
+		self.data.xcursor = x
+		self.data.ycursor = y
 
 		# Selección
 		if self.data.currentTool == 0:
@@ -253,12 +256,14 @@ class Canvas(QtGui.QLabel):
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
+			"""
 			if self.toolHint != None:
 				self.toolHint.setGeometry(x, y)
 			else:
 				self.toolHint = ToolHint(QtCore.QPoint(x,y), self.data, self)
 				self.toolHint.setGeometry(x, y)
 				self.toolHint.show()
+			"""
 			if event.buttons() == Qt.LeftButton and self.drawing:
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.primaryColor)
 				self.com.updateCanvas.emit()
@@ -295,6 +300,42 @@ class Canvas(QtGui.QLabel):
 				self.move(self.x(), 0)
 
 		self.update()
+
+	def drawToolHint(self, x, y):
+
+		if self.data.currentTool == 1: m = self.data.bitmaps[self.data.pencilSize-1]
+		elif self.data.currentTool == 2: m = self.data.bitmaps[self.data.eraserSize-1]
+
+		painter = QtGui.QPainter(self)
+		#painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
+		pen = QtGui.QPen(QtGui.QColor(0,0,0,96))
+		#pen.setStyle(Qt.DotLine)
+		painter.setPen(pen)
+		size = len(m)
+
+		for i in range(size):
+			for j in range(size):
+				if m[i][j]:
+					if j == 0 or not m[i][j-1]:
+						x0 = (x-size/2+j)*self.data.zoom
+						y0 = (y-size/2+i)*self.data.zoom
+						y1 = (y-size/2+i+1)*self.data.zoom-1
+						painter.drawLine(x0, y0, x0, y1)
+					if j == size-1 or not m[i][j+1]:
+						x0 = (x+size/2+(j-size)+2)*self.data.zoom-1
+						y0 = (y-size/2+i)*self.data.zoom
+						y1 = (y-size/2+i+1)*self.data.zoom-1
+						painter.drawLine(x0, y0, x0, y1)
+					if i == 0 or not m[i-1][j]:
+						x0 = (x-size/2+j)*self.data.zoom
+						x1 = (x-size/2+j+1)*self.data.zoom-1
+						y0 = (y-size/2+i)*self.data.zoom
+						painter.drawLine(x0, y0, x1, y0)
+					if i == size-1  or not m[i+1][j]:
+						x0 = (x+size/2+(j-size)+1)*self.data.zoom
+						x1 = (x+size/2+(j-size)+2)*self.data.zoom-1
+						y0 = (y+size/2+(i-size)+2)*self.data.zoom-1
+						painter.drawLine(x0, y0, x1, y0)
 			
 	def mouseReleaseEvent(self, event):
 
@@ -383,11 +424,18 @@ class Canvas(QtGui.QLabel):
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 
+		# Draw ToolHint
+		xcursor = self.mapFromGlobal(QtGui.QCursor().pos()).x()/self.data.zoom
+		ycursor = self.mapFromGlobal(QtGui.QCursor().pos()).y()/self.data.zoom
+		self.drawToolHint(xcursor, ycursor)
+
+	"""
 	def hideToolHint(self):
 
 		if self.toolHint != None:
 			self.toolHint.hide()
 			self.toolHint = None
+	"""
 
 	def zoom(self): # Cosas que hacer cuando se aplica un zoom
 
@@ -422,15 +470,15 @@ class Canvas(QtGui.QLabel):
 		d = (2 * dy) - dx
 
 		for i in range(0,dx):
-		    if steep: self.data.paintPoint(y, x, color.rgba())
-		    else: self.data.paintPoint(x, y, color.rgba())
+		    if steep: self.data.paintPoint(y, x, color)
+		    else: self.data.paintPoint(x, y, color)
 		    while d >= 0:
 		        y = y + sy
 		        d = d - (2 * dx)
 		    x = x + sx
 		    d = d + (2 * dy)
 
-		self.data.paintPoint(endPoint.x(), endPoint.y(), color.rgba())
+		self.data.paintPoint(endPoint.x(), endPoint.y(), color)
 
 	def applySelection(self):
 		if self.data.selection != None:
