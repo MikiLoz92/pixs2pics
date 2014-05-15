@@ -5,6 +5,7 @@ import ConfigParser
 
 from PyQt4 import QtGui, QtCore
 from translation import *
+from brushes import *
 
 ## Model / Modelo
 class Data:
@@ -48,21 +49,12 @@ class Data:
 		# Creamos la QImage
 		self.newImage(32,32,QtGui.QColor(255,255,255))
 
-		# Draw elipse
-		painter = QtGui.QPainter(self.image)
-		painter.drawEllipse(QtCore.QRect(0,0,6,6))
-
 		# Creamos los cursores
 		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
 		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/dropperCur.png"), 0, 23)
 
-		# Creamos las puntas del lápiz
-		self.tips = []
-		for i in range(9):
-			self.tips.append(self.getCircle(i))
-
 		# Generar Bitmaps
-		self.bitmaps = self.createBitmaps()
+		self.circles, self.brushes = createBrushes()
 
 	def loadImage(self, fileName):
 
@@ -123,7 +115,7 @@ class Data:
 				if m[i][j] and xx >= 0 and xx < self.image.width() and yy >= 0 and yy < self.image.height():
 					self.image.setPixel(xx, yy, color.rgba())
 		"""
-		
+		"""
 		# Qt Ellipses
 		erasing = (self.currentTool == 2)
 		if erasing: size = (self.eraserSize-1)*2
@@ -137,6 +129,20 @@ class Data:
 			painter.drawPath(path)
 		else:
 			self.image.setPixel(x, y, color.rgba())
+		"""
+
+		# Bitmaps
+		erasing = (self.currentTool == 2)
+		if erasing:
+			m = self.brushes[self.eraserSize-1]
+			radius = self.eraserSize - 1
+		else:
+			m = self.brushes[self.pencilSize-1]
+			radius = self.pencilSize - 1
+		painter = QtGui.QPainter(self.image)
+		painter.setPen(color)
+		painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
+		painter.drawPixmap(QtCore.QPoint(x-radius, y-radius), self.brushes[radius])
 
 
 	def createBitmaps(self):
@@ -166,51 +172,7 @@ class Data:
 					else:
 						bmp[j].append(False)
 			l2.append(bmp)
-		return l2
-
-	def printMatrix(self, m):
-		for row in m:
-			print " ".join([str(x) for x in row])
-
-	def getCircle(self, radius):
-		x0 = radius
-		y0 = radius
-		f = 1 - radius
-		ddf_x = 1
-		ddf_y = -2 * radius
-		x = 0
-		y = radius
-		l = []
-		for i in range(2*radius+1):
-			l.append([0]*(2*radius+1))
-		l[y0+radius][x0] = True
-		l[y0-radius][x0] = True
-		l[y0][x0+radius] = True
-		l[y0][x0-radius] = True
-		while x < y:
-			if f >= 0: 
-				y -= 1
-				ddf_y += 2
-				f += ddf_y
-			x += 1
-			ddf_x += 2
-			f += ddf_x
-			for i in range(x0-x,x0+x+1):
-				print i
-				l[y0+y][i] = True
-			for i in range(x0-x,x0+x+1):		
-				print i
-				l[y0-y][i] = True
-			for i in range(x0-y,x0+y+1):
-				print i
-				l[y0+x][i] = True
-			for i in range(x0-y,x0+y+1):
-				print i
-				l[y0-x][i] = True
-			for i in range(x0-radius, x0+radius+1):
-				l[y0][i] = True
 		return l
-	
 
 	def changePrimaryColor(self, c):
 

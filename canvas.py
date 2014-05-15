@@ -303,8 +303,8 @@ class Canvas(QtGui.QLabel):
 
 	def drawToolHint(self, x, y):
 
-		if self.data.currentTool == 1: m = self.data.bitmaps[self.data.pencilSize-1]
-		elif self.data.currentTool == 2: m = self.data.bitmaps[self.data.eraserSize-1]
+		if self.data.currentTool == 1: m = self.data.circles[self.data.pencilSize-1]
+		elif self.data.currentTool == 2: m = self.data.circles[self.data.eraserSize-1]
 
 		painter = QtGui.QPainter(self)
 		#painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
