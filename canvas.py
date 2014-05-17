@@ -174,6 +174,7 @@ class Canvas(QtGui.QLabel):
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.lastPoint = QtCore.QPoint(x,y)
 				self.data.paintPoint(x, y, self.data.bgColor)
+				self.com.updateCanvas.emit()
 				self.drawing = True
 
 		# Pipeta de color
@@ -424,10 +425,11 @@ class Canvas(QtGui.QLabel):
 				if i % self.data.matrixGridHeight == 0:
 					painter.drawLine(0, i*self.data.zoom, w*self.data.zoom, i*self.data.zoom)
 
-		# Draw ToolHint
-		xcursor = self.mapFromGlobal(QtGui.QCursor().pos()).x()/self.data.zoom
-		ycursor = self.mapFromGlobal(QtGui.QCursor().pos()).y()/self.data.zoom
-		self.drawToolHint(xcursor, ycursor)
+		if self.data.currentTool == 1 or self.data.currentTool == 2:
+			# Draw ToolHint
+			xcursor = self.mapFromGlobal(QtGui.QCursor().pos()).x()/self.data.zoom
+			ycursor = self.mapFromGlobal(QtGui.QCursor().pos()).y()/self.data.zoom
+			self.drawToolHint(xcursor, ycursor)
 
 	"""
 	def hideToolHint(self):

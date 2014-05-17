@@ -826,6 +826,18 @@ class MainWindow(QtGui.QMainWindow):
 			elif event.buttons() == Qt.RightButton:
 				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
 
+	def wheelEvent(self, event):
+		print "wheelEvent"
+
+		if self.onClickPalette:
+			print "wheelEvent2"
+			if event.delta() > 0:
+				self.zoomIn()
+			else:
+				self.zoomOut()
+
+		super(MainWindow, self).wheelEvent(event)
+
 	def closeEvent(self, event):
 
 		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
