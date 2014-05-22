@@ -263,6 +263,28 @@ class Data:
 			self.image = self.image.transformed(transform)
 			self.addHistoryStep()
 
+	def resizeCanvas(self, width, height):
+
+		im = self.image
+		self.image = QtGui.QImage(width, height, QtGui.QImage.Format_ARGB32_Premultiplied)
+		self.image.fill(self.bgColor)
+		painter = QtGui.QPainter(self.image)
+		painter.drawImage(QtCore.QPoint(0,0,), im)
+		self.com.updateCanvas.emit()
+		self.com.resizeCanvas.emit()
+
+	def setPencilSize(self, size):
+
+		if size < 10 and size > 0:
+			self.pencilSize = size
+			self.com.updatePencilSize.emit(self.pencilSize)
+
+	def setEraserSize(self, size):
+
+		if size < 10 and size > 0:
+			self.eraserSize = size
+			self.com.updateEraserSize.emit(self.eraserSize)
+
 	def getText(self, sect, ident): # Get some text in the current language
 
 		return self.tdatabase.getText(self.lang, sect, ident).decode("utf-8").replace("\\n", "\n")

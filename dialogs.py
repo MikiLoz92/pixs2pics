@@ -126,6 +126,48 @@ class ResizeImageDialog (QtGui.QDialog):
 		super(ResizeImageDialog,self).accept()
 
 
+class ResizeCanvasDialog (QtGui.QDialog):
+
+	def __init__(self, Parent=None):
+
+		super(ResizeCanvasDialog, self).__init__(Parent)
+
+		self.parent = Parent
+
+		dimensionGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_resize_canvas", "dimension"))
+		dimensionLayout = QtGui.QVBoxLayout()
+
+		self.width = QtGui.QSpinBox(dimensionGroup)
+		self.width.setMinimum(1)
+		self.width.setMaximum(1024)
+		self.width.setValue(Parent.data.image.width())
+		self.height = QtGui.QSpinBox(dimensionGroup)
+		self.height.setMinimum(1)
+		self.height.setMaximum(1024)
+		self.height.setValue(Parent.data.image.height())
+
+		dimensionLayout.addWidget(self.width)
+		dimensionLayout.addWidget(self.height)
+		dimensionGroup.setLayout(dimensionLayout)
+		
+		buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+		buttonBox.accepted.connect(self.accept)
+		buttonBox.rejected.connect(self.reject)
+
+		mainLayout = QtGui.QVBoxLayout()
+		mainLayout.addWidget(dimensionGroup)
+		mainLayout.addWidget(buttonBox)
+
+		self.setLayout(mainLayout)
+		self.setWindowTitle(self.parent.data.getText("dialog_resize_canvas", "title"))
+		self.show()
+
+	def accept(self):
+	
+		self.parent.data.resizeCanvas(self.width.value(), self.height.value())
+		super(ResizeCanvasDialog,self).accept()
+
+
 class Preferences (QtGui.QDialog):
 
 	def  __init__(self, data, com, Parent=None):
@@ -143,15 +185,11 @@ class Preferences (QtGui.QDialog):
 		self.view.addWidget(self.createLanguageView())
 		self.view.addWidget(self.createUICustomizationView())
 		self.view.addWidget(self.createMatrixGridView())
-		#self.view.addWidget(self.createKeyboardShorcutsView()) # Si se descomenta da un SEGFAULT
-		#self.view.addWidget(self.createDefaultsView()) # Si se descomenta da un SEGFAULT
 
 		self.preferences = QtGui.QListWidget()
-		self.preferences.addItem("Language")
-		self.preferences.addItem("UI Customization")
-		self.preferences.addItem("Matrix grid")
-		self.preferences.addItem("Keyboard shortcuts")
-		self.preferences.addItem("Defaults")
+		self.preferences.addItem(self.data.getText("dialog_preferences", "item_language"))
+		self.preferences.addItem(self.data.getText("dialog_preferences", "item_theme"))
+		self.preferences.addItem(self.data.getText("dialog_preferences", "item_matrix_grid"))
 		self.preferences.setCurrentRow(0)
 		self.preferences.currentItemChanged.connect(self.changeCurrentView)
 		self.preferences.setFixedWidth(self.preferences.sizeHintForColumn(0) + 24)
@@ -182,7 +220,7 @@ class Preferences (QtGui.QDialog):
 
 		# Widget de ejemplo
 
-		g = QtGui.QGroupBox("Language")
+		g = QtGui.QGroupBox(self.data.getText("dialog_preferences", "item_language_language"))
 
 		w = QtGui.QWidget()
 
@@ -212,7 +250,7 @@ class Preferences (QtGui.QDialog):
 
 	def createUICustomizationView(self):
 
-		g = QtGui.QGroupBox("UI Customization")
+		g = QtGui.QGroupBox(self.data.getText("dialog_preferences", "item_theme"))
 		w = QtGui.QWidget()
 		vbox = QtGui.QVBoxLayout()
 		hbox = QtGui.QHBoxLayout()
@@ -230,7 +268,7 @@ class Preferences (QtGui.QDialog):
 		self.theme.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
 		#self.theme.setFixedWidth(self.theme.sizeHint().width())
 
-		hbox.addWidget(QtGui.QLabel("Theme:"))
+		hbox.addWidget(QtGui.QLabel(self.data.getText("dialog_preferences", "item_theme_theme")))
 		hbox.addWidget(self.theme)
 		hbox.setAlignment(Qt.AlignLeft)
 		vbox.addLayout(hbox)
@@ -245,7 +283,7 @@ class Preferences (QtGui.QDialog):
 
 	def createMatrixGridView(self):
 
-		g = QtGui.QGroupBox("Matrix grid dimension")
+		g = QtGui.QGroupBox(self.data.getText("dialog_preferences", "item_matrix_grid_dimension"))
 
 		vbox = QtGui.QVBoxLayout()
 		
@@ -267,18 +305,10 @@ class Preferences (QtGui.QDialog):
 
 		return g
 
-	def createKeyboardShorcutsView(self):
-
-		return
-
-	def createDefaultsView(self):
-
-		return
-
 	def accept(self):
 
 		if self.langCodes[self.language.currentIndex()] != self.data.lang:
-			QtGui.QMessageBox.information(self, "Language settings changed", "You will have to close Pix2Pics for the language settings to apply.")
+			QtGui.QMessageBox.information(self, self.data.getText("dialog_preferences", "item_language_changed_title"), self.data.getText("dialog_preferences", "item_language_changed_message"))
 		self.data.setDefault("language", "lang", self.langCodes[self.language.currentIndex()])
 
 		self.data.matrixGridWidth = self.matrixGridWidth.value()
@@ -286,6 +316,8 @@ class Preferences (QtGui.QDialog):
 		self.data.matrixGridHeight = self.matrixGridHeight.value()
 		self.data.setDefault("grid", "matrix_grid_height", self.data.matrixGridHeight)
 
+		if self.data.getDefault("theme", "theme") != self.themeDirs[self.theme.currentIndex()]:
+			QtGui.QMessageBox.information(self, self.data.getText("dialog_preferences", "item_theme_changed_title"), self.data.getText("dialog_preferences", "item_theme_changed_message"))
 		self.data.setDefault("theme", "theme", self.themeDirs[self.theme.currentIndex()])
 
 		self.com.updateCanvas.emit()

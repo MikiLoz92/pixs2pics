@@ -61,8 +61,8 @@ flip_ver = Voltear verticalmente
 rotate_cw = Rotar 90º en sentido horario
 rotate_ccw = Rotar 90º en sentido antihorario
 rotate_180 = Rotar 180º
-resize = Modificar tamaño
-resize_canvas = Tamaño del lienzo...
+resize = Redimensionar...
+resize_canvas = Redimensionar lienzo...
 
 [menu_transform_status_tips]
 flip_hor = Voltear horizontalmente la imagen o una parte de ella
@@ -101,11 +101,25 @@ all_files = Todos los archivos
 title = Guarda la imagen actual
 
 [dialog_resize]
-title = Modificar tamaño...
+title = Redimensionar...
+dimension = Nuevas dimensiones
+
+[dialog_resize_canvas]
+title = Redimensionar lienzo...
 dimension = Nuevas dimensiones
 
 [dialog_preferences]
 title=Preferencias
+item_language = Idioma
+item_language_language = Idioma
+item_language_changed_title = Ajustes de idioma cambiados
+item_language_changed_message = Tendrás que reinicar Pix2Pics para que se apliquen los nuevos ajustes de idioma.
+item_theme = Tema
+item_theme_theme = Tema
+item_theme_changed_title = Ajustes de tema cambiados
+item_theme_changed_message = Tendrás que reinicar Pix2Pics para que se apliquen los nuevos ajustes de tema.
+item_matrix_grid = Rejilla matricial
+item_matrix_grid_dimension = Dimensiones
 
 [dialog_about]
 title = Acerca de Pix2Pics

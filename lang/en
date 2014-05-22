@@ -104,8 +104,22 @@ title = Save the current image
 title = Resize...
 dimension = New dimension
 
+[dialog_resize_canvas]
+title = Resize canvas...
+dimension = New dimension
+
 [dialog_preferences]
-title=Preferences
+title = Preferences
+item_language = Language
+item_language_language = Language
+item_language_changed_title = Language settings changed
+item_language_changed_message = You will have to close Pix2Pics for the language settings to apply.
+item_theme = Theme
+item_theme_theme = Theme
+item_theme_changed_title = Theme settings changed
+item_theme_changed_message = You will have to close Pix2Pics for the theme settings to apply.
+item_matrix_grid = Matrix grid
+item_matrix_grid_dimension = Dimension
 
 [dialog_preferences_language]
 

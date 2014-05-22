@@ -33,3 +33,6 @@ class Communication(QtCore.QObject):
 
 	enterCanvas = QtCore.pyqtSignal()
 	leaveCanvas = QtCore.pyqtSignal()
+
+	updatePencilSize = QtCore.pyqtSignal([int])
+	updateEraserSize = QtCore.pyqtSignal([int])

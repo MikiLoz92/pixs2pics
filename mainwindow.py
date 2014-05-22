@@ -6,7 +6,7 @@ from PyQt4.QtCore import Qt
 import os, random
 
 from mainwidget import MainWidget
-from dialogs import ResizeImageDialog, NewFileDialog, Preferences
+from dialogs import *
 from palette import Palette, Color
 
 
@@ -54,6 +54,12 @@ class Preview (QtGui.QDockWidget):
 		else:
 			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 
+class SizeLabel (QtGui.QLabel):
+
+	def setValue(self, value):
+
+		self.setText(str(value))
+
 
 class ToolProperties (QtGui.QDockWidget):
 
@@ -100,13 +106,15 @@ class ToolProperties (QtGui.QDockWidget):
 		pencilSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
 		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
 		slider.setValue(self.data.pencilSize)
-		self.pencilSize = QtGui.QLabel(str(self.data.pencilSize))
+		self.pencilSize = SizeLabel(str(self.data.pencilSize))
 
 		slider.setMaximum(9)
 		slider.setMinimum(1)
 		slider.setPageStep(1)
 		slider.setValue(self.data.pencilSize)
-		slider.valueChanged.connect(self.setPencilSize)
+		slider.valueChanged.connect(self.data.setPencilSize)
+		slider.valueChanged.connect(self.pencilSize.setValue)
+		self.com.updatePencilSize.connect(slider.setValue)
 
 		hbox1.addWidget(pencilSizeLabel)
 		hbox1.addWidget(slider)
@@ -161,14 +169,16 @@ class ToolProperties (QtGui.QDockWidget):
 
 		eraserSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
 		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-		slider.setValue(self.data.pencilSize)
-		self.eraserSize = QtGui.QLabel(str(self.data.eraserSize))
+		slider.setValue(self.data.eraserSize)
+		self.eraserSize = SizeLabel(str(self.data.eraserSize))
 
 		slider.setMaximum(9)
 		slider.setMinimum(1)
 		slider.setPageStep(1)
 		slider.setValue(self.data.eraserSize)
-		slider.valueChanged.connect(self.setEraserSize)
+		slider.valueChanged.connect(self.data.setEraserSize)
+		slider.valueChanged.connect(self.eraserSize.setValue)
+		self.com.updateEraserSize.connect(slider.setValue)
 
 		hbox.addWidget(eraserSizeLabel)
 		hbox.addWidget(slider)
@@ -460,9 +470,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Llistes de propietats (de cada acció)
 		ids = ["flip_hor", "flip_ver", "rotate_cw", "rotate_ccw", "rotate_180", "resize", "resize_canvas"]
-		icons = ["", "", "", "", "", "resize-image.png", ""]
+		icons = ["", "", "", "", "", "", ""]
 		shortcuts = ['', '', '', '', '', 'Ctrl+R', '']
-		connects = [self.flipHorizontally,self.flipVertically,self.rotate90CW,self.rotate90CCW,self.rotate180,self.showResizeImageDialog,0]
+		connects = [self.flipHorizontally,self.flipVertically,self.rotate90CW,self.rotate90CCW,self.rotate180,self.showResizeImageDialog,self.showResizeCanvasDialog]
 
 		# Llista d'accions
 		l = []
@@ -623,6 +633,10 @@ class MainWindow(QtGui.QMainWindow):
 
 		d = ResizeImageDialog(self)
 
+	def showResizeCanvasDialog(self):
+
+		d = ResizeCanvasDialog(self)
+
 	def resizeImage(self, width, height):
 		
 		self.data.image = self.data.image.scaled(width, height)
@@ -782,6 +796,19 @@ class MainWindow(QtGui.QMainWindow):
 			self.com.onClickPalette.emit()
 			self.grabMouse()
 			self.grabKeyboard()
+
+		elif event.key() == Qt.Key_Plus:
+			if self.data.currentTool == 1:
+				self.data.setPencilSize(self.data.pencilSize+1)
+			elif self.data.currentTool == 2:
+				self.data.setEraserSize(self.data.eraserSize+1)
+
+		elif event.key() == Qt.Key_Minus:
+			if self.data.currentTool == 1:
+				self.data.setPencilSize(self.data.pencilSize-1)
+			elif self.data.currentTool == 2:
+				self.data.setEraserSize(self.data.eraserSize-1)
+
 
 	def keyReleaseEvent(self, event):
 

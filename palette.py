@@ -76,11 +76,16 @@ class Color(QtGui.QFrame):
 			self.data.changePrimaryColor(self.color)
 		elif e.button() == Qt.RightButton:
 			self.data.changeSecondaryColor(self.color)
-		elif e.button == Qt.MidButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
+		elif e.button() == Qt.MidButton:
+			c = QtGui.QColorDialog.getColor(self.color)
 			if c.isValid():
 				self.color = c
 				self.update()
+
+	def update(self):
+
+		self.setStyleSheet("background-color: " + self.color.name() + ";")
+		super(Color, self).update()
 
 """
 class Palette (QtGui.QWidget):

@@ -166,8 +166,8 @@ class Canvas(QtGui.QLabel):
 					color = self.data.bgColor
 					size = self.data.eraserSize
 				self.data.paintPoint(x, y, color)
-				self.com.updateCanvas.emit()
 				self.drawing = True
+			self.com.updateCanvas.emit()
 
 		# Goma
 		elif self.data.currentTool == 2:
