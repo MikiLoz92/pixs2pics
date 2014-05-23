@@ -49,19 +49,15 @@ def createCircle(radius):
 			ddf_x += 2
 			f += ddf_x
 			for i in range(x0-x,x0+x+1):
-				print i
 				l[y0+y][i] = True
 				im.setPixel(i, y0+y, QtCore.Qt.color0)
 			for i in range(x0-x,x0+x+1):		
-				print i
 				l[y0-y][i] = True
 				im.setPixel(i, y0-y, QtCore.Qt.color0)
 			for i in range(x0-y,x0+y+1):
-				print i
 				l[y0+x][i] = True
 				im.setPixel(i, y0+x, QtCore.Qt.color0)
 			for i in range(x0-y,x0+y+1):
-				print i
 				l[y0-x][i] = True
 				im.setPixel(i, y0-x, QtCore.Qt.color0)
 			for i in range(x0-radius, x0+radius+1):

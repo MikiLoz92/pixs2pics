@@ -18,6 +18,7 @@ class Data:
 	"""
 
 	color = QtCore.Qt.red
+	palette = []
 	pencilSize = 1
 	pencilAlpha = 255
 	secondaryColorEraser = False
@@ -45,6 +46,9 @@ class Data:
 
 		# Cargamos TODA la configuración
 		self.loadDefaults()
+
+		# Cargamos la Paleta
+		self.loadPalette()
 
 		# Creamos la QImage
 		self.newImage(32,32,QtGui.QColor(255,255,255))
@@ -362,3 +366,16 @@ class Data:
 	def loadDefaultsTheme(self):
 
 		self.theme = self.getDefault("theme", "theme")
+
+	def loadPalette(self):
+
+		f = open("palette.cfg")
+		l = f.readlines()
+		for i in l:
+			colors = i[:-1].split(' ')
+			red = int(colors[0])
+			green = int(colors[1])
+			blue = int(colors[2])
+			self.palette.append([red, green, blue])
+		f.close()
+		print self.palette

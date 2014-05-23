@@ -89,7 +89,7 @@ class ToolProperties (QtGui.QDockWidget):
 		l.append(self.createEraserWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
-		l.append(self.createGradientWidget())
+		#l.append(self.createGradientWidget())
 		l.append(QtGui.QWidget())
 
 		return l
@@ -403,6 +403,7 @@ class MainWindow(QtGui.QMainWindow):
 		for i in range(len(ids)):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_file_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
+			a.triggered.connect(self.restoreFocus)
 			a.setStatusTip(self.data.getText("menu_file_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
@@ -426,6 +427,7 @@ class MainWindow(QtGui.QMainWindow):
 		for i in range(len(ids)):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_edit_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
+			a.triggered.connect(self.restoreFocus)
 			a.setStatusTip(self.data.getText("menu_edit_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
@@ -441,7 +443,7 @@ class MainWindow(QtGui.QMainWindow):
 		# Llistes de propietats (de cada acció)
 		ids = ["pixel_grid", "matrix_grid"]
 		icons = ["", ""]
-		shortcuts = ['', '']
+		shortcuts = ['Ctrl+G', 'Ctrl+M']
 		connects = [self.setPixelGrid, self.setMatrixGrid]
 
 		# Llista d'accions
@@ -450,6 +452,7 @@ class MainWindow(QtGui.QMainWindow):
 		for i in range(len(ids)):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_view_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
+			a.triggered.connect(self.restoreFocus)
 			a.setStatusTip(self.data.getText("menu_view_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			a.setCheckable(True)
@@ -471,7 +474,7 @@ class MainWindow(QtGui.QMainWindow):
 		# Llistes de propietats (de cada acció)
 		ids = ["flip_hor", "flip_ver", "rotate_cw", "rotate_ccw", "rotate_180", "resize", "resize_canvas"]
 		icons = ["", "", "", "", "", "", ""]
-		shortcuts = ['', '', '', '', '', 'Ctrl+R', '']
+		shortcuts = ['', '', '', '', '', '', '']
 		connects = [self.flipHorizontally,self.flipVertically,self.rotate90CW,self.rotate90CCW,self.rotate180,self.showResizeImageDialog,self.showResizeCanvasDialog]
 
 		# Llista d'accions
@@ -480,6 +483,7 @@ class MainWindow(QtGui.QMainWindow):
 		for i in range(len(ids)):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_transform_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
+			a.triggered.connect(self.restoreFocus)
 			a.setStatusTip(self.data.getText("menu_transform_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
@@ -494,7 +498,7 @@ class MainWindow(QtGui.QMainWindow):
 		# Llistes de propietats (de cada acció)
 		ids = ["contents", "about"]
 		icons = ["help-contents.png", "help-about.png"]
-		shortcuts = ['Ctrl+H', 'Ctrl+B']
+		shortcuts = ['F1', 'Ctrl+B']
 		connects = [0, self.showAboutDialog]
 
 		# Llista d'accions
@@ -503,6 +507,7 @@ class MainWindow(QtGui.QMainWindow):
 		for i in range(len(ids)):
 			a = QtGui.QAction(QtGui.QIcon("images/" + icons[i]), self.data.getText("menu_help_labels", ids[i]), self)
 			a.setShortcut(shortcuts[i])
+			a.triggered.connect(self.restoreFocus)
 			a.setStatusTip(self.data.getText("menu_help_status_tips", ids[i]))
 			if connects[i] != 0: a.triggered.connect(connects[i])
 			l.append(a)
@@ -511,6 +516,12 @@ class MainWindow(QtGui.QMainWindow):
 		l.insert(1,0)
 
 		return l
+
+	def restoreFocus(self):
+
+		self.releaseMouse()
+		self.releaseKeyboard()
+		QtCore.QCoreApplication.instance().restoreOverrideCursor()
 
 	def createMenuBar(self):
 		
@@ -788,6 +799,7 @@ class MainWindow(QtGui.QMainWindow):
 
 	def keyPressEvent(self, event):
 
+		print "KeyPress"
 		super(MainWindow, self).keyPressEvent(event)
 
 		if event.key() == Qt.Key_Control:
@@ -795,7 +807,7 @@ class MainWindow(QtGui.QMainWindow):
 			QtCore.QCoreApplication.instance().setOverrideCursor(self.data.colorPickerCur)
 			self.com.onClickPalette.emit()
 			self.grabMouse()
-			self.grabKeyboard()
+			#self.grabKeyboard()
 
 		elif event.key() == Qt.Key_Plus:
 			if self.data.currentTool == 1:
@@ -808,6 +820,11 @@ class MainWindow(QtGui.QMainWindow):
 				self.data.setPencilSize(self.data.pencilSize-1)
 			elif self.data.currentTool == 2:
 				self.data.setEraserSize(self.data.eraserSize-1)
+
+		else:
+			self.restoreOverrideCursor()
+			self.releaseMouse()
+			self.releaseKeyboard()
 
 
 	def keyReleaseEvent(self, event):
@@ -833,6 +850,7 @@ class MainWindow(QtGui.QMainWindow):
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
 			if event.button() == Qt.LeftButton:
+				print c.red(), c.green(), c.blue()
 				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
 			elif event.button() == Qt.RightButton:
 				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
@@ -869,4 +887,12 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
 		self.data.setDefault("color", "secondary_color", self.data.secondaryColor.rgb())
+
+		# Guardar paleta
+		f = open("palette.cfg", 'w')
+		for i in self.data.palette:
+			f.write(str(i[0]) + " " + str(i[1]) + " " + str(i[2]) + "\n")
+		f.close()
+
+
 		super(MainWindow, self).closeEvent(event)

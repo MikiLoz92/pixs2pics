@@ -419,7 +419,6 @@ class Canvas(QtGui.QLabel):
 			h = self.data.image.height()
 			for i in range(w)[1:]:
 				if i % self.data.matrixGridWidth == 0:
-					print i
 					painter.drawLine(i*self.data.zoom, 0, i*self.data.zoom, h*self.data.zoom)
 			for i in range(h)[1:]:
 				if i % self.data.matrixGridHeight == 0:
