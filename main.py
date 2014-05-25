@@ -31,16 +31,17 @@ def readCSS(fname):
 if __name__ == '__main__':
 
 	app = QtGui.QApplication(sys.argv)
-	app.setWindowIcon(QtGui.QIcon("icon.gif"))
+	app.setWindowIcon(QtGui.QIcon("images/icon.gif"))
 	com = Communication()
 	data = Data(com)
 
-	customFnt = "Lato-Reg.ttf"
-	if QtGui.QFontDatabase().addApplicationFont(customFnt) < 0:
-		print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
-	else:
-		fnt = QtGui.QFont("Lato", 10)
-		app.setFont(fnt)
+	if data.theme != "default-light" and data.theme != "default-dark":
+		customFnt = "Lato-Reg.ttf"
+		if QtGui.QFontDatabase().addApplicationFont(os.path.join("fonts", customFnt)) < 0:
+			print "Warning: Could not load custom font" + customFnt + ", falling back to default font."
+		else:
+			fnt = QtGui.QFont("Lato", 10)
+			app.setFont(fnt)
 
 	if os.path.isdir(os.path.join("themes", data.theme)):
 		css = os.path.join("themes", data.theme, "style.css")

@@ -21,13 +21,13 @@ class NewFileDialog(QtGui.QDialog):
 		dimensionGroup = QtGui.QGroupBox(self.parent.data.getText("dialog_new_image", "dimension"))
 		dimensionLayout = QtGui.QVBoxLayout()
 		self.width = QtGui.QSpinBox(dimensionGroup)
-		self.width.setValue(32)
 		self.width.setMinimum(1)
-		self.width.setMaximum(1024)
+		self.width.setMaximum(4096)
+		self.width.setValue(self.data.getIntDefault("new", "width", 32))
 		self.height = QtGui.QSpinBox(dimensionGroup)
-		self.height.setValue(32)
 		self.height.setMinimum(1)
-		self.height.setMaximum(1024)
+		self.height.setMaximum(4096)
+		self.height.setValue(self.data.getIntDefault("new", "height", 32))
 		dimensionLayout.addWidget(self.width)
 		dimensionLayout.addWidget(self.height)
 		dimensionGroup.setLayout(dimensionLayout)
@@ -81,6 +81,8 @@ class NewFileDialog(QtGui.QDialog):
 			self.data.newImage(self.width.value(), self.height.value(), QtGui.QColor(0,0,0,0))
 		else:
 			self.data.newImage(self.width.value(), self.height.value(), self.color)
+		self.data.setDefault("new", "width", str(self.width.value()))
+		self.data.setDefault("new", "height", str(self.height.value()))
 		super(NewFileDialog, self).accept()
 
 
@@ -97,11 +99,11 @@ class ResizeImageDialog (QtGui.QDialog):
 
 		self.width = QtGui.QSpinBox(dimensionGroup)
 		self.width.setMinimum(1)
-		self.width.setMaximum(1024)
+		self.width.setMaximum(4096)
 		self.width.setValue(Parent.data.image.width())
 		self.height = QtGui.QSpinBox(dimensionGroup)
 		self.height.setMinimum(1)
-		self.height.setMaximum(1024)
+		self.height.setMaximum(4096)
 		self.height.setValue(Parent.data.image.height())
 
 		dimensionLayout.addWidget(self.width)
@@ -316,7 +318,7 @@ class Preferences (QtGui.QDialog):
 		self.data.matrixGridHeight = self.matrixGridHeight.value()
 		self.data.setDefault("grid", "matrix_grid_height", self.data.matrixGridHeight)
 
-		if self.data.getDefault("theme", "theme") != self.themeDirs[self.theme.currentIndex()]:
+		if self.data.getDefault("theme", "theme", "aquamarine") != self.themeDirs[self.theme.currentIndex()]:
 			QtGui.QMessageBox.information(self, self.data.getText("dialog_preferences", "item_theme_changed_title"), self.data.getText("dialog_preferences", "item_theme_changed_message"))
 		self.data.setDefault("theme", "theme", self.themeDirs[self.theme.currentIndex()])
 

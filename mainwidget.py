@@ -24,7 +24,7 @@ class MainWidget(QtGui.QScrollArea):
 		self.setBackgroundRole(QtGui.QPalette.Dark)
 		self.setObjectName("MainWidget")
 		self.setWidget(self.canvas)
-	"""
+	
 	def resizeEvent(self, event):
 
 		super(MainWidget,self).resizeEvent(event)
@@ -45,4 +45,4 @@ class MainWidget(QtGui.QScrollArea):
 			self.canvas.move( (w-self.data.image.width()*self.data.zoom)/2 , self.canvas.y() )
 		if self.canvas.height() < h:
 			self.canvas.move( self.canvas.x(), (h-self.data.image.height()*self.data.zoom)/2 )
-	"""
+	

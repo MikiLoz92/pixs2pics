@@ -91,7 +91,7 @@ class Canvas(QtGui.QLabel):
 		print "Entering Canvas"
 		super(Canvas, self).enterEvent(event)
 		if not self.data.colorPicker:
-			cursors = [0, self.data.pencilCur, 0, self.data.colorPickerCur, 0, 0, 0]
+			cursors = [0, self.data.pencilCur, self.data.eraserCur, self.data.colorPickerCur, self.data.fillCur, 0, 0]
 			for i in range(7):
 				if self.data.currentTool == i and cursors[i] != 0:
 					self.setCursor(cursors[i])
@@ -290,6 +290,7 @@ class Canvas(QtGui.QLabel):
 			
 			self.move(self.mapToParent(event.pos() - self.grabPoint))
 
+			"""
 			print "event pos:", self.mapToParent(pos).x(), "parent.width:", self.parent.width(), "width:", self.width()
 			if (self.mapToParent(pos).x() + self.width() - self.grabPoint.x()) > (self.parent.width() ):
 				self.move(self.parent.width()-self.width(), self.y())
@@ -299,6 +300,19 @@ class Canvas(QtGui.QLabel):
 				self.move(self.x(), self.parent.height()-self.height())
 			elif (self.mapToParent(pos).y() - self.grabPoint.y()) < 0:
 				self.move(self.x(), 0)
+			"""
+
+			w = self.parent.frameGeometry().width()
+			h = self.parent.frameGeometry().height()
+
+			"""
+			if self.width() > w:
+				self.move( self.mapToParent(event.pos().x() - self.grabPoint.x()), self.y() )
+			if self.height() > h:
+				self.move( self.x(), self.mapToParent(event.pos().y() - self.grabPoint.y()))
+			"""
+
+			self.parent.horizontalScrollBar.setValue()
 
 		self.update()
 

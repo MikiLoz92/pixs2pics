@@ -19,6 +19,16 @@ class Data:
 
 	color = QtCore.Qt.red
 	palette = []
+	defaultPalette = [[14, 53, 75], [0, 76, 115], [18, 121, 174], [49, 162, 238], [136, 199, 234], [27, 52, 43],
+	                  [30, 85, 55], [69, 145, 26], [121, 191, 29], [190, 222, 44], [69, 18, 18], [113, 31, 31],
+	                  [184, 37, 53], [220, 81, 115], [255, 159, 182], [39, 20, 67], [105, 28, 99], [173, 81, 185],
+	                  [184, 152, 208], [53, 48, 36], [89, 66, 40], [140, 92, 77], [208, 128, 112], [229, 145, 49],
+	                  [247, 176, 114], [252, 215, 142], [0, 0, 0], [33, 33, 33], [79, 79, 79], [179, 179, 179],
+	                  [255, 255, 255], [37, 42, 46], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
+	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
 	pencilSize = 1
 	pencilAlpha = 255
 	secondaryColorEraser = False
@@ -54,8 +64,10 @@ class Data:
 		self.newImage(32,32,QtGui.QColor(255,255,255))
 
 		# Creamos los cursores
-		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/pencilCur.png"), 0, 23)
-		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/dropperCur.png"), 0, 23)
+		self.pencilCur = QtGui.QCursor(QtGui.QPixmap("images/cursors/penicon.png"), 2, 17)
+		self.colorPickerCur = QtGui.QCursor(QtGui.QPixmap("images/cursors/droppericon.png"), 2, 17)
+		self.eraserCur = QtGui.QCursor(QtGui.QPixmap("images/cursors/erasericon.png"), 2, 17)
+		self.fillCur = QtGui.QCursor(QtGui.QPixmap("images/cursors/fillicon.png"), 1, 14)
 
 		# Generar Bitmaps
 		self.circles, self.brushes = createBrushes()
@@ -301,36 +313,64 @@ class Data:
 
 		try:
 			self.cp.set(sect, ident, value)
-			f = open("defaults.cfg", "w")
-			self.cp.write(f)
-			f.close()
 		except ConfigParser.NoSectionError:
-			print "Trying to set \"" + ident + "\" to \"" + str(value) + "\" on section \"" + sect + "\", but given section does not exist."
+			print "Trying to set \"" + ident + "\" to \"" + str(value) + "\" on section \"" + sect + "\", but given section does not exist. Creating section."
+			self.cp.add_section(sect)
+			self.cp.set(sect, ident, value)
 
-	def getDefault(self, sect, ident):
+		f = open("defaults.cfg", "w")
+		self.cp.write(f)
+		f.close()
 
-		return self.cp.get(sect, ident)
+	def getDefault(self, sect, ident, default):
 
-	def getBoolDefault(self, sect, ident):
+		try:
+			return self.cp.get(sect, ident)
+		except ConfigParser.NoSectionError:
+			print "Trying to get value from option \"" + ident + "\" on section \"" + sect + "\", but no section with that name exists. Returning default value."
+			return default
+		except ConfigParser.NoOptionError:
+			print "Trying to get value from option \"" + ident + "\" on section \"" + sect + "\", but specified option does not exist within that section. Returning default value."
+			return default
+
+	def getBoolDefault(self, sect, ident, default):
 
 		try:
 			return self.cp.getboolean(sect, ident)
 		except ValueError:
 			print "Trying to get boolean value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not boolean."
+		except ConfigParser.NoSectionError:
+			print "Trying to get boolean value from option \"" + ident + "\" on section \"" + sect + "\", but no section with that name exists. Returning default value."
+			return default
+		except ConfigParser.NoOptionError:
+			print "Trying to get boolean value from option \"" + ident + "\" on section \"" + sect + "\", but specified option does not exist within that section. Returning default value."
+			return default
 
-	def getIntDefault(self, sect, ident):
+	def getIntDefault(self, sect, ident, default):
 
 		try:
 			return self.cp.getint(sect, ident)
 		except ValueError:
 			print "Trying to get integer value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not an integer."
+		except ConfigParser.NoSectionError:
+			print "Trying to get integer value from option \"" + ident + "\" on section \"" + sect + "\", but no section with that name exists. Returning default value."
+			return default
+		except ConfigParser.NoOptionError:
+			print "Trying to get integer value from option \"" + ident + "\" on section \"" + sect + "\", but specified option does not exist within that section. Returning default value."
+			return default
 
-	def getFloatDefault(self, sect, ident):
+	def getFloatDefault(self, sect, ident, default):
 
 		try:
 			return self.cp.getfloat(sect, ident)
 		except ValueError:
 			print "Trying to get float value from option \"" + ident + "\" on section \"" + sect + "\", but given option value is not a floating point number."
+		except ConfigParser.NoSectionError:
+			print "Trying to get float value from option \"" + ident + "\" on section \"" + sect + "\", but no section with that name exists. Returning default value."
+			return default
+		except ConfigParser.NoOptionError:
+			print "Trying to get float value from option \"" + ident + "\" on section \"" + sect + "\", but specified option does not exist within that section. Returning default value."
+			return default
 
 	def loadDefaults(self):
 
@@ -345,7 +385,7 @@ class Data:
 	def loadDefaultsLanguage(self):
 
 		self.tdatabase = TDatabase()
-		lang = self.getDefault("language", "lang")
+		lang = self.getDefault("language", "lang", "en")
 		if lang in self.tdatabase.langAvailable:
 			self.lang = lang
 		else:
@@ -353,23 +393,29 @@ class Data:
 
 	def loadDefaultsGrid(self):
 
-		self.grid = self.getBoolDefault("grid", "grid")
-		self.matrixGrid = self.getBoolDefault("grid", "matrix_grid")
-		self.matrixGridWidth = self.getIntDefault("grid", "matrix_grid_width")
-		self.matrixGridHeight = self.getIntDefault("grid", "matrix_grid_height")
+		self.grid = self.getBoolDefault("grid", "grid", False)
+		self.matrixGrid = self.getBoolDefault("grid", "matrix_grid", False)
+		self.matrixGridWidth = self.getIntDefault("grid", "matrix_grid_width", 16)
+		self.matrixGridHeight = self.getIntDefault("grid", "matrix_grid_height", 16)
 
 	def loadDefaultsColor(self):
 
-		self.primaryColor = QtGui.QColor(self.getIntDefault("color", "primary_color"))
-		self.secondaryColor = QtGui.QColor(self.getIntDefault("color", "secondary_color"))
+		self.primaryColor = QtGui.QColor(self.getIntDefault("color", "primary_color", QtCore.Qt.color1))
+		self.secondaryColor = QtGui.QColor(self.getIntDefault("color", "secondary_color", QtCore.Qt.color0))
 
 	def loadDefaultsTheme(self):
 
-		self.theme = self.getDefault("theme", "theme")
+		self.theme = self.getDefault("theme", "theme", "aquamarine")
 
 	def loadPalette(self):
 
-		f = open("palette.cfg")
+		try:
+			f = open("palette.cfg", 'r')
+		except IOError:
+			print "Cannot open palette.cfg, falling back to default palette."
+			self.palette = self.defaultPalette
+			return
+
 		l = f.readlines()
 		for i in l:
 			colors = i[:-1].split(' ')
@@ -379,3 +425,10 @@ class Data:
 			self.palette.append([red, green, blue])
 		f.close()
 		print self.palette
+
+	def savePalette(self):
+
+		f = open("palette.cfg", 'w')
+		for i in self.palette:
+			f.write(str(i[0]) + " " + str(i[1]) + " " + str(i[2]) + "\n")
+		f.close()

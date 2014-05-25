@@ -5,8 +5,6 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 import random
 
-from flowlayout import FlowLayout
-
 
 class CurrentColor(QtGui.QLabel):
 

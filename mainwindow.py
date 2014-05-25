@@ -348,8 +348,10 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient", "exchange"]
-		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
+		#tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient", "exchange"]
+		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient"]
+		#connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
+		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool]
 
 		for i in range(len(tools)):
 			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]), self.tools)
@@ -379,7 +381,8 @@ class MainWindow(QtGui.QMainWindow):
 		j = 0
 		for i in l:
 			toolBar.addAction(i)
-			if j == 6:
+			#if j == 6:
+			if j == 5:
 				toolBar.addSeparator()
 			j += 1
 
@@ -608,7 +611,11 @@ class MainWindow(QtGui.QMainWindow):
 		
 	def adjustScrollBar(self, scrollBar, zoom):
 
-		scrollBar.setValue(int(zoom * scrollBar.value() + ((zoom - 1) * scrollBar.pageStep()/2)))
+
+		#scrollBar.setValue(int(zoom * scrollBar.value() + ((zoom - 1) * scrollBar.pageStep()/2)))
+		scrollBar.setValue((scrollBar.maximum() - scrollBar.minimum()) / 2)
+		print scrollBar.minimum()
+		print scrollBar.maximum()
 		print zoom
 
 	def flipHorizontally(self):
@@ -822,7 +829,7 @@ class MainWindow(QtGui.QMainWindow):
 				self.data.setEraserSize(self.data.eraserSize-1)
 
 		else:
-			self.restoreOverrideCursor()
+			QtCore.QCoreApplication.instance().restoreOverrideCursor()
 			self.releaseMouse()
 			self.releaseKeyboard()
 
@@ -888,11 +895,6 @@ class MainWindow(QtGui.QMainWindow):
 		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
 		self.data.setDefault("color", "secondary_color", self.data.secondaryColor.rgb())
 
-		# Guardar paleta
-		f = open("palette.cfg", 'w')
-		for i in self.data.palette:
-			f.write(str(i[0]) + " " + str(i[1]) + " " + str(i[2]) + "\n")
-		f.close()
-
+		self.data.savePalette()
 
 		super(MainWindow, self).closeEvent(event)
