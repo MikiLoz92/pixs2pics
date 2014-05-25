@@ -266,7 +266,6 @@ class Preferences (QtGui.QDialog):
 			if self.data.theme == i:
 				self.theme.setCurrentIndex(j)
 			j += 1
-		print self.themeDirs
 		self.theme.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
 		#self.theme.setFixedWidth(self.theme.sizeHint().width())
 

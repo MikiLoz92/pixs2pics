@@ -44,8 +44,6 @@ class Preview (QtGui.QDockWidget):
 		else:
 			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
 
-		#print "Updating Preview"
-
 	def setPixmap(self):
 
 		if self.data.image.width() > 128 or self.data.image.height() > 128:
@@ -132,7 +130,6 @@ class ToolProperties (QtGui.QDockWidget):
 		hbox2.addWidget(alpha)
 		"""
 		hbox2 = QtGui.QHBoxLayout()
-		print self.data.getText("tool_properties_pencil", "eraser")
 		eraser = QtGui.QCheckBox(self.data.getText("tool_properties_pencil", "eraser"), self)
 		eraser.setChecked(self.data.secondaryColorEraser)
 		eraser.toggled.connect(self.toggleSecondaryColorEraser)
@@ -257,7 +254,6 @@ class ToolProperties (QtGui.QDockWidget):
 
 	def setAlphaValue(self,alpha):
 		self.data.DegAlpha = alpha
-		print "alpha",alpha
 
 	def changeDegState(self):
 		if self.DegOp1.isChecked():
@@ -276,7 +272,6 @@ class ToolProperties (QtGui.QDockWidget):
 	def updateWidget(self):
 
 		self.setWidget(self.widgets[self.data.currentTool])
-		print self.data.currentTool
 
 
 class PenSizeValueLabel(QtGui.QLabel):
@@ -352,10 +347,12 @@ class MainWindow(QtGui.QMainWindow):
 		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient"]
 		#connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
 		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool]
+		shortcuts = ['Z', 'X', 'C', 'A', 'S', 'D']
 
 		for i in range(len(tools)):
-			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]), self.tools)
+			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]) + " (" + shortcuts[i] + ")", self.tools)
 			a.setCheckable(True)
+			a.setShortcut(shortcuts[i])
 			if connects[i] != 0: a.toggled.connect(connects[i])
 			l.append(a)
 
@@ -611,12 +608,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 	def adjustScrollBar(self, scrollBar, zoom):
 
-
-		#scrollBar.setValue(int(zoom * scrollBar.value() + ((zoom - 1) * scrollBar.pageStep()/2)))
 		scrollBar.setValue((scrollBar.maximum() - scrollBar.minimum()) / 2)
-		print scrollBar.minimum()
-		print scrollBar.maximum()
-		print zoom
 
 	def flipHorizontally(self):
 
@@ -756,17 +748,13 @@ class MainWindow(QtGui.QMainWindow):
 
 	def undo(self):
 
-		print "Undo"
 		if self.data.posHistory > 0:
 			self.data.posHistory -= 1
-			print self.data.posHistory
 			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			self.com.updateCanvas.emit()
-			print self.data.history
 
 	def redo(self):
 
-		print "Redo"
 		if self.data.posHistory < len(self.data.history)-1:
 			self.data.posHistory += 1
 			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
@@ -784,7 +772,6 @@ class MainWindow(QtGui.QMainWindow):
 
 		clipboard = QtGui.QApplication.clipboard()
 		if not clipboard.image().isNull():
-			print self.tools.actions()[0].setChecked(True)
 			self.com.pasteImage.emit()
 			self.com.updateCanvas.emit()
 
@@ -806,7 +793,6 @@ class MainWindow(QtGui.QMainWindow):
 
 	def keyPressEvent(self, event):
 
-		print "KeyPress"
 		super(MainWindow, self).keyPressEvent(event)
 
 		if event.key() == Qt.Key_Control:
@@ -857,7 +843,6 @@ class MainWindow(QtGui.QMainWindow):
 			im = QtGui.QPixmap.grabWindow(widget.winId()).toImage() # Captura de pantalla
 			c = QtGui.QColor(im.pixel(QtGui.QCursor.pos())) # Cogemos el color de la posición del cursor
 			if event.button() == Qt.LeftButton:
-				print c.red(), c.green(), c.blue()
 				self.data.changePrimaryColor(c) # Cambiamos el color primario actual por el que hemos cogido
 			elif event.button() == Qt.RightButton:
 				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
@@ -879,10 +864,8 @@ class MainWindow(QtGui.QMainWindow):
 				self.data.changeSecondaryColor(c) # Cambiamos el color secundario actual por el que hemos cogido
 
 	def wheelEvent(self, event):
-		print "wheelEvent"
 
 		if self.onClickPalette:
-			print "wheelEvent2"
 			if event.delta() > 0:
 				self.zoomIn()
 			else:
@@ -892,9 +875,6 @@ class MainWindow(QtGui.QMainWindow):
 
 	def closeEvent(self, event):
 
-		self.data.setDefault("color", "primary_color", self.data.primaryColor.rgb())
-		self.data.setDefault("color", "secondary_color", self.data.secondaryColor.rgb())
-
-		self.data.savePalette()
+		self.data.saveDefaults()
 
 		super(MainWindow, self).closeEvent(event)

@@ -28,7 +28,6 @@ class TDatabase:
 		for i in l:
 			cp.read("lang/" + i)
 			langname = cp.get("_lang", "name").decode("utf-8")
-			print langname.encode("utf-8")
 			d2 = {}
 			for j in cp.sections()[1:]: # Sin la sección _lang
 				d3 = {}
@@ -44,29 +43,3 @@ class TDatabase:
 	def getText(self, lang, sect, ident):
 
 		return self.d[lang][sect][ident]
-
-"""
-
-d = {
-
-	"menu": {
-		"new": "&New"
-		"open" = "&Open"
-		"save" = "&Save"
-		"saveas" = "Save &As..."
-		"exit"= "&Exit"
-	}
-
-	"menu_status_tip": {
-		...
-	}
-
-} ...y un diccionario como este para cada idioma.
-
-Para probarlo en una terminal (en python):
-
->>> from translation import *
->>> t = TDatabase()
->>> t.getText("en", "menu", "new")
-
-"""

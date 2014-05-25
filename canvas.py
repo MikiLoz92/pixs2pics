@@ -14,7 +14,6 @@ class Selection(QtGui.QRubberBand):
 		super(Selection, self).__init__(QtGui.QRubberBand.Rectangle, parent)
 
 		self.data = data
-		print origin
 
 		self.origin = QtCore.QPoint(origin)
 		self.finished = False
@@ -68,6 +67,7 @@ class Canvas(QtGui.QLabel):
 		self.com.updateCanvas.connect(self.update)
 		self.com.resizeCanvas.connect(self.resize)
 		self.com.updateTool.connect(self.applySelection)
+		self.com.updateTool.connect(self.changeCursor)
 		self.com.newImage.connect(self.resizeToNewImage)
 		#self.com.onClickPalette.connect(self.hideToolHint)
 
@@ -88,23 +88,26 @@ class Canvas(QtGui.QLabel):
 
 	def enterEvent(self, event): # Cuando entra el ratón en el Canvas cambiamos el cursor
 
-		print "Entering Canvas"
 		super(Canvas, self).enterEvent(event)
 		if not self.data.colorPicker:
-			cursors = [0, self.data.pencilCur, self.data.eraserCur, self.data.colorPickerCur, self.data.fillCur, 0, 0]
-			for i in range(7):
-				if self.data.currentTool == i and cursors[i] != 0:
-					self.setCursor(cursors[i])
+			self.changeCursor()
 		self.com.enterCanvas.emit()
 
 	def leaveEvent(self, event): # Si el ratón se va, lo reiniciamos
 
-		print "Leaving Canvas"
 		super(Canvas, self).leaveEvent(event)
 		self.unsetCursor()
 		self.com.leaveCanvas.emit()
-		#self.hideToolHint()
 
+	def changeCursor(self):
+
+		cursors = [0, self.data.pencilCur, self.data.eraserCur, self.data.colorPickerCur, self.data.fillCur, 0, 0]
+		for i in range(7):
+			if self.data.currentTool == i:
+				if cursors[i] == 0:
+					self.unsetCursor()
+				else:
+					self.setCursor(cursors[i])
 	"""
 	def dragEnterEvent(self, event):
 
@@ -124,13 +127,11 @@ class Canvas(QtGui.QLabel):
 			self.com.resizeCanvas.emit()
 		event.acceptProposedAction()
 	"""
-
 	def mousePressEvent(self, event):
 
 		pos = event.pos()
 		x = pos.x() / self.data.zoom # x de la imagen
 		y = pos.y() / self.data.zoom # y de la imagen
-		print "Current tool:", self.data.currentTool
 
 		# Selección
 		if self.data.currentTool == 0:
@@ -159,7 +160,6 @@ class Canvas(QtGui.QLabel):
 				self.drawing = False
 				self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			elif event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
-				print "Painting a point"
 				color = self.data.primaryColor if event.button() == Qt.LeftButton else self.data.secondaryColor
 				size = self.data.pencilSize
 				if event.button() == Qt.RightButton and self.data.secondaryColorEraser:
@@ -257,14 +257,6 @@ class Canvas(QtGui.QLabel):
 		# Lápiz
 		elif self.data.currentTool == 1:
 			endPoint = QtCore.QPoint(x,y)
-			"""
-			if self.toolHint != None:
-				self.toolHint.setGeometry(x, y)
-			else:
-				self.toolHint = ToolHint(QtCore.QPoint(x,y), self.data, self)
-				self.toolHint.setGeometry(x, y)
-				self.toolHint.show()
-			"""
 			if event.buttons() == Qt.LeftButton and self.drawing:
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.primaryColor)
 				self.com.updateCanvas.emit()
@@ -280,7 +272,6 @@ class Canvas(QtGui.QLabel):
 		# Goma
 		elif self.data.currentTool == 2:
 			if event.buttons() == Qt.LeftButton or event.buttons() == Qt.RightButton:
-				print "Borrando"
 				endPoint = QtCore.QPoint(x,y)
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.bgColor)
 				self.com.updateCanvas.emit()
@@ -362,18 +353,18 @@ class Canvas(QtGui.QLabel):
 		if self.data.currentTool == 0 and event.button() == QtCore.Qt.LeftButton:
 			
 			if self.selecting:
-				print "Selection made starting at (" + str(self.data.selection.origin.x()) + ", " + str(self.data.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				#print "Selection made starting at (" + str(self.data.selection.origin.x()) + ", " + str(self.data.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
 				self.data.selection.finished = True
 				self.data.selection.image = self.data.image.copy(self.data.selection.rect)
 				painter = QtGui.QPainter(self.data.image)
 				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 				painter.fillRect(self.data.selection.rect, self.data.bgColor)
-				print "Filling selection rect with bgColor"
 			else:
 				if self.data.selection != None and self.data.selection.finished:
-					print "Moved selection"
+					#print "Moved selection"
+					pass
 				else:
-					print "No selection was made"
+					#print "No selection was made"
 					self.data.selection = None
 			self.selecting = False
 
@@ -459,7 +450,6 @@ class Canvas(QtGui.QLabel):
 
 	def resize(self):
 
-		print "Resizing Canvas"
 		super(Canvas, self).resize(QtCore.QSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom))
 	
 	def drawLineTo(self, endPoint, color):
@@ -497,7 +487,7 @@ class Canvas(QtGui.QLabel):
 
 	def applySelection(self):
 		if self.data.selection != None:
-			print "Applying selection"
+			#print "Applying selection"
 			painter = QtGui.QPainter(self.data.image)
 			painter.drawImage(self.data.selection.rect.topLeft(), self.data.selection.image)
 			self.data.addHistoryStep()
@@ -539,7 +529,6 @@ class Canvas(QtGui.QLabel):
 	def clearImage(self):
 
 		if self.data.selection != None:
-			print "Clear"
 			self.data.selection.hide()
 			self.data.selection = None
 			self.com.updateCanvas.emit()
@@ -549,16 +538,15 @@ class Canvas(QtGui.QLabel):
 		if self.data.selection != None:
 			self.data.selection.hide()
 			self.data.selection = None
-		#self.resize(self.data.image.width(), self.data.image.height())
 		self.resize()
 		self.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
-		#self.data.zoom = 1
 		self.com.updateCanvas.emit()
 
 	def fillImage(self, begin, paint, current, imagen):
 
 		if paint.rgb() == current :
-			print "pass activated"
+			#print "pass activated"
+			pass
 		else:
 			queue = [begin]
 			for x,y in queue:
@@ -593,7 +581,7 @@ class Canvas(QtGui.QLabel):
 
 		pi = self.data.DegPoint
 		alpha = self.data.DegAlpha
-		print pi,pf
+		#print pi,pf
 
 		if pf[0] == pi[0]:
 
@@ -607,7 +595,7 @@ class Canvas(QtGui.QLabel):
 
 			color1 = self.data.color_deg_1.getRgb()
 			color2 = self.data.color_deg_2.getRgb()
-			print color1,color2
+			#print color1,color2
 
 			Var_r = color2[0] - color1[0]
 			dr = float(Var_r)/abs(Var_y)
@@ -615,7 +603,7 @@ class Canvas(QtGui.QLabel):
 			dg = float(Var_g)/abs(Var_y)
 			Var_b = color2[2] - color1[2]
 			db = float(Var_b)/abs(Var_y)
-			print dr, dg, db
+			#print dr, dg, db
 
 			for i in range(1,abs(Var_y)+1):
 				R = color1[0] + i*dr
@@ -624,10 +612,10 @@ class Canvas(QtGui.QLabel):
 				R = int( round(R) )
 				G = int( round(G) )
 				B = int( round(B) )
-				print R,G,B
+				#print R,G,B
 
 				tmp_c = QtGui.QColor(R,G,B,alpha)
-				print "changed color"
+				#print "changed color"
 				self.data.image.setPixel(pi[0],pi[1]+i*dy,tmp_c.rgba())
 
 			return 0
@@ -644,7 +632,7 @@ class Canvas(QtGui.QLabel):
 
 			color1 = self.data.color_deg_1.getRgb()
 			color2 = self.data.color_deg_2.getRgb()
-			print color1,color2
+			#print color1,color2
 
 			Var_r = color2[0] - color1[0]
 			dr = float(Var_r)/abs(Var_x)
@@ -652,7 +640,7 @@ class Canvas(QtGui.QLabel):
 			dg = float(Var_g)/abs(Var_x)
 			Var_b = color2[2] - color1[2]
 			db = float(Var_b)/abs(Var_x)
-			print dr, dg, db
+			#print dr, dg, db
 
 			for i in range(1,abs(Var_x)+1):
 				R = color1[0] + i*dr
@@ -661,7 +649,7 @@ class Canvas(QtGui.QLabel):
 				R = int( round(R) )
 				G = int( round(G) )
 				B = int( round(B) )
-				print R,G,B
+				#print R,G,B
 
 				tmp_c = QtGui.QColor(R,G,B,alpha)
 				self.data.image.setPixel(pi[0]+i*dx,pi[1],tmp_c.rgba())
@@ -674,7 +662,7 @@ class Canvas(QtGui.QLabel):
 
 		pi = self.data.DegPoint
 		alpha = self.data.DegAlpha
-		print pi,pf
+		#print pi,pf
 
 		if pf[0] == pi[0]:
 
@@ -692,7 +680,7 @@ class Canvas(QtGui.QLabel):
 			for i in range(1,abs(Var_y)+1):
 
 				color.setAlpha(255-da*i)
-				print "changed color"
+				#print "changed color"
 				self.data.image.setPixel(pi[0],pi[1]+i*dy,color.rgba())
 
 			return 0
@@ -713,7 +701,7 @@ class Canvas(QtGui.QLabel):
 			for i in range(1,abs(Var_x)+1):
 
 				color.setAlpha(255-da*i)
-				print "changed color"
+				#print "changed color"
 				self.data.image.setPixel(pi[0]+i*dx,pi[1],color.rgba())
 
 			return 0

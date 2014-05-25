@@ -20,6 +20,7 @@ class MainWidget(QtGui.QScrollArea):
 		self.com = com
 		self.data = data
 		self.canvas = Canvas(w, h, data, com, color, self)
+		self.parent = Parent
 
 		self.setBackgroundRole(QtGui.QPalette.Dark)
 		self.setObjectName("MainWidget")
@@ -45,4 +46,12 @@ class MainWidget(QtGui.QScrollArea):
 			self.canvas.move( (w-self.data.image.width()*self.data.zoom)/2 , self.canvas.y() )
 		if self.canvas.height() < h:
 			self.canvas.move( self.canvas.x(), (h-self.data.image.height()*self.data.zoom)/2 )
-	
+
+	def wheelEvent(self, event):
+
+		#super(MainWidget, self).wheelEvent(event)
+		
+		if self.parent.onClickPalette:
+			self.parent.wheelEvent(event)
+		else:
+			super(MainWidget, self).wheelEvent(event)

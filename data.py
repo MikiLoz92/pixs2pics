@@ -18,6 +18,7 @@ class Data:
 	"""
 
 	color = QtCore.Qt.red
+
 	palette = []
 	defaultPalette = [[14, 53, 75], [0, 76, 115], [18, 121, 174], [49, 162, 238], [136, 199, 234], [27, 52, 43],
 	                  [30, 85, 55], [69, 145, 26], [121, 191, 29], [190, 222, 44], [69, 18, 18], [113, 31, 31],
@@ -29,15 +30,15 @@ class Data:
 	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
 	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0],
 	                  [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-	pencilSize = 1
-	pencilAlpha = 255
-	secondaryColorEraser = False
-	eraserSize = 2
-	brushSize = 3
+
 	selection = None
+
 	currentTool = 1
+
 	zoom = 1
+
 	defaultFileName = ""
+
 	colorPicker = False
 
 	ximage = 0
@@ -77,7 +78,6 @@ class Data:
 		self.defaultFileName = fileName
 		self.image = QtGui.QImage(fileName).convertToFormat(QtGui.QImage.Format_ARGB32_Premultiplied)
 		if self.image.hasAlphaChannel():
-			print "Image has alpha channel"
 			self.bgColor = QtGui.QColor(0,0,0,0)
 		else:
 			self.bgColor = QtGui.QColor(255,255,255)
@@ -381,6 +381,8 @@ class Data:
 		self.loadDefaultsGrid()
 		self.loadDefaultsColor()
 		self.loadDefaultsTheme()
+		self.loadDefaultsPencil()
+		self.loadDefaultsEraser()
 
 	def loadDefaultsLanguage(self):
 
@@ -407,6 +409,26 @@ class Data:
 
 		self.theme = self.getDefault("theme", "theme", "aquamarine")
 
+	def loadDefaultsPencil(self):
+
+		self.pencilSize = self.getIntDefault("pencil", "size", 1)
+		self.secondaryColorEraser = self.getBoolDefault("pencil", "secondary_color_eraser", False)
+
+	def loadDefaultsEraser(self):
+
+		self.eraserSize = self.getIntDefault("eraser", "size", 1)
+
+	def saveDefaults(self):
+
+		self.setDefault("color", "primary_color", self.primaryColor.rgb())
+		self.setDefault("color", "secondary_color", self.secondaryColor.rgb())
+
+		self.setDefault("pencil", "size", self.pencilSize)
+		self.setDefault("pencil", "secondary_color_eraser", self.secondaryColorEraser)
+		self.setDefault("eraser", "size", self.eraserSize)
+
+		self.savePalette()
+
 	def loadPalette(self):
 
 		try:
@@ -424,7 +446,6 @@ class Data:
 			blue = int(colors[2])
 			self.palette.append([red, green, blue])
 		f.close()
-		print self.palette
 
 	def savePalette(self):
 
