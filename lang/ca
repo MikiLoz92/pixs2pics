@@ -113,11 +113,11 @@ title=Preferèncias
 item_language = Idioma
 item_language_language = Idioma
 item_language_changed_title = Ajusts d'idioma cambiats
-item_language_changed_message = Tindràs que reinicar Pix2Pics perque s'apliquin els nous canvis d'idioma.
+item_language_changed_message = Tindràs que reinicar Pix2Pics per que s'apliquin els nous canvis d'idioma.
 item_theme = Tema
 item_theme_theme = Tema
 item_theme_changed_title = Ajusts de tema cambiats
-item_theme_changed_message = Tindràs que reinicar Pix2Pics perque s'apliquin els nous canvis en el tema.
+item_theme_changed_message = Tindràs que reinicar Pix2Pics per que s'apliquin els nous canvis en el tema.
 item_matrix_grid = Graella matricial
 item_matrix_grid_dimension = Dimensions
 

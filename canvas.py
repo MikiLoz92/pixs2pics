@@ -16,6 +16,7 @@ class Selection(QtGui.QRubberBand):
 		self.data = data
 
 		self.origin = QtCore.QPoint(origin)
+		self.originTopLeft = QtCore.QPoint()
 		self.finished = False
 		self.moving = False
 		self.image = None
@@ -303,8 +304,6 @@ class Canvas(QtGui.QLabel):
 				self.move( self.x(), self.mapToParent(event.pos().y() - self.grabPoint.y()))
 			"""
 
-			self.parent.horizontalScrollBar.setValue()
-
 		self.update()
 
 	def drawToolHint(self, x, y):
@@ -354,6 +353,7 @@ class Canvas(QtGui.QLabel):
 			
 			if self.selecting:
 				#print "Selection made starting at (" + str(self.data.selection.origin.x()) + ", " + str(self.data.selection.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				self.data.selection.originTopLeft = QtCore.QPoint(self.data.selection.rect.x(), self.data.selection.rect.y())
 				self.data.selection.finished = True
 				self.data.selection.image = self.data.image.copy(self.data.selection.rect)
 				painter = QtGui.QPainter(self.data.image)
@@ -490,7 +490,8 @@ class Canvas(QtGui.QLabel):
 			#print "Applying selection"
 			painter = QtGui.QPainter(self.data.image)
 			painter.drawImage(self.data.selection.rect.topLeft(), self.data.selection.image)
-			self.data.addHistoryStep()
+			if self.data.selection.originTopLeft != self.data.selection.rect.topLeft():
+				self.data.addHistoryStep()
 			self.com.updateCanvas.emit()
 			self.data.selection.hide()
 			self.data.selection = None
@@ -531,6 +532,7 @@ class Canvas(QtGui.QLabel):
 		if self.data.selection != None:
 			self.data.selection.hide()
 			self.data.selection = None
+			self.data.addHistoryStep()
 			self.com.updateCanvas.emit()
 
 	def resizeToNewImage(self):
