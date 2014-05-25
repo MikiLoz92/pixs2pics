@@ -39,13 +39,13 @@ clear = E&liminar
 preferences = P&referències
 
 [menu_edit_status_tips]
-undo = Desfer l'última acció
-redo = Refer l'última acció
-cut = Tallar la imatge o una part
-copy = Copiar la imatge o una part
-paste = Enganxar una imatge a sobre
-clear = Eliminar la imatge o una part
-preferences = Obrir el diáleg de preferències
+undo = Desfés l'última acció
+redo = Refés l'última acció
+cut = Talla la imatge o una part
+copy = Copia la imatge o una part
+paste = Enganxa una imatge a sobre
+clear = Elimina la imatge o una part
+preferences = Obrir el diàleg de preferències
 
 [menu_view_labels]
 pixel_grid = Graella de píxel
@@ -112,11 +112,11 @@ dimension = Noves dimensions
 title=Preferèncias
 item_language = Idioma
 item_language_language = Idioma
-item_language_changed_title = Ajusts d'idioma cambiats
+item_language_changed_title = Opcions d'idioma cambiades
 item_language_changed_message = Tindràs que reinicar Pix2Pics per que s'apliquin els nous canvis d'idioma.
 item_theme = Tema
 item_theme_theme = Tema
-item_theme_changed_title = Ajusts de tema cambiats
+item_theme_changed_title = Opcions de tema cambiades
 item_theme_changed_message = Tindràs que reinicar Pix2Pics per que s'apliquin els nous canvis en el tema.
 item_matrix_grid = Graella matricial
 item_matrix_grid_dimension = Dimensions
