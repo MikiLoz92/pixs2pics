@@ -2,7 +2,7 @@
 name = Español
 
 [pix2pics]
-title = Pix2Pics
+title = Pixs2Pics
 
 # ------------
 # --- MENU ---
@@ -79,7 +79,7 @@ about = A&cerca de...
 
 [menu_help_status_tips]
 contents = Abrir la ventana de ayuda
-about = Acerca de Pix2Pics
+about = Acerca de Pixs2Pics
 
 # ---------------
 # --- DIALOGS ---
@@ -122,8 +122,8 @@ item_matrix_grid = Rejilla matricial
 item_matrix_grid_dimension = Dimensiones
 
 [dialog_about]
-title = Acerca de Pix2Pics
-description = Pix2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.
+title = Acerca de Pixs2Pics
+description = Pixs2Pics es un programa de Pixel Art polivalente, puedes crear sprites y tiles o editar imágenes sin complicaciones.
 #Autores:\n- Miguel Vera Belmonte\n- Alicia Guindulain\n- Antonio Peris\n- Luis Mollà\n-Natacza Johnson
 
 # -------------

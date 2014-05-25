@@ -2,7 +2,7 @@
 name = English
 
 [pix2pics]
-title = Pix2Pics
+title = Pixs2Pics
 
 # ------------
 # --- MENU ---
@@ -79,7 +79,7 @@ about = &About
 
 [menu_help_status_tips]
 contents = Show the help window
-about = About Pix2Pics...
+about = About Pixs2Pics...
 
 # ---------------
 # --- DIALOGS ---
@@ -124,8 +124,8 @@ item_matrix_grid_dimension = Dimension
 [dialog_preferences_language]
 
 [dialog_about]
-title = About Pix2Pics
-description = Pix2Pics is a Pixel Art software that serves all purposes, from creating sprites and tiles to editing simple images.
+title = About Pixs2Pics
+description = Pixs2Pics is a Pixel Art software that serves all purposes, from creating sprites and tiles to editing simple images.
 
 # -------------
 # --- TOOLS ---

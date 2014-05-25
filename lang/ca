@@ -2,7 +2,7 @@
 name = Català
 
 [pix2pics]
-title = Pix2Pics
+title = Pixs2Pics
 
 # ------------
 # --- MENU ---
@@ -79,7 +79,7 @@ about = E&n quant a...
 
 [menu_help_status_tips]
 contents = Obrir la finestra d'ajuda
-about = En quant a Pix2Pics
+about = En quant a Pixs2Pics
 
 # ---------------
 # --- DIALOGS ---
@@ -122,8 +122,8 @@ item_matrix_grid = Graella matricial
 item_matrix_grid_dimension = Dimensions
 
 [dialog_about]
-title = En quant a Pix2Pics
-description = Pix2Pics és un programa de Pixel Art polivalent, pots crear sprites i tiles o editar imatges sense complicacions.
+title = En quant a Pixs2Pics
+description = Pixs2Pics és un programa de Pixel Art polivalent, pots crear sprites i tiles o editar imatges sense complicacions.
 #Autors:\n- Miguel Vera Belmonte\n- Alicia Guindulain\n- Antonio Peris\n- Luis Mollà\n-Natacza Johnson
 
 # -------------
