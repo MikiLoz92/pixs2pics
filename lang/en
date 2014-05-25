@@ -125,7 +125,7 @@ item_matrix_grid_dimension = Dimension
 
 [dialog_about]
 title = About Pix2Pics
-description = Pix2Pics is a Pixel Art that serves all purposes, from creating sprites and tiles to editing simple images.
+description = Pix2Pics is a Pixel Art software that serves all purposes, from creating sprites and tiles to editing simple images.
 
 # -------------
 # --- TOOLS ---
