@@ -28,6 +28,17 @@ class CurrentColor(QtGui.QLabel):
 		self.setStyleSheet("background-color: " + self.color.name() + ";")
 		self.setFixedHeight(24)
 
+	def mouseMoveEvent(self, e):
+
+		mimeData = QtCore.QMimeData()
+		mimeData.setColorData(self.color)
+
+		drag = QtGui.QDrag(self)
+		drag.setMimeData(mimeData)
+		drag.setHotSpot(e.pos() - self.rect().topLeft())
+
+		dropAction = drag.start(QtCore.Qt.MoveAction)
+
 	def mouseReleaseEvent(self, e):
 
 		if e.button() == Qt.LeftButton:
@@ -68,6 +79,8 @@ class Color(QtGui.QFrame):
 		self.setFixedSize(12, 12)
 		self.setStyleSheet("background-color: " + self.color.name() + ";")
 
+		self.setAcceptDrops(True)
+
 	def mousePressEvent(self, e):
 
 		if e.button() == Qt.LeftButton:
@@ -77,14 +90,43 @@ class Color(QtGui.QFrame):
 		elif e.button() == Qt.MidButton:
 			c = QtGui.QColorDialog.getColor(self.color)
 			if c.isValid():
-				self.color = c
-				self.data.palette[self.position] = [c.red(), c.green(), c.blue()]
-				self.update()
+				self.changeColor(c)
+
+	def mouseMoveEvent(self, e):
+
+		mimeData = QtCore.QMimeData()
+		mimeData.setColorData(self.color)
+
+		drag = QtGui.QDrag(self)
+		drag.setMimeData(mimeData)
+		drag.setHotSpot(e.pos() - self.rect().topLeft())
+
+		dropAction = drag.start(QtCore.Qt.MoveAction)
+
+		self.changeColor(QtGui.QColor(0,0,0))
+
+	def dragEnterEvent(self, e):
+
+		if e.mimeData().hasColor():
+			e.accept()
+
+	def dropEvent(self, e):
+
+		self.changeColor(QtGui.QColor(e.mimeData().colorData()))
+
+		e.setDropAction(QtCore.Qt.CopyAction)
+		e.accept()
 
 	def update(self):
 
 		self.setStyleSheet("background-color: " + self.color.name() + ";")
 		super(Color, self).update()
+
+	def changeColor(self, c):
+
+		self.color = c
+		self.data.palette[self.position] = [c.red(), c.green(), c.blue()]
+		self.update()
 
 class Palette (QtGui.QWidget):
 
