@@ -503,6 +503,7 @@ class Canvas(QtGui.QLabel):
 			clipboard.setImage(self.data.selection.image)
 			self.data.selection.hide()
 			self.data.selection = None
+			self.data.addHistoryStep()
 			self.com.updateCanvas.emit()
 		else: # Copiar imagen entera
 			clipboard.setImage(self.data.image)

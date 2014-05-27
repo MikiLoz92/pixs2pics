@@ -124,7 +124,7 @@ class ResizeImageDialog (QtGui.QDialog):
 
 	def accept(self):
 	
-		self.parent.resizeImage(self.width.value(), self.height.value())
+		self.parent.data.resizeImage(self.width.value(), self.height.value())
 		super(ResizeImageDialog,self).accept()
 
 

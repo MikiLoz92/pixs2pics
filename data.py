@@ -279,6 +279,13 @@ class Data:
 			self.image = self.image.transformed(transform)
 			self.addHistoryStep()
 
+	def resizeImage(self, width, height):
+		
+		self.image = self.image.scaled(width, height)
+		self.addHistoryStep()
+		self.com.newImage.emit()
+		self.com.resizeCanvas.emit()
+
 	def resizeCanvas(self, width, height):
 
 		im = self.image
@@ -286,6 +293,7 @@ class Data:
 		self.image.fill(self.bgColor)
 		painter = QtGui.QPainter(self.image)
 		painter.drawImage(QtCore.QPoint(0,0,), im)
+		self.addHistoryStep()
 		self.com.updateCanvas.emit()
 		self.com.resizeCanvas.emit()
 

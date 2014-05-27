@@ -646,11 +646,6 @@ class MainWindow(QtGui.QMainWindow):
 	def showResizeCanvasDialog(self):
 
 		d = ResizeCanvasDialog(self)
-
-	def resizeImage(self, width, height):
-		
-		self.data.image = self.data.image.scaled(width, height)
-		self.com.newImage.emit()
 		
 	def setPencilSize(self, size):
 
@@ -752,6 +747,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.data.posHistory -= 1
 			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			self.com.updateCanvas.emit()
+			self.com.resizeCanvas.emit()
 
 	def redo(self):
 
@@ -759,6 +755,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.data.posHistory += 1
 			self.data.image = QtGui.QImage(self.data.history[self.data.posHistory])
 			self.com.updateCanvas.emit()
+			self.com.resizeCanvas.emit()
 
 	def cut(self):
 
