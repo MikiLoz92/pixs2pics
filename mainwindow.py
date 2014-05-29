@@ -87,7 +87,7 @@ class ToolProperties (QtGui.QDockWidget):
 		l.append(self.createEraserWidget())
 		l.append(QtGui.QWidget())
 		l.append(QtGui.QWidget())
-		#l.append(self.createGradientWidget())
+		l.append(self.createGradientWidget())
 		l.append(QtGui.QWidget())
 
 		return l
@@ -195,18 +195,20 @@ class ToolProperties (QtGui.QDockWidget):
 
 	def createGradientWidget(self):
 
-		w = QtGui.QWidget()
-		grid = QtGui.QGridLayout()
+		self.v = QtGui.QVBoxLayout()
 
-		self.label1 = QtGui.QLabel("Color 1:", self)
-		self.label2 = QtGui.QLabel("Color 2:", self)
-		self.label3 = QtGui.QLabel("Transparencia:", self)
-		self.color1 = DegColor(self.data, self.com, self.data.color_deg_1, 1)
-		self.color2 = DegColor(self.data, self.com, self.data.color_deg_2, 2)
+		v2 = QtGui.QVBoxLayout()
 
-		self.DegOp1 = QtGui.QRadioButton("2 Colores")
-		self.DegOp2 = QtGui.QRadioButton("1 color a Transparente")
-		self.DegOp1.setChecked(True)
+		self.btn1 = QtGui.QRadioButton("Horitzontal")
+		self.btn2 = QtGui.QRadioButton("Vertical")
+		self.btn1.setChecked(True)
+
+		self.btn1.clicked.connect( lambda : self.changeDegDir('H') )
+		self.btn2.clicked.connect( lambda : self.changeDegDir('V') )
+
+		h = QtGui.QHBoxLayout()
+
+		self.label = QtGui.QLabel("Transparencia:", self)
 
 		self.AlphaSpin = QtGui.QSpinBox(self) 
 		self.AlphaSpin.setMinimum(0)
@@ -214,63 +216,47 @@ class ToolProperties (QtGui.QDockWidget):
 		self.AlphaSpin.setValue(255)
 		self.AlphaSpin.valueChanged.connect(self.setAlphaValue)
 
-		hbox = QtGui.QHBoxLayout()
-		hbox.addWidget(self.label3)
-		hbox.addWidget(self.AlphaSpin)
-		hbox.setAlignment(QtCore.Qt.AlignTop)
+		h.addWidget(self.label)
+		h.addWidget(self.AlphaSpin)
+		tmp = QtGui.QWidget()
+		tmp.setLayout(h) 
 
-		self.DegOp1.clicked.connect(self.changeDegState)
-		self.DegOp2.clicked.connect(self.changeDegState)
+		self.check = QtGui.QCheckBox("Color a Transparente")
+		self.check.stateChanged.connect(self.changeDegState)
 
-		self.color1.com.updateColorDeg.connect(self.setColorDeg1)
-		self.color2.com.updateColorDeg.connect(self.setColorDeg2)
+		v2.addWidget(self.btn1)
+		v2.addWidget(self.btn2)
+		tmp2 = QtGui.QWidget()
+		tmp2.setLayout(v2) 
 
-		grid.addWidget(self.label1,1,1)
-		grid.addWidget(self.color1,1,3)
-		grid.addWidget(self.label2,3,1)
-		grid.addWidget(self.color2,3,3)
-		grid.addLayout(hbox,5,1,1,3)
-		grid.addWidget(self.DegOp1,7,1,1,3)
-		grid.addWidget(self.DegOp2,9,1,1,3)
+		self.v.addWidget(tmp2) 
+		#self.v.addWidget(tmp)
+		#self.v.addWidget(self.check)
 
-		grid.setRowMinimumHeight(0,3)
-		grid.setRowMinimumHeight(2,3)
-		grid.setRowMinimumHeight(4,3)
-		grid.setRowMinimumHeight(6,8)
-		grid.setColumnMinimumWidth(0,3)
-		grid.setColumnMinimumWidth(2,3)
-		grid.setColumnMinimumWidth(4,1)
-		grid.setRowStretch(12,1)
-
-		w.setLayout(grid)
+		w = QtGui.QWidget()
+		w.setLayout(self.v)
+		self.v.addStretch()
 
 		return w
 
-	def setColorDeg1(self):
-		self.data.color_deg_1 = self.color1.color
 
-	def setColorDeg2(self):
-		self.data.color_deg_2 = self.color2.color
-
-	def setAlphaValue(self,alpha):
-		self.data.DegAlpha = alpha
+	def changeDegDir(self, state):
+		if self.btn1.isChecked():
+			self.data.DegDir = 'H'
+		elif self.btn2.isChecked():
+			self.data.DegDir = 'V'
 
 	def changeDegState(self):
-		if self.DegOp1.isChecked():
+		if self.check.isChecked():
 			self.data.DegState = 1
-			self.color2.show()
-			self.label2.show()
-			self.label3.show()
-			self.AlphaSpin.show()
-		elif self.DegOp2.isChecked():
+		else:
 			self.data.DegState = 2
-			self.color2.hide()
-			self.label2.hide()
-			self.label3.hide()
-			self.AlphaSpin.hide()
+
+	def setAlphaValue(self):
+		self.data.DegAlpha = self.AlphaSpin.value()
+		print self.data.DegAlpha
 
 	def updateWidget(self):
-
 		self.setWidget(self.widgets[self.data.currentTool])
 
 

@@ -46,12 +46,9 @@ class Data:
 	ximage = 0
 	yimage = 0
 
-	DegState = 1
-	DegPoint = 0
-	color_deg_1 = QtGui.QColor(QtCore.Qt.white)
-	color_deg_2 = QtGui.QColor(QtCore.Qt.black)
+	DegDir = 'H'
+	DegState = 2
 	DegAlpha = 255
-	save_color = 0
 
 	def __init__(self, com):
 

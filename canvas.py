@@ -365,6 +365,17 @@ class Canvas(QtGui.QLabel):
 			
 			if self.selecting:
 				#print "Gradient made starting at (" + str(self.data.gradient.origin.x()) + ", " + str(self.data.gradient.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				x1,y1 = self.data.gradient.origin.x(), self.data.gradient.origin.y()
+				x2,y2 = x,y
+				xm,ym = max(x1,x2),max(y1,y2)
+				if xm == x2 : 
+					lx = range(x1,x2+1)
+				else:
+					lx = range(x1,x2-1,-1)
+				if ym == y2:
+					ly = range(y1,y2+1)
+				else:
+					ly = range(y1,y2-1,-1)
 				self.data.gradient.originTopLeft = QtCore.QPoint(self.data.gradient.rect.x(), self.data.gradient.rect.y())
 				self.data.gradient.finished = True
 				self.data.gradient.image = self.data.image.copy(self.data.gradient.rect)
@@ -374,7 +385,20 @@ class Canvas(QtGui.QLabel):
 				painter = QtGui.QPainter(self.data.image)
 				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
 				#painter.fillRect(x1,y1,x2,y2, self.data.bgColor)
-				
+				if self.data.DegState == 2:
+					if self.data.DegDir == 'H':
+						for i in ly:
+							self.Grad2Colors( (x1,i) , (x2,i) )
+					else:
+						for i in lx:
+							self.Grad2Colors( (i,y1) , (i,y2) )
+				elif self.data.DegState == 1:
+					if self.data.DegDir == 'H':
+						for i in ly:
+							self.GradColorAlpha( (x1,i) , (x2,i) )
+					else:
+						for i in lx:
+							self.GradColorAlpha( (i,y1) , (i,y2) )
 
 			self.selecting = False
 	
@@ -578,11 +602,9 @@ class Canvas(QtGui.QLabel):
 							if imagen.pixel(xp,yp-1) == current:
 								queue.append( (xp,yp-1) )
 
-	def Grad2Colors(self, pf):
+	def Grad2Colors(self, pi, pf):
 
-		pi = self.data.DegPoint
 		alpha = self.data.DegAlpha
-		#print pi,pf
 
 		if pf[0] == pi[0]:
 
@@ -594,8 +616,8 @@ class Canvas(QtGui.QLabel):
 			else:
 				return 0
 
-			color1 = self.data.color_deg_1.getRgb()
-			color2 = self.data.color_deg_2.getRgb()
+			color1 = self.data.primaryColor.getRgb()
+			color2 = self.data.secondaryColor.getRgb()
 			#print color1,color2
 
 			Var_r = color2[0] - color1[0]
@@ -606,7 +628,7 @@ class Canvas(QtGui.QLabel):
 			db = float(Var_b)/abs(Var_y)
 			#print dr, dg, db
 
-			for i in range(1,abs(Var_y)+1):
+			for i in range(0,abs(Var_y)+1):
 				R = color1[0] + i*dr
 				G = color1[1] + i*dg
 				B = color1[2] + i*db
@@ -631,8 +653,8 @@ class Canvas(QtGui.QLabel):
 			else:
 				return 0
 
-			color1 = self.data.color_deg_1.getRgb()
-			color2 = self.data.color_deg_2.getRgb()
+			color1 = self.data.primaryColor.getRgb()
+			color2 = self.data.secondaryColor.getRgb()
 			#print color1,color2
 
 			Var_r = color2[0] - color1[0]
@@ -643,7 +665,7 @@ class Canvas(QtGui.QLabel):
 			db = float(Var_b)/abs(Var_x)
 			#print dr, dg, db
 
-			for i in range(1,abs(Var_x)+1):
+			for i in range(0,abs(Var_x)+1):
 				R = color1[0] + i*dr
 				G = color1[1] + i*dg
 				B = color1[2] + i*db
@@ -659,11 +681,9 @@ class Canvas(QtGui.QLabel):
 		else:
 			return 1
 
-	def GradColorAlpha(self, pf):
+	def GradColorAlpha(self, pi, pf):
 
-		pi = self.data.DegPoint
 		alpha = self.data.DegAlpha
-		#print pi,pf
 
 		if pf[0] == pi[0]:
 
@@ -675,10 +695,10 @@ class Canvas(QtGui.QLabel):
 			else:
 				return 0
 
-			color = self.data.color_deg_1
+			color = self.data.primaryColor
 			da = 255/abs(Var_y)
 
-			for i in range(1,abs(Var_y)+1):
+			for i in range(0,abs(Var_y)+1):
 
 				color.setAlpha(255-da*i)
 				#print "changed color"
@@ -696,13 +716,12 @@ class Canvas(QtGui.QLabel):
 			else:
 				return 0
 
-			color = self.data.color_deg_1
+			color = self.data.primaryColor
 			da = 255/abs(Var_x)
 
-			for i in range(1,abs(Var_x)+1):
+			for i in range(0,abs(Var_x)+1):
 
 				color.setAlpha(255-da*i)
-				#print "changed color"
 				self.data.image.setPixel(pi[0]+i*dx,pi[1],color.rgba())
 
 			return 0
