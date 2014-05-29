@@ -33,6 +33,8 @@ class Data:
 
 	selection = None
 
+	gradient = None
+
 	currentTool = 1
 
 	zoom = 1

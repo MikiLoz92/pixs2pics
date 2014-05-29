@@ -197,35 +197,8 @@ class Canvas(QtGui.QLabel):
 
 		# Degradado
 		elif self.data.currentTool == 5:
-
 			if event.button() == Qt.LeftButton:
-
-				if self.data.DegPoint == 0:
-					self.data.DegPoint = (x,y)
-					self.data.save_color = QtGui.QColor( self.data.image.pixel(x,y) )
-					self.data.color_deg_1.setAlpha(self.data.DegAlpha)
-					if self.data.DegState == 1:
-						self.data.image.setPixel(x,y,self.data.color_deg_1.rgba())
-					elif self.data.DegState == 2:
-						self.data.image.setPixel(x,y,self.data.color_deg_1.rgb())
-
-				elif (x,y) != self.data.DegPoint :
-					if self.data.DegState == 1:
-						i = self.Grad2Colors((x,y))
-						if i==0:
-							self.data.DegPoint = 0
-					elif self.data.DegState == 2:
-						i = self.GradColorAlpha((x,y))
-						if i==0:
-							self.data.DegPoint = 0
-
-			elif event.button() == QtCore.Qt.RightButton:
-
-				#Degradado - Cancelar primera selección
-				if self.data.currentTool==6 and self.data.DegPoint!=0:
-					x, y = self.data.DegPoint
-					self.data.image.setPixel(x,y,self.data.save_color.rgba())
-					self.data.DegPoint = 0
+				self.data.gradient = Selection(QtCore.QPoint(x, y), self.data, self)
 
 		# Mover canvas
 		if event.button() == Qt.MiddleButton:
@@ -251,7 +224,7 @@ class Canvas(QtGui.QLabel):
 			if event.buttons() == Qt.LeftButton:
 				if not self.data.selection.finished:
 					self.selecting = True
-					self.resizeSelection(event.pos().x(), event.pos().y())
+					self.resizeSelection(self.data.selection, event.pos().x(), event.pos().y())
 				if self.data.selection.moving:
 					self.moveSelection(event.pos().x(), event.pos().y())
 
@@ -277,6 +250,13 @@ class Canvas(QtGui.QLabel):
 				self.drawLineTo(QtCore.QPoint(x,y), self.data.bgColor)
 				self.com.updateCanvas.emit()
 				self.lastPoint = QtCore.QPoint(endPoint)
+
+		# Degradado
+		if self.data.currentTool == 5:
+			if event.buttons() == Qt.LeftButton:
+				if self.data.gradient and not self.data.gradient.finished:
+					self.selecting = True
+					self.resizeSelection(self.data.gradient, event.pos().x(), event.pos().y())
 
 		if event.buttons() == Qt.MiddleButton:
 			
@@ -379,6 +359,24 @@ class Canvas(QtGui.QLabel):
 			if event.button() == Qt.LeftButton or event.button() == Qt.RightButton:
 				self.data.addHistoryStep()
 				self.drawing = False
+
+		# Degradado
+		if self.data.currentTool == 5 and event.button() == QtCore.Qt.LeftButton:
+			
+			if self.selecting:
+				#print "Gradient made starting at (" + str(self.data.gradient.origin.x()) + ", " + str(self.data.gradient.origin.y()) + ") and ending at (" + str(x) + ", " + str(y) + ") (both included)"
+				self.data.gradient.originTopLeft = QtCore.QPoint(self.data.gradient.rect.x(), self.data.gradient.rect.y())
+				self.data.gradient.finished = True
+				self.data.gradient.image = self.data.image.copy(self.data.gradient.rect)
+				self.data.gradient.hide()
+				self.data.gradient = None
+				# OPERACIONES DE PINTADO AQUí ABAJO
+				painter = QtGui.QPainter(self.data.image)
+				painter.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
+				#painter.fillRect(x1,y1,x2,y2, self.data.bgColor)
+				
+
+			self.selecting = False
 	
 	def paintEvent(self, event):
 		
@@ -712,24 +710,24 @@ class Canvas(QtGui.QLabel):
 		else:
 			return 1
 
-	def resizeSelection(self, xevent, yevent):
+	def resizeSelection(self, selection, xevent, yevent):
 
 		# En la imagen
 		x = xevent / self.data.zoom
 		y = yevent / self.data.zoom
 
-		if x >= self.data.selection.origin.x() and y >= self.data.selection.origin.y():
-			self.data.selection.setGeometry( self.data.selection.origin.x(), self.data.selection.origin.y(), x - self.data.selection.origin.x() + 1, y - self.data.selection.origin.y() + 1 )
-		elif x < self.data.selection.origin.x() and y >= self.data.selection.origin.y():
-			self.data.selection.setGeometry( x, self.data.selection.origin.y(), self.data.selection.origin.x() - x + 1, y - self.data.selection.origin.y() + 1 )
-		elif x < self.data.selection.origin.x() and y < self.data.selection.origin.y():
-			self.data.selection.setGeometry( x, y, self.data.selection.origin.x() - x + 1, self.data.selection.origin.y() - y + 1 )
-		elif x >= self.data.selection.origin.x() and y < self.data.selection.origin.y():
-			self.data.selection.setGeometry( self.data.selection.origin.x(), y, x - self.data.selection.origin.x() + 1, self.data.selection.origin.y() - y + 1 )
+		if x >= selection.origin.x() and y >= selection.origin.y():
+			selection.setGeometry( selection.origin.x(), selection.origin.y(), x - selection.origin.x() + 1, y - selection.origin.y() + 1 )
+		elif x < selection.origin.x() and y >= selection.origin.y():
+			selection.setGeometry( x, selection.origin.y(), selection.origin.x() - x + 1, y - selection.origin.y() + 1 )
+		elif x < selection.origin.x() and y < selection.origin.y():
+			selection.setGeometry( x, y, selection.origin.x() - x + 1, selection.origin.y() - y + 1 )
+		elif x >= selection.origin.x() and y < selection.origin.y():
+			selection.setGeometry( selection.origin.x(), y, x - selection.origin.x() + 1, selection.origin.y() - y + 1 )
 		else:
-			self.data.selection.setGeometry( xorig, yorig, 1, 1 )
+			selection.setGeometry( xorig, yorig, 1, 1 )
 
-		self.data.selection.show()
+		selection.show()
 
 	def calcNewSelectionGeometry(self):
 
