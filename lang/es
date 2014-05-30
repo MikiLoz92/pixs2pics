@@ -159,6 +159,13 @@ preview = Miniatura
 size = Tamaño:
 eraser = Usar goma en vez\nde color secundario
 
+[tool_properties_eraser]
+size = Tamaño:
+
+[tool_properties_gradient]
+horizontal = Horizontal
+vertical = Vertical
+
 [status]
 ready = Listo
 

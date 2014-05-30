@@ -399,6 +399,8 @@ class Canvas(QtGui.QLabel):
 					else:
 						for i in lx:
 							self.GradColorAlpha( (i,y1) , (i,y2) )
+				self.data.addHistoryStep()
+				self.com.updateCanvas.emit()
 
 			self.selecting = False
 	

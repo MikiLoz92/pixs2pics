@@ -159,6 +159,13 @@ preview = Miniatura
 size = Grandària:
 eraser = Usar la goma en comptes\ndel color secundari
 
+[tool_properties_eraser]
+size = Grandària:
+
+[tool_properties_gradient]
+horizontal = Horizontal
+vertical = Vertical
+
 [status]
 ready = Llest
 

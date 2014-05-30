@@ -160,6 +160,13 @@ preview = Preview
 size = Size:
 eraser = Use eraser instead\nof secondary color
 
+[tool_properties_eraser]
+size = Size:
+
+[tool_properties_gradient]
+horizontal = Horizontal
+vertical = Vertical
+
 [status]
 ready = Ready
 

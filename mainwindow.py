@@ -164,7 +164,7 @@ class ToolProperties (QtGui.QDockWidget):
 
 		hbox = QtGui.QHBoxLayout()
 
-		eraserSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
+		eraserSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_eraser", "size"))
 		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
 		slider.setValue(self.data.eraserSize)
 		self.eraserSize = SizeLabel(str(self.data.eraserSize))
@@ -199,8 +199,8 @@ class ToolProperties (QtGui.QDockWidget):
 
 		v2 = QtGui.QVBoxLayout()
 
-		self.btn1 = QtGui.QRadioButton("Horitzontal")
-		self.btn2 = QtGui.QRadioButton("Vertical")
+		self.btn1 = QtGui.QRadioButton(self.data.getText("tool_properties_gradient", "horizontal"))
+		self.btn2 = QtGui.QRadioButton(self.data.getText("tool_properties_gradient", "vertical"))
 		self.btn1.setChecked(True)
 
 		self.btn1.clicked.connect( lambda : self.changeDegDir('H') )
@@ -485,7 +485,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["contents", "about"]
 		icons = ["help-contents.png", "help-about.png"]
 		shortcuts = ['F1', 'Ctrl+B']
-		connects = [0, self.showAboutDialog]
+		connects = [self.showHelp, self.showAboutDialog]
 
 		# Llista d'accions
 		l = []
@@ -688,6 +688,11 @@ class MainWindow(QtGui.QMainWindow):
 	def showNewFileDialog(self):
 
 		d = NewFileDialog(self.data, self)
+
+	def showHelp(self):
+
+		url = QtCore.QUrl("http://nataczajohnson.wix.com/pixs2pics#!page3/cee5")
+		QtGui.QDesktopServices.openUrl(url)
 
 	def showAboutDialog(self):
 
