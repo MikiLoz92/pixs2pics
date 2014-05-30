@@ -381,7 +381,7 @@ class MainWindow(QtGui.QMainWindow):
 		ids = ["new", "open", "save", "saveas", "exit"]
 		icons = ["document-new.png", "document-open.png", "document-save.png", "document-save-as.png", "application-exit.png"]
 		shortcuts = ['Ctrl+N', 'Ctrl+O', 'Ctrl+S', 'Ctrl+Shift+S', 'Ctrl+Q']
-		connects = [self.showNewFileDialog, self.openFile, self.saveFile, self.saveFileAs, QtGui.qApp.quit]
+		connects = [self.showNewFileDialog, self.openFile, self.saveFile, self.saveFileAs, self.close]
 
 		# Llista d'accions
 		l = []
@@ -862,6 +862,19 @@ class MainWindow(QtGui.QMainWindow):
 		super(MainWindow, self).wheelEvent(event)
 
 	def closeEvent(self, event):
+
+		reply = QtGui.QMessageBox.warning(self, self.data.getText("dialog_exit", "title"),
+			self.data.getText("dialog_exit", "message"),
+			QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard | QtGui.QMessageBox.Cancel,
+			QtGui.QMessageBox.Save)
+		if reply == QtGui.QMessageBox.Discard:
+			event.accept()
+		elif reply == QtGui.QMessageBox.Cancel:
+			event.ignore()  
+			return 
+		elif reply == QtGui.QMessageBox.Save:
+			self.saveFile()
+			event.accept()
 
 		self.data.saveDefaults()
 
