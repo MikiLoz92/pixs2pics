@@ -92,6 +92,7 @@ class Color(QtGui.QFrame):
 			if c.isValid():
 				self.changeColor(c)
 
+	"""
 	def mouseMoveEvent(self, e):
 
 		mimeData = QtCore.QMimeData()
@@ -104,6 +105,7 @@ class Color(QtGui.QFrame):
 		dropAction = drag.start(QtCore.Qt.MoveAction)
 
 		self.changeColor(QtGui.QColor(0,0,0))
+	"""
 
 	def dragEnterEvent(self, e):
 

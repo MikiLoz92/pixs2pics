@@ -126,6 +126,10 @@ title = En quant a Pixs2Pics
 description = Pixs2Pics és un programa de Pixel Art polivalent, pots crear sprites i tiles o editar imatges sense complicacions.
 #Autors:\n- Miguel Vera Belmonte\n- Alicia Guindulain\n- Antonio Peris\n- Luis Mollà\n-Natacza Johnson
 
+[dialog_exit]
+title = Sortir
+message = Hi ha canvis que encara no s'han guardat. Estás segur que vols sortir?
+
 # -------------
 # --- TOOLS ---
 # -------------
