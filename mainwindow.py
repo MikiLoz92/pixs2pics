@@ -5,285 +5,12 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 import os, random
 
+from preview import Preview
+from toolproperties import ToolProperties
 from mainwidget import MainWidget
+from palette import Palette
+
 from dialogs import *
-from palette import Palette, Color
-
-
-class Preview (QtGui.QDockWidget):
-
-	def __init__(self, title, data, com, Parent=None):
-
-		super(Preview, self).__init__(title, Parent)
-
-		self.data = data
-		self.com = com
-		self.parent = Parent
-		self.setAllowedAreas(Qt.RightDockWidgetArea)
-		self.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-
-		self.label = QtGui.QLabel()
-		self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
-		self.label.setObjectName("Preview")
-		self.label.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
-		self.layout = QtGui.QHBoxLayout()
-		self.layout.addWidget(self.label)
-		self.label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-		self.layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-		self.setWidget(self.label)
-		self.update()
-
-		self.com.updateCanvas.connect(self.update)
-
-	def update(self):
-
-		super(Preview, self).update()
-		if self.data.image.width() > 128 or self.data.image.height() > 128:
-			imatge = self.data.image.scaled(128, 128, Qt.KeepAspectRatio)
-			self.label.setPixmap(QtGui.QPixmap.fromImage(imatge))
-		else:
-			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
-
-	def setPixmap(self):
-
-		if self.data.image.width() > 128 or self.data.image.height() > 128:
-			imatge = self.data.image.scaled(128, 128, Qt.KeepAspectRatio)
-			self.label.setPixmap(QtGui.QPixmap.fromImage(imatge))
-		else:
-			self.label.setPixmap(QtGui.QPixmap.fromImage(self.data.image))
-
-class SizeLabel (QtGui.QLabel):
-
-	def setValue(self, value):
-
-		self.setText(str(value))
-
-
-class ToolProperties (QtGui.QDockWidget):
-
-	def __init__(self, title, data, com, Parent=None):
-
-		super(ToolProperties, self).__init__(title, Parent)
-
-		self.data = data
-		self.com = com
-		self.parent = Parent
-		self.setAllowedAreas(Qt.RightDockWidgetArea)
-		self.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-
-		# Llista de widgets (configuració de cada eina del programa)
-		self.widgets = self.createWidgets()
-		self.com.updateTool.connect(self.updateWidget)
-
-		self.updateWidget()
-
-	def createWidgets(self):
-
-		# Creem una llista amb tots el widgets i la retornem
-		l = []
-
-		l.append(QtGui.QWidget())
-		l.append(self.createPencilWidget())
-		l.append(self.createEraserWidget())
-		l.append(QtGui.QWidget())
-		l.append(QtGui.QWidget())
-		l.append(self.createGradientWidget())
-		l.append(QtGui.QWidget())
-
-		return l
-
-	def createPencilWidget(self):
-
-		w = QtGui.QWidget()
-		w.setObjectName("ToolProperties")
-		w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
-		vbox = QtGui.QVBoxLayout()
-
-		hbox1 = QtGui.QHBoxLayout()
-
-		pencilSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_pencil", "size"))
-		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-		slider.setValue(self.data.pencilSize)
-		self.pencilSize = SizeLabel(str(self.data.pencilSize))
-
-		slider.setMaximum(9)
-		slider.setMinimum(1)
-		slider.setPageStep(1)
-		slider.setValue(self.data.pencilSize)
-		slider.valueChanged.connect(self.data.setPencilSize)
-		slider.valueChanged.connect(self.pencilSize.setValue)
-		self.com.updatePencilSize.connect(slider.setValue)
-
-		hbox1.addWidget(pencilSizeLabel)
-		hbox1.addWidget(slider)
-		hbox1.addWidget(self.pencilSize)
-
-		"""
-		hbox2 = QtGui.QHBoxLayout()
-		hbox2.addWidget(QtGui.QLabel("Alpha:"))
-		alpha = QtGui.QSpinBox()
-		alpha.setMinimum(0)
-		alpha.setMaximum(255)
-		alpha.setValue(255)
-		alpha.valueChanged.connect(self.setPencilAlpha)
-		alpha.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
-		hbox2.addWidget(alpha)
-		"""
-		hbox2 = QtGui.QHBoxLayout()
-		eraser = QtGui.QCheckBox(self.data.getText("tool_properties_pencil", "eraser"), self)
-		eraser.setChecked(self.data.secondaryColorEraser)
-		eraser.toggled.connect(self.toggleSecondaryColorEraser)
-		hbox2.addWidget(eraser)
-
-		vbox.setAlignment(QtCore.Qt.AlignTop)
-
-		vbox.addLayout(hbox1)
-		vbox.addLayout(hbox2)
-		w.setLayout(vbox)
-
-		return w
-
-	def setPencilSize(self, size):
-
-		self.pencilSize.setText(str(size))
-		self.data.pencilSize = size
-
-	def setPencilAlpha(self, alpha):
-
-		self.data.pencilAlpha = alpha
-
-	def toggleSecondaryColorEraser(self):
-
-		self.data.secondaryColorEraser = not self.data.secondaryColorEraser
-
-	def createEraserWidget(self):
-
-		w = QtGui.QWidget()
-		w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
-		vbox = QtGui.QVBoxLayout()
-
-		hbox = QtGui.QHBoxLayout()
-
-		eraserSizeLabel = QtGui.QLabel(self.data.getText("tool_properties_eraser", "size"))
-		slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-		slider.setValue(self.data.eraserSize)
-		self.eraserSize = SizeLabel(str(self.data.eraserSize))
-
-		slider.setMaximum(9)
-		slider.setMinimum(1)
-		slider.setPageStep(1)
-		slider.setValue(self.data.eraserSize)
-		slider.valueChanged.connect(self.data.setEraserSize)
-		slider.valueChanged.connect(self.eraserSize.setValue)
-		self.com.updateEraserSize.connect(slider.setValue)
-
-		hbox.addWidget(eraserSizeLabel)
-		hbox.addWidget(slider)
-		hbox.addWidget(self.eraserSize)
-
-		vbox.setAlignment(QtCore.Qt.AlignTop)
-
-		vbox.addLayout(hbox)
-		w.setLayout(vbox)
-
-		return w
-
-	def setEraserSize(self, size):
-
-		self.eraserSize.setText(str(size))
-		self.data.eraserSize = size
-
-	def createGradientWidget(self):
-
-		self.v = QtGui.QVBoxLayout()
-
-		v2 = QtGui.QVBoxLayout()
-
-		self.btn1 = QtGui.QRadioButton(self.data.getText("tool_properties_gradient", "horizontal"))
-		self.btn2 = QtGui.QRadioButton(self.data.getText("tool_properties_gradient", "vertical"))
-		self.btn1.setChecked(True)
-
-		self.btn1.clicked.connect( lambda : self.changeDegDir('H') )
-		self.btn2.clicked.connect( lambda : self.changeDegDir('V') )
-
-		h = QtGui.QHBoxLayout()
-
-		self.label = QtGui.QLabel("Transparencia:", self)
-
-		self.AlphaSpin = QtGui.QSpinBox(self) 
-		self.AlphaSpin.setMinimum(0)
-		self.AlphaSpin.setMaximum(255)
-		self.AlphaSpin.setValue(255)
-		self.AlphaSpin.valueChanged.connect(self.setAlphaValue)
-
-		h.addWidget(self.label)
-		h.addWidget(self.AlphaSpin)
-		tmp = QtGui.QWidget()
-		tmp.setLayout(h) 
-
-		self.check = QtGui.QCheckBox("Color a Transparente")
-		self.check.stateChanged.connect(self.changeDegState)
-
-		v2.addWidget(self.btn1)
-		v2.addWidget(self.btn2)
-		tmp2 = QtGui.QWidget()
-		tmp2.setLayout(v2) 
-
-		self.v.addWidget(tmp2) 
-		#self.v.addWidget(tmp)
-		#self.v.addWidget(self.check)
-
-		w = QtGui.QWidget()
-		w.setLayout(self.v)
-		self.v.addStretch()
-
-		return w
-
-
-	def changeDegDir(self, state):
-		if self.btn1.isChecked():
-			self.data.DegDir = 'H'
-		elif self.btn2.isChecked():
-			self.data.DegDir = 'V'
-
-	def changeDegState(self):
-		if self.check.isChecked():
-			self.data.DegState = 1
-		else:
-			self.data.DegState = 2
-
-	def setAlphaValue(self):
-		self.data.DegAlpha = self.AlphaSpin.value()
-		print self.data.DegAlpha
-
-	def updateWidget(self):
-		self.setWidget(self.widgets[self.data.currentTool])
-
-
-class PenSizeValueLabel(QtGui.QLabel):
-
-	def setText(self, text):
-
-		super(PenSizeValueLabel, self).setText(str(text))
-
-
-class DegColor(Color):
-
-	def __init__(self, data, com, color, index, Parent = None):
-
-		super(DegColor,self).__init__(False, data, com, Parent)
-
-		self.color = color
-		self.index = index
-
-	def mousePressEvent(self, e):
-
-		if e.button() == Qt.LeftButton:
-			c = QtGui.QColorDialog.getColor(self.color, self)
-			if c.isValid():
-				self.color = c
-				self.update()
-				self.com.updateColorDeg.emit()
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -300,6 +27,7 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.com.enterCanvas.connect(self.showImagePosition)
 		self.com.leaveCanvas.connect(self.hideImagePosition)
+		self.com.overCanvas.connect(self.setImagePosition)
 
 		self.onClickPalette = False
 		self.resize(800,480)
@@ -329,11 +57,9 @@ class MainWindow(QtGui.QMainWindow):
 
 		self.tools = QtGui.QActionGroup(self)
 
-		#tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient", "exchange"]
-		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient"]
-		#connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
-		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool]
-		shortcuts = ['Z', 'X', 'C', 'A', 'S', 'D']
+		tools = ["selection", "pencil", "eraser", "colorpicker", "fill", "gradient", "exchange"]
+		connects = [self.setSelectionTool, self.setPencilTool, self.setEraserTool, self.setColorPickerTool, self.setFillTool, self.setGradientTool, self.setExchangeTool]
+		shortcuts = ['Z', 'X', 'C', 'A', 'S', 'D', '']
 
 		for i in range(len(tools)):
 			a = QtGui.QAction(QtGui.QIcon( os.path.join("themes", self.data.theme, tools[i] + ".png") ), self.data.getText("tools", tools[i]) + " (" + shortcuts[i] + ")", self.tools)
@@ -364,8 +90,7 @@ class MainWindow(QtGui.QMainWindow):
 		j = 0
 		for i in l:
 			toolBar.addAction(i)
-			#if j == 6:
-			if j == 5:
+			if j == 6:
 				toolBar.addSeparator()
 			j += 1
 
@@ -402,10 +127,10 @@ class MainWindow(QtGui.QMainWindow):
 	def createEditActions(self):
 
 		# Llistes de propietats (de cada acció)
-		ids = ["undo", "redo", "cut", "copy", "paste", "clear", "preferences"]
-		icons = ["edit-undo.png", "edit-redo.png", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
-		shortcuts = ['Ctrl+Z', 'Ctrl+Y', 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
-		connects = [self.undo, self.redo, self.cut, self.copy, self.paste, self.clear, self.showPreferences]
+		ids = ["undo", "redo", "selectall", "deselect", "invert", "cut", "copy", "paste", "clear", "preferences"]
+		icons = ["edit-undo.png", "edit-redo.png", "", "", "", "edit-cut.png", "edit-copy.png", "edit-paste.png", "edit-clear.png", "document-properties.png"]
+		shortcuts = ['Ctrl+Z', 'Ctrl+Y', "", "", "", 'Ctrl+X', 'Ctrl+C', 'Ctrl+V', 'Del', '']
+		connects = [self.undo, self.redo, 0, 0, 0, self.cut, self.copy, self.paste, self.clear, self.showPreferences]
 
 		# Llista d'accions
 		l = []
@@ -420,7 +145,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Insertem els zeros que simbolitzen separadors
 		l.insert(2,0)
-		l.insert(7,0)
+		l.insert(6,0)
+		l.insert(11,0)
 
 		return l
 
@@ -677,13 +403,17 @@ class MainWindow(QtGui.QMainWindow):
 
 		if self.imagePosLabel.isHidden():
 			self.imagePosLabel.setText( str(self.data.ximage) + str(self.data.yimage) )
-			self.statusBar.addWidget(self.imagePosLabel)
+			self.statusBar.insertWidget(0, self.imagePosLabel, 0)
 			self.imagePosLabel.show()
-			self.imagePosLabel.move(self.statusBar.width()/2,self.imagePosLabel.y())
+			#self.imagePosLabel.move(self.statusBar.width()/2,self.imagePosLabel.y())
 
 	def hideImagePosition(self):
 
 		self.statusBar.removeWidget(self.imagePosLabel)
+
+	def setImagePosition(self, x, y):
+
+		self.imagePosLabel.setText("  Pos: (" + str(x) + ", " + str(y) + ")")
 	
 	def showNewFileDialog(self):
 

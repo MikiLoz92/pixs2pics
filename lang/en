@@ -32,6 +32,9 @@ exit = Exit application
 [menu_edit_labels]
 undo = &Undo
 redo = &Redo
+selectall = &Select All
+deselect = &Deselect
+invert = &Invert
 cut = Cu&t
 copy = &Copy
 paste = &Paste
@@ -41,6 +44,9 @@ preferences = &Preferences
 [menu_edit_status_tips]
 undo = Undo the last action
 redo = Redo the last action
+selectall = Select the whole image
+deselect = Deselect what is selected
+invert = Invert the selection
 cut = Cut the image or a part of it
 copy = Copy the image or a part of it
 paste = Paste an image onto this one

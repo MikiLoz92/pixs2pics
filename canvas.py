@@ -219,6 +219,8 @@ class Canvas(QtGui.QLabel):
 		self.data.xcursor = x
 		self.data.ycursor = y
 
+		self.com.overCanvas.emit(x, y)
+
 		# Selección
 		if self.data.currentTool == 0:
 			if event.buttons() == Qt.LeftButton:
