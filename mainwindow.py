@@ -36,7 +36,8 @@ class MainWindow(QtGui.QMainWindow):
 		self.menuBar = self.createMenuBar()
 		self.toolBar = self.createToolBar()
 		self.createDockWidgets()
-		self.mainWidget = MainWidget(128, 96, data, com, Qt.red, self)
+
+		self.mainWidget = MainWidget(data, com, self)
 
 		self.imagePosLabel = QtGui.QLabel()
 		self.imagePosLabel.setObjectName("ImagePosLabel")
@@ -298,7 +299,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.data.zoom += 1
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
-			self.mainWidget.canvas.update()
+			self.mainWidget.currentWidget().canvas.update()
 			self.com.zoom.emit()
 
 	def zoomOut(self):
@@ -307,7 +308,7 @@ class MainWindow(QtGui.QMainWindow):
 			self.data.zoom -= 1
 			#self.mainWidget.canvas.setFixedSize(self.data.image.width()*self.data.zoom, self.data.image.height()*self.data.zoom)
 			self.scaleImage(self.data.zoom)
-			self.mainWidget.canvas.update()
+			self.mainWidget.currentWidget().canvas.update()
 			self.com.zoom.emit()
 
 	def scaleImage(self, zoom):
@@ -315,8 +316,8 @@ class MainWindow(QtGui.QMainWindow):
 		#self.mainWidget.canvas.resize(zoom * self.data.image.size())
 		self.com.resizeCanvas.emit()
 
-		self.adjustScrollBar(self.mainWidget.horizontalScrollBar(), zoom)
-		self.adjustScrollBar(self.mainWidget.verticalScrollBar(), zoom)
+		self.adjustScrollBar(self.mainWidget.currentWidget().horizontalScrollBar(), zoom)
+		self.adjustScrollBar(self.mainWidget.currentWidget().verticalScrollBar(), zoom)
 		
 	def adjustScrollBar(self, scrollBar, zoom):
 

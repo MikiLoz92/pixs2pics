@@ -52,7 +52,7 @@ class Canvas(QtGui.QLabel):
 	Se expande de tamaño a medida que aumentamos el zoom.
 	"""
 
-	def __init__(self, w, h, data, com, color, parent=None):
+	def __init__(self, data, com, parent=None):
 
 		#super(Canvas, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
 		super(Canvas, self).__init__(parent)
